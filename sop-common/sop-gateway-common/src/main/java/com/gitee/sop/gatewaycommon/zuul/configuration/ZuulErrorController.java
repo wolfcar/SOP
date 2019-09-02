@@ -2,14 +2,15 @@ package com.gitee.sop.gatewaycommon.zuul.configuration;
 
 import com.gitee.sop.gatewaycommon.bean.ApiContext;
 import com.gitee.sop.gatewaycommon.result.ResultExecutor;
+import com.gitee.sop.gatewaycommon.zuul.ZuulContext;
 import com.netflix.zuul.context.RequestContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.error.ErrorController;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -28,13 +29,17 @@ public class ZuulErrorController implements ErrorController {
      */
     @RequestMapping(ERROR_PATH)
     @ResponseBody
-    public Object error(HttpServletResponse response) {
+    public Object error(HttpServletRequest request, HttpServletResponse response) {
         RequestContext ctx = RequestContext.getCurrentContext();
         if (ctx.getResponse() == null) {
             ctx.setResponse(response);
         }
-        ctx.setResponseStatusCode(HttpStatus.OK.value());
         Throwable throwable = ctx.getThrowable();
+        log.error("网关报错，URL:{}, status:{}, params:{}",
+                request.getRequestURL().toString()
+                , response.getStatus()
+                , ZuulContext.getApiParam()
+                , throwable);
         return this.buildResult(throwable);
     }
 
