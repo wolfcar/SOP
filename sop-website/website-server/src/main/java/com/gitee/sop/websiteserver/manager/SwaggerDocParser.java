@@ -8,7 +8,6 @@ import com.gitee.sop.websiteserver.bean.DocModule;
 import com.gitee.sop.websiteserver.bean.DocParameter;
 import com.gitee.sop.websiteserver.bean.DocParserContext;
 import com.google.common.collect.Sets;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 
 import java.util.ArrayList;
@@ -93,6 +92,7 @@ public class SwaggerDocParser implements DocParser {
         docItem.setSummary(docInfo.getString("summary"));
         docItem.setDescription(docInfo.getString("description"));
         docItem.setMultiple(docInfo.getString("multiple") != null);
+        docItem.setProduces(docInfo.getJSONArray("produces").toJavaList(String.class));
         String moduleName = this.buildModuleName(docInfo, docRoot);
         docItem.setModule(moduleName);
         List<DocParameter> docParameterList = this.buildRequestParameterList(docInfo, docRoot);
@@ -138,27 +138,33 @@ public class SwaggerDocParser implements DocParser {
                 })
                 .collect(Collectors.groupingBy(DocParameter::getModule));
 
-        collect.entrySet().stream()
-                .forEach(entry -> {
-                    DocParameter moduleDoc = new DocParameter();
-                    moduleDoc.setName(entry.getKey());
-                    moduleDoc.setType("object");
-                    moduleDoc.setRefs(entry.getValue());
-                    docParameterList.add(moduleDoc);
-                });
+        collect.forEach((key, value) -> {
+            DocParameter moduleDoc = new DocParameter();
+            moduleDoc.setName(key);
+            moduleDoc.setType("object");
+            moduleDoc.setRefs(value);
+            docParameterList.add(moduleDoc);
+        });
 
-        List<DocParameter> ret = docParameterList.stream()
+        return docParameterList.stream()
                 .filter(docParameter -> !docParameter.getName().contains("."))
                 .collect(Collectors.toList());
-
-        return ret;
     }
 
     protected List<DocParameter> buildResponseParameterList(JSONObject docInfo, JSONObject docRoot) {
-        String responseRef = getResponseRef(docInfo);
+        RefInfo refInfo = getResponseRefInfo(docInfo);
         List<DocParameter> respParameterList = Collections.emptyList();
-        if (StringUtils.isNotBlank(responseRef)) {
+        if (refInfo != null) {
+            String responseRef = refInfo.ref;
             respParameterList = this.buildDocParameters(responseRef, docRoot);
+            // 如果返回数组
+            if (refInfo.isArray) {
+                DocParameter docParameter = new DocParameter();
+                docParameter.setName("items");
+                docParameter.setType("array");
+                docParameter.setRefs(respParameterList);
+                respParameterList = Collections.singletonList(docParameter);
+            }
         }
         return respParameterList;
     }
@@ -170,42 +176,101 @@ public class SwaggerDocParser implements DocParser {
         List<DocParameter> docParameterList = new ArrayList<>();
         for (String fieldName : fieldNames) {
             /*
-            {
-                    "description": "分类故事",
-                    "$ref": "#/definitions/StoryVO",
-                    "originalRef": "StoryVO"
+               {
+                  "description": "分类故事",
+                  "$ref": "#/definitions/StoryVO"
                 }
              */
             JSONObject fieldInfo = properties.getJSONObject(fieldName);
-            DocParameter respParam = fieldInfo.toJavaObject(DocParameter.class);
-            respParam.setName(fieldName);
-            docParameterList.add(respParam);
-            String originalRef = isArray(fieldInfo) ? getRef(fieldInfo.getJSONObject(fieldName)) : getRef(fieldInfo);
-            if (StringUtils.isNotBlank(originalRef)) {
-                List<DocParameter> refs = buildDocParameters(originalRef, docRoot);
-                respParam.setRefs(refs);
+            DocParameter docParameter = fieldInfo.toJavaObject(DocParameter.class);
+            docParameter.setName(fieldName);
+            docParameterList.add(docParameter);
+            RefInfo refInfo = this.getRefInfo(fieldInfo);
+            if (refInfo != null) {
+                List<DocParameter> refs = buildDocParameters(refInfo.ref, docRoot);
+                docParameter.setRefs(refs);
             }
         }
         return docParameterList;
     }
 
-    protected boolean isArray(JSONObject fieldInfo) {
-        return "array".equalsIgnoreCase(fieldInfo.getString("type"));
-    }
 
-    private String getRef(JSONObject fieldInfo) {
-        return Optional.ofNullable(fieldInfo)
-                .map(jsonObject -> jsonObject.getString("originalRef"))
+    /**
+     * 简单对象返回：
+     * "responses": {
+     *                     "200": {
+     *                         "description": "OK",
+     *                         "schema": {
+     *                             "$ref": "#/definitions/FileUploadVO"
+     *                         }
+     *                     },
+     *                     "401": {
+     *                         "description": "Unauthorized"
+     *                     },
+     *                     "403": {
+     *                         "description": "Forbidden"
+     *                     },
+     *                     "404": {
+     *                         "description": "Not Found"
+     *                     }
+     *                 }
+     * 纯数组返回：
+     * "responses": {
+     *                     "200": {
+     *                         "description": "OK",
+     *                         "schema": {
+     *                             "type": "array",
+     *                             "items": {
+     *                                 "$ref": "#/definitions/StoryVO"
+     *                             }
+     *                         }
+     *                     },
+     *                     "401": {
+     *                         "description": "Unauthorized"
+     *                     },
+     *                     "403": {
+     *                         "description": "Forbidden"
+     *                     },
+     *                     "404": {
+     *                         "description": "Not Found"
+     *                     }
+     *                 }
+     * @param docInfo
+     * @return
+     */
+    protected RefInfo getResponseRefInfo(JSONObject docInfo) {
+        return Optional.ofNullable(docInfo.getJSONObject("responses"))
+                .flatMap(jsonObject -> Optional.ofNullable(jsonObject.getJSONObject("200")))
+                .flatMap(jsonObject -> Optional.ofNullable(jsonObject.getJSONObject("schema")))
+                .map(this::getRefInfo)
                 .orElse(null);
     }
 
-    protected String getResponseRef(JSONObject docInfo) {
-        String ref = Optional.ofNullable(docInfo.getJSONObject("responses"))
-                .flatMap(jsonObject -> Optional.ofNullable(jsonObject.getJSONObject("200")))
-                .flatMap(jsonObject -> Optional.ofNullable(jsonObject.getJSONObject("schema")))
-                .flatMap(jsonObject -> Optional.ofNullable(jsonObject.getString("originalRef")))
-                .orElse("");
-        return ref;
+    private RefInfo getRefInfo(JSONObject jsonObject) {
+        String ref;
+        boolean isArray = "array".equals(jsonObject.getString("type"));
+        if (isArray) {
+            ref = jsonObject.getJSONObject("items").getString("$ref");
+        } else {
+            // #/definitions/Category
+            ref = jsonObject.getString("$ref");
+        }
+        if (ref == null) {
+            return null;
+        }
+        int index = ref.lastIndexOf("/");
+        if (index > -1) {
+            ref = ref.substring(index + 1);
+        }
+        RefInfo refInfo = new RefInfo();
+        refInfo.isArray = isArray;
+        refInfo.ref = ref;
+        return refInfo;
+    }
+
+    private static class RefInfo {
+        private boolean isArray;
+        private String ref;
     }
 
 }

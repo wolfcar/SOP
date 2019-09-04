@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 支付宝服务端，假设签名验证通过后，到达这里进行具体的业务处理。
@@ -109,6 +111,8 @@ public class AlipayController {
     @ApiAbility
     @GetMapping("getStory2")
     public Story getStory2_0() {
+        OpenContext openContext = ServiceContext.getCurrentContext().getOpenContext();
+        System.out.println(openContext.getAppId());
         Story story = new Story();
         story.setId(1);
         story.setName("海底小纵队(默认版本号)");
@@ -178,6 +182,23 @@ public class AlipayController {
         storyVO.name = "白雪公主, app_id:" + app_id;
         storyVO.gmt_create = new Date();
         return storyVO;
+    }
+
+    @ApiOperation(value = "返回数组结果", notes = "返回数组结果")
+    @ApiMapping(value = "alipay.story.find2")
+    public List<StoryVO> getStory3(StoryParam story) {
+        int index = 0;
+        StoryVO storyVO = new StoryVO();
+        storyVO.id = 1L;
+        storyVO.name = "白雪公主, index:" + index++;
+        storyVO.gmt_create = new Date();
+
+        StoryVO storyVO2 = new StoryVO();
+        storyVO2.id = 1L;
+        storyVO2.name = "白雪公主, index:" + index++;
+        storyVO2.gmt_create = new Date();
+
+        return Arrays.asList(storyVO, storyVO2);
     }
 
     /**
