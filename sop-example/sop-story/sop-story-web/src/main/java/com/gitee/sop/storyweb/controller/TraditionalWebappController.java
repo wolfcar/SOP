@@ -84,6 +84,8 @@ public class TraditionalWebappController {
     public Food getById(@PathVariable("id") Integer id) {
         Food food = new Food();
         food.setId(id);
+        food.setName("香蕉");
+        food.setPrice(BigDecimal.valueOf(100));
         return food;
     }
 
