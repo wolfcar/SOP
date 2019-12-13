@@ -8,7 +8,6 @@ import com.gitee.easyopen.ApiParamParser;
 import com.gitee.easyopen.ParamNames;
 import com.gitee.easyopen.interceptor.ApiInterceptor;
 import com.gitee.easyopen.session.ApiSessionManager;
-import com.gitee.sop.adminserver.common.MyApiSessionManager;
 import com.gitee.sop.adminserver.interceptor.LoginInterceptor;
 import com.gitee.sop.adminserver.service.RegistryService;
 import com.gitee.sop.adminserver.service.impl.RegistryServiceEurekaImpl;
@@ -49,7 +48,7 @@ public class WebConfig {
                 , SerializerFeature.WriteDateUseDateFormat)
         );
 
-        ApiSessionManager apiSessionManager = new MyApiSessionManager();
+        ApiSessionManager apiSessionManager = new ApiSessionManager();
         // session有效期
         int timeout = NumberUtils.toInt(accessTokenTimeout, 30);
         apiSessionManager.setSessionTimeout(timeout);
