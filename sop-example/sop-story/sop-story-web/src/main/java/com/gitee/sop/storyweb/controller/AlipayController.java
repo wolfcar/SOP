@@ -18,6 +18,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -138,6 +139,17 @@ public class AlipayController {
         StoryResult story = new StoryResult();
         story.setId(1L);
         story.setName("海底小纵队(默认版本号),param:" + param);
+        return story;
+    }
+
+    // http://localhost:2222/getStory33
+    // 遗留接口具备开放平台能力
+    @ApiAbility
+    @PostMapping("getStory33")
+    public StoryResult getStory22(@RequestBody StoryParam param) {
+        StoryResult story = new StoryResult();
+        story.setId(1L);
+        story.setName("遗留接口,param:" + param);
         return story;
     }
 

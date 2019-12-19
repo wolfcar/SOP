@@ -65,6 +65,22 @@ public class AllInOneTest extends TestBase {
     }
 
     /**
+     * 测试遗留接口
+     * 以json方式提交(application/json)
+     */
+    public void testPostJSON2() {
+        Client.RequestBuilder requestBuilder = new Client.RequestBuilder()
+                .method("getStory33")
+                .version("1.0")
+                // 以json方式提交
+                .postJson(true)
+                .bizContent(new BizContent().add("id", "1").add("name", "葫芦娃"))
+                .httpMethod(HttpTool.HTTPMethod.POST);
+
+        client.execute(requestBuilder);
+    }
+
+    /**
      * 测试feign。gateway -> book-service(consumer) -> story-service(provider)
      */
     public void testFeign() {
