@@ -133,7 +133,7 @@ public class Client {
         private String url;
         private String method;
         private String version = DEFAULT_VERSION;
-        private Map<String, String> bizContent;
+        private Map<String, Object> bizContent;
         private HttpTool.HTTPMethod httpMethod;
         private Map<String, String> header;
         private boolean ignoreSign;
@@ -181,7 +181,7 @@ public class Client {
          * @param bizContent 业务参数
          * @return 返回RequestBuilder
          */
-        public RequestBuilder bizContent(Map<String, String> bizContent) {
+        public RequestBuilder bizContent(Map<String, Object> bizContent) {
             this.bizContent = bizContent;
             return this;
         }
@@ -227,6 +227,9 @@ public class Client {
          */
         public RequestBuilder postJson(boolean postJson) {
             this.postJson = postJson;
+            if (postJson) {
+                this.httpMethod(HttpTool.HTTPMethod.POST);
+            }
             return this;
         }
 
