@@ -41,7 +41,7 @@
         </el-form-item>
       </fieldset>
       <fieldset v-show="showKeys()">
-        <legend>平台公私钥</legend>
+        <legend>平台公私钥[可选]</legend>
         <el-form-item class="gen-key">
           <el-button type="text" @click="onGenKeysPlatform">重新生成</el-button>
         </el-form-item>

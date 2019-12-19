@@ -21,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.MultipartRequest;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
-import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor;
 import org.springframework.web.servlet.mvc.method.annotation.ServletRequestMethodArgumentResolver;
 
 import javax.servlet.ServletRequest;
@@ -40,7 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -85,9 +83,7 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(MethodParameter methodParameter) {
         // 是否有注解
-        boolean hasAnnotation = methodParameter.hasMethodAnnotation(ApiMapping.class)
-                || methodParameter.hasMethodAnnotation(ApiAbility.class);
-        if (hasAnnotation) {
+        if (hasApiAnnotation(methodParameter)) {
             openApiParams.add(methodParameter);
         }
         Class<?> paramType = methodParameter.getParameterType();
@@ -114,6 +110,11 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
         );
         // 除此之外都匹配
         return !exclude;
+    }
+
+    private boolean hasApiAnnotation(MethodParameter methodParameter) {
+        return methodParameter.hasMethodAnnotation(ApiMapping.class)
+                || OpenUtil.getAnnotationFromMethodOrClass(methodParameter.getMethod(), ApiAbility.class) != null;
     }
 
     @Override

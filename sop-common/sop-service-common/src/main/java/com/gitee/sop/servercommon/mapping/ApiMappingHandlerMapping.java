@@ -4,8 +4,8 @@ import com.gitee.sop.servercommon.annotation.ApiAbility;
 import com.gitee.sop.servercommon.annotation.ApiMapping;
 import com.gitee.sop.servercommon.bean.ServiceConfig;
 import com.gitee.sop.servercommon.bean.ServiceContext;
+import com.gitee.sop.servercommon.util.OpenUtil;
 import org.springframework.core.PriorityOrdered;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.StringValueResolver;
 import org.springframework.web.servlet.mvc.condition.RequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -26,12 +26,14 @@ public class ApiMappingHandlerMapping extends RequestMappingHandlerMapping imple
         String sopMvc = System.getProperty(ServiceContext.SOP_MVC);
         boolean isMvc = sopMvc != null;
         ApiMapping apiMapping = method.getAnnotation(ApiMapping.class);
-        ApiAbility apiAbility = method.getAnnotation(ApiAbility.class);
+        ApiAbility apiAbility = OpenUtil.getAnnotationFromMethodOrClass(method, ApiAbility.class);
         StringValueResolver valueResolver = null;
         if (apiMapping != null || apiAbility != null) {
             valueResolver = isMvc ? stringValueResolverMVC : stringValueResolver;
         }
-        this.setEmbeddedValueResolver(valueResolver);
+        if (valueResolver != null) {
+            this.setEmbeddedValueResolver(valueResolver);
+        }
         return super.getMappingForMethod(method, handlerType);
     }
 
@@ -53,7 +55,7 @@ public class ApiMappingHandlerMapping extends RequestMappingHandlerMapping imple
             permission = apiMapping.permission();
             needToken = apiMapping.needToken();
         } else {
-            ApiAbility apiAbility = this.findApiAbilityAnnotation(method);
+            ApiAbility apiAbility = OpenUtil.getAnnotationFromMethodOrClass(method, ApiAbility.class);
             if (apiAbility != null) {
                 version = apiAbility.version();
                 ignoreValidate = apiAbility.ignoreValidate();
@@ -88,12 +90,4 @@ public class ApiMappingHandlerMapping extends RequestMappingHandlerMapping imple
         return new ApiMappingRequestCondition(apiMappingInfo);
     }
 
-    protected ApiAbility findApiAbilityAnnotation(Method method) {
-        ApiAbility apiAbility = method.getAnnotation(ApiAbility.class);
-        if (apiAbility == null) {
-            Class<?> controllerClass = method.getDeclaringClass();
-            apiAbility = AnnotationUtils.findAnnotation(controllerClass, ApiAbility.class);
-        }
-        return apiAbility;
-    }
 }
