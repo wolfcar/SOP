@@ -58,8 +58,7 @@ public class AllInOneTest extends TestBase {
                 .version("1.0")
                 // 以json方式提交
                 .postJson(true)
-                .bizContent(new BizContent().add("id", "1").add("name", "葫芦娃"))
-                .httpMethod(HttpTool.HTTPMethod.POST);
+                .bizContent(new BizContent().add("id", "1").add("name", "葫芦娃"));
 
         client.execute(requestBuilder);
     }
@@ -314,8 +313,8 @@ public class AllInOneTest extends TestBase {
         client.execute(requestBuilder);
     }
 
-    class BizContent extends HashMap<String, String> {
-        public BizContent add(String key, String value) {
+    class BizContent extends HashMap<String, Object> {
+        public BizContent add(String key, Object value) {
             this.put(key, value);
             return this;
         }
