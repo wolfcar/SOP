@@ -80,7 +80,7 @@ SOP封装了开放平台大部分功能包括：签名验证、统一异常处�
 ## 分支说明
 
 - master：发版分支
-- spring-cloud-gateway：Spring Cloud Gateway作为网关
+- spring-cloud-gateway：Spring Cloud Gateway作为网关（不推荐）
 - develop：日常开发分支
 - eureka：使用eureka注册中心
 - 1.x：老的1.x版本代码
