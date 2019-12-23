@@ -31,9 +31,7 @@ public class ApiMappingHandlerMapping extends RequestMappingHandlerMapping imple
         if (apiMapping != null || apiAbility != null) {
             valueResolver = isMvc ? stringValueResolverMVC : stringValueResolver;
         }
-        if (valueResolver != null) {
-            this.setEmbeddedValueResolver(valueResolver);
-        }
+        this.setEmbeddedValueResolver(valueResolver);
         return super.getMappingForMethod(method, handlerType);
     }
 
