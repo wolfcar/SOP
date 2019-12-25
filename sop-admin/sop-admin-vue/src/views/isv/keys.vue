@@ -45,7 +45,7 @@
         <el-form-item class="gen-key">
           <el-button type="text" @click="onGenKeysPlatform">重新生成</el-button>
         </el-form-item>
-        <el-form-item prop="publicKeyPlatform" :label="selfLabel('平台公钥')">
+        <el-form-item prop="publicKeyPlatform" label="平台公钥">
           <el-input v-model="isvKeysFormData.publicKeyPlatform" type="textarea" />
         </el-form-item>
         <el-form-item prop="privateKeyPlatform" label="平台私钥">
