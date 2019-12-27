@@ -24,7 +24,7 @@ SOP封装了开放平台大部分功能包括：签名验证、统一异常处�
 
 ## 架构图
 
-![架构图](https://images.gitee.com/uploads/images/2019/0821/201531_0f605f7c_332975.png "SOP架构图")
+![架构图](https://images.gitee.com/uploads/images/2019/1227/145216_c9b45109_332975.png "sop3.png")
 
 > 如上图所示，整个系统运行后，开发者只需关注微服务中的业务代码，接口变更后重新部署微服务应用即可
 
