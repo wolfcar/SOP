@@ -33,7 +33,7 @@ public class RegistryServiceNacosImpl implements RegistryService {
 
     private static HttpTool httpTool = new HttpTool();
 
-    @Value("${nacos.discovery.server-addr:${registry.nacos-server-addr:}}")
+    @Value("${nacos.discovery.server-addr:${spring.cloud.nacos.discovery.server-addr:}}")
     private String nacosAddr;
 
     private NamingService namingService;
