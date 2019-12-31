@@ -41,7 +41,7 @@
 		<!-- easyopen starter -->
 		<dependency>
 			<groupId>net.oschina.durcframework</groupId>
-			<artifactId>easyopen-spring-boot-starter</artifactId>
+			<artifactId>easyopen</artifactId>
 			<version>1.16.5</version>
 		</dependency>
 
@@ -72,11 +72,6 @@
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
         
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
