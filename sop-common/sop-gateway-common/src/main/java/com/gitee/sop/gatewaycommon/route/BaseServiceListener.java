@@ -8,7 +8,7 @@ import org.springframework.web.client.RestTemplate;
 /**
  * @author tanghc
  */
-public abstract class BaseServiceListener implements ServiceListener {
+public abstract class BaseServiceListener implements ServiceListener, RegistryMetadata {
 
     private static final String SECRET = "a3d9sf!1@odl90zd>fkASwq";
 

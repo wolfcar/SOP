@@ -70,7 +70,7 @@ public class ServiceRouteListener extends BaseServiceListener {
      * @param instance 服务实例
      * @return 返回最终url
      */
-    private static String getRouteRequestUrl(InstanceDefinition instance) {
+    private String getRouteRequestUrl(InstanceDefinition instance) {
         Map<String, String> metadata = instance.getMetadata();
         String customPath = metadata.get(METADATA_SOP_ROUTES_PATH);
         String homeUrl;
@@ -88,7 +88,7 @@ public class ServiceRouteListener extends BaseServiceListener {
         } else {
             // 默认处理
             homeUrl = getHomeUrl(instance);
-            String contextPath = metadata.getOrDefault(SopConstants.METADATA_SERVER_CONTEXT_PATH, "");
+            String contextPath = this.getContextPath(metadata);
             servletPath = contextPath + SOP_ROUTES_PATH;
         }
         if (StringUtils.isNotBlank(servletPath) && !servletPath.startsWith("/")) {
