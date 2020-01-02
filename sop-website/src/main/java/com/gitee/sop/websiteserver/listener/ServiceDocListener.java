@@ -44,9 +44,9 @@ public class ServiceDocListener extends BaseServiceListener {
         }
     }
 
-    private static String getRouteRequestUrl(InstanceDefinition instance) {
+    private String getRouteRequestUrl(InstanceDefinition instance) {
         String query = buildQuery(SECRET);
-        String contextPath = instance.getMetadata().getOrDefault(SopConstants.METADATA_SERVER_CONTEXT_PATH, "");
+        String contextPath = this.getContextPath(instance.getMetadata());
         return "http://" + instance.getIp() + ":" + instance.getPort() + contextPath + "/v2/api-docs" + query;
     }
 }
