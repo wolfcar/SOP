@@ -61,6 +61,8 @@ public class SwaggerDocParser implements DocParser {
             }
         }
 
+        docItems.sort(Comparator.comparing(DocItem::getNameVersion));
+
         List<DocModule> docModuleList = docItems.stream()
                 .collect(Collectors.groupingBy(DocItem::getModule))
                 .entrySet()
