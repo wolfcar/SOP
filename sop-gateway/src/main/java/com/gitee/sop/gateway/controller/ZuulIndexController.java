@@ -13,13 +13,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 网关入口
+ * zuul网关入口
  *
  * @author tanghc
  */
 @Slf4j
 @Controller
-public class RedirectController {
+public class ZuulIndexController {
 
     @Autowired
     private ValidateService validateService;
