@@ -23,6 +23,15 @@ import java.util.Map;
 public class ZuulResultExecutor extends BaseExecutorAdapter<RequestContext, String> {
 
     @Override
+    protected boolean isMergeResult(RequestContext request) {
+        Object notMerge = request.getRequest().getAttribute(SopConstants.SOP_NOT_MERGE);
+        if (notMerge != null) {
+            return false;
+        }
+        return super.isMergeResult(request);
+    }
+
+    @Override
     public int getResponseStatus(RequestContext requestContext) {
         List<Pair<String, String>> bizHeaders = requestContext.getZuulResponseHeaders();
 
