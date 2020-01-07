@@ -28,8 +28,11 @@ public class ApiMappingHandlerMapping extends RequestMappingHandlerMapping imple
         ApiMapping apiMapping = method.getAnnotation(ApiMapping.class);
         ApiAbility apiAbility = OpenUtil.getAnnotationFromMethodOrClass(method, ApiAbility.class);
         StringValueResolver valueResolver = null;
-        if (apiMapping != null || apiAbility != null) {
-            valueResolver = isMvc ? stringValueResolverMVC : stringValueResolver;
+        if (apiMapping != null) {
+            valueResolver = stringValueResolver;
+        }
+        if (isMvc || apiAbility != null) {
+            valueResolver = stringValueResolverMVC;
         }
         this.setEmbeddedValueResolver(valueResolver);
         return super.getMappingForMethod(method, handlerType);
