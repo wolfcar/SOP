@@ -27,13 +27,13 @@
 
     <dependencies>
         <!--
-            <artifactId>sop-bridge-zuul</artifactId>    : spring cloud gateway作为网关
-            <artifactId>sop-bridge-gateway</artifactId> : spring cloud zuul作为网关
+            <artifactId>sop-bridge-gateway</artifactId> : spring cloud gateway作为网关
+            <artifactId>sop-bridge-zuul</artifactId>    : spring cloud zuul作为网关
         -->
          <dependency>
             <groupId>com.gitee.sop</groupId>
-             <!--<artifactId>sop-bridge-zuul</artifactId>-->
              <artifactId>sop-bridge-gateway</artifactId>
+             <!--<artifactId>sop-bridge-zuul</artifactId>-->
             <version>2.6.0-SNAPSHOT</version>
         </dependency>
 
