@@ -1,5 +1,11 @@
 # changelog
 
+## 2.6.0
+
+- 重构spring cloud gateway网关
+- zuul和gateway网关二合一
+- 代码优化
+
 ## 2.5.10
 
 - 优化签名认证，优化校验日志打印
