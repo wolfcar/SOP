@@ -1,4 +1,4 @@
-package com.gitee.sop.gateway.controller;
+package com.gitee.sop.gatewaycommon.zuul.controller;
 
 import com.gitee.sop.gatewaycommon.bean.SopConstants;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,7 +14,7 @@ import java.io.IOException;
  * 传统web开发入口
  * @author tanghc
  */
-@WebServlet(urlPatterns = "/rest/*")
+//@WebServlet(urlPatterns = "/rest/*")
 public class RestServlet extends HttpServlet {
 
     private static final String EMPTY_VERSION = "";
