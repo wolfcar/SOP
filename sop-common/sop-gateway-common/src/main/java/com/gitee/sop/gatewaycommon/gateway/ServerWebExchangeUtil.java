@@ -1,6 +1,7 @@
 package com.gitee.sop.gatewaycommon.gateway;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.gitee.sop.gatewaycommon.bean.SopConstants;
 import com.gitee.sop.gatewaycommon.gateway.common.FileUploadHttpServletRequest;
 import com.gitee.sop.gatewaycommon.gateway.common.RequestContentDataExtractor;
@@ -13,24 +14,26 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.HttpMessageReader;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.reactive.function.server.HandlerStrategies;
+import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilterChain;
+import reactor.core.publisher.Mono;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
-
-import static com.gitee.sop.gatewaycommon.bean.SopConstants.CACHE_REQUEST_BODY_FOR_MAP;
-import static com.gitee.sop.gatewaycommon.bean.SopConstants.CACHE_REQUEST_BODY_OBJECT_KEY;
 
 /**
  * @author tanghc
@@ -38,7 +41,131 @@ import static com.gitee.sop.gatewaycommon.bean.SopConstants.CACHE_REQUEST_BODY_O
 @Slf4j
 public class ServerWebExchangeUtil {
 
+    private static final String UNKNOWN_PATH = "/sop/unknown";
+    private static final String VALIDATE_ERROR_PATH = "/sop/validateError";
+    private static final String REST_PATH = "/rest";
+
     private static FormHttpMessageConverter formHttpMessageConverter = new FormHttpMessageConverter();
+
+    private static final List<HttpMessageReader<?>> messageReaders;
+
+    static {
+        messageReaders = HandlerStrategies.withDefaults().messageReaders();
+    }
+
+    /**
+     * 重定向
+     *
+     * @param exchange exchange
+     * @param apiParam apiParam
+     * @return 返回新的ServerWebExchange，配合chain.filter(newExchange);使用
+     */
+    public static ServerWebExchange getForwardExchange(ServerWebExchange exchange, ApiParam apiParam) {
+        ServerHttpRequest newRequest = getForwardRequest(exchange.getRequest(), apiParam);
+        return exchange.mutate().request(newRequest).build();
+    }
+
+    public static ServerHttpRequest getForwardRequest(ServerHttpRequest request, ApiParam apiParam) {
+        return request
+                .mutate()
+                .header(SopConstants.REDIRECT_VERSION_KEY, apiParam.fetchVersion())
+                .path(getForwardPath(apiParam)).build();
+    }
+
+    /**
+     * 构建一个接受请求体的request
+     *
+     * @param exchange exchange
+     * @return 返回ServerRequest
+     */
+    public static ServerRequest createReadBodyRequest(ServerWebExchange exchange) {
+        return ServerRequest.create(exchange, messageReaders);
+    }
+
+    public static ServerWebExchange getRestfulExchange(ServerWebExchange exchange, String path) {
+        int index = path.indexOf(REST_PATH);
+        // 取"/rest"的后面部分
+        String newPath = path.substring(index + REST_PATH.length());
+        ApiParam apiParam = new ApiParam();
+        apiParam.setName(newPath);
+        apiParam.setVersion("");
+        setApiParam(exchange, apiParam);
+        return getForwardExchange(exchange, newPath);
+    }
+
+    /**
+     * 重定向
+     *
+     * @param exchange    exchange
+     * @param forwardPath 重定向path
+     * @return 返回新的ServerWebExchange，配合chain.filter(newExchange);使用
+     */
+    public static ServerWebExchange getForwardExchange(ServerWebExchange exchange, String forwardPath) {
+        ServerHttpRequest newRequest = exchange.getRequest()
+                .mutate()
+                .path(forwardPath).build();
+        return exchange.mutate().request(newRequest).build();
+    }
+
+    public static Mono<Void> forwardUnknown(ServerWebExchange exchange, WebFilterChain chain) {
+        // 非法访问
+        ServerWebExchange newExchange = ServerWebExchangeUtil.getForwardExchange(exchange, UNKNOWN_PATH);
+        return chain.filter(newExchange);
+    }
+
+    private static String getForwardPath(ApiParam apiParam) {
+        // 如果有异常，则重定向到这个path
+        if (apiParam.getThrowable() != null) {
+            return VALIDATE_ERROR_PATH;
+        }
+        String forwardPath = UNKNOWN_PATH;
+        String method = apiParam.fetchName();
+        if (org.springframework.util.StringUtils.hasText(method)) {
+            forwardPath = "/" + method + "/";
+        }
+        return forwardPath;
+    }
+
+    public static ApiParam getApiParam(ServerWebExchange exchange, String body) {
+        MediaType contentType = exchange.getRequest().getHeaders().getContentType();
+        if (contentType == null) {
+            contentType = MediaType.APPLICATION_FORM_URLENCODED;
+        }
+        ApiParam apiParam = new ApiParam();
+        String ip = Optional.ofNullable(exchange.getRequest().getRemoteAddress())
+                .map(address -> address.getAddress().getHostAddress())
+                .orElse("");
+        apiParam.setIp(ip);
+        Map<String, ?> params = null;
+        String contentTypeStr = contentType.toString().toLowerCase();
+        // 如果是json方式提交
+        if (StringUtils.containsAny(contentTypeStr, "json", "text")) {
+            JSONObject jsonObject = JSON.parseObject(body);
+            apiParam.putAll(jsonObject);
+        } else if (StringUtils.containsIgnoreCase(contentTypeStr, "multipart")) {
+            // 如果是文件上传请求
+            HttpServletRequest fileUploadRequest = getFileUploadRequest(exchange, body);
+            setFileUploadRequest(exchange, fileUploadRequest);
+            RequestUtil.UploadInfo uploadInfo = RequestUtil.getUploadInfo(fileUploadRequest);
+            params = uploadInfo.getUploadParams();
+            apiParam.setUploadContext(uploadInfo.getUploadContext());
+        } else {
+            // APPLICATION_FORM_URLENCODED请求
+            params = RequestUtil.parseQueryToMap(body);
+        }
+        if (params != null) {
+            apiParam.putAll(params);
+        }
+        setApiParam(exchange, apiParam);
+        return apiParam;
+    }
+
+    public static ApiParam getApiParam(ServerWebExchange exchange, Map<String, String> params) {
+        ApiParam apiParam = new ApiParam();
+        apiParam.putAll(params);
+        setApiParam(exchange, apiParam);
+        return apiParam;
+    }
 
     /**
      * 获取请求参数
@@ -58,62 +185,6 @@ public class ServerWebExchangeUtil {
      */
     public static void setApiParam(ServerWebExchange exchange, ApiParam apiParam) {
         exchange.getAttributes().put(SopConstants.CACHE_API_PARAM, apiParam);
-    }
-
-    /**
-     * 获取Spring Cloud Gateway请求的原始参数。前提是要使用ReadBodyRoutePredicateFactory
-     *
-     * @param exchange ServerWebExchange
-     * @return 没有参数返回null
-     * @see com.gitee.sop.gatewaycommon.gateway.route.ReadBodyRoutePredicateFactory
-     */
-    public static ApiParam getRequestParams(ServerWebExchange exchange) {
-        ApiParam apiParamExist = exchange.getAttribute(CACHE_REQUEST_BODY_FOR_MAP);
-        if (apiParamExist != null) {
-            return apiParamExist;
-        }
-        ApiParam apiParam = new ApiParam();
-        Map<String, ?> params = null;
-        if (exchange.getRequest().getMethod() == HttpMethod.GET) {
-            MultiValueMap<String, String> queryParams = exchange.getRequest().getQueryParams();
-            params = buildParams(queryParams);
-        } else {
-            String cachedBody = exchange.getAttribute(CACHE_REQUEST_BODY_OBJECT_KEY);
-            if (cachedBody != null) {
-                MediaType contentType = exchange.getRequest().getHeaders().getContentType();
-                String contentTypeStr = contentType == null ? "" : contentType.toString().toLowerCase();
-                // 如果是json方式提交
-                if (StringUtils.containsAny(contentTypeStr, "json", "text")) {
-                    params = JSON.parseObject(cachedBody);
-                } else if (StringUtils.containsIgnoreCase(contentTypeStr, "multipart")) {
-                    // 如果是文件上传请求
-                    HttpServletRequest fileUploadRequest = getFileUploadRequest(exchange, cachedBody);
-                    setFileUploadRequest(exchange, fileUploadRequest);
-                    RequestUtil.UploadInfo uploadInfo = RequestUtil.getUploadInfo(fileUploadRequest);
-                    params = uploadInfo.getUploadParams();
-                    apiParam.setUploadContext(uploadInfo.getUploadContext());
-                } else {
-                    params = RequestUtil.parseQueryToMap(cachedBody);
-                }
-            }
-        }
-        if (params != null) {
-            apiParam.putAll(params);
-            exchange.getAttributes().put(CACHE_REQUEST_BODY_FOR_MAP, apiParam);
-        }
-        return apiParam;
-    }
-
-
-    public static Map<String, String> buildParams(MultiValueMap<String, String> queryParams) {
-        if (queryParams == null || queryParams.size() == 0) {
-            return null;
-        }
-        Map<String, String> params = new HashMap<>(queryParams.size());
-        for (Map.Entry<String, List<String>> entry : queryParams.entrySet()) {
-            params.put(entry.getKey(), entry.getValue().get(0));
-        }
-        return params;
     }
 
     /**

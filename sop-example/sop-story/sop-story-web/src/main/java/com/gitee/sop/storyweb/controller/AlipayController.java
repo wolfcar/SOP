@@ -17,6 +17,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,6 +40,9 @@ import java.util.List;
 @Slf4j
 @Api(tags = "故事接口")
 public class AlipayController {
+
+    @Autowired
+    private Environment environment;
 
     // http://localhost:2222/story_get
     // 原生的接口，可正常调用
@@ -180,7 +185,7 @@ public class AlipayController {
     public StoryResult getStory(StoryParam param) {
         StoryResult story = new StoryResult();
         story.setId(1L);
-        story.setName("海底小纵队(alipay.story.get1.0), param:" + param);
+        story.setName("海底小纵队(alipay.story.get1.0), port:" + environment.getProperty("server.port") + ", param:" + param);
         return story;
     }
 

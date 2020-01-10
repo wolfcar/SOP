@@ -27,7 +27,7 @@ public class EnvGrayFilter implements GlobalFilter, Ordered {
         String nameVersion = apiParam.fetchNameVersion();
         TargetRoute targetRoute = RouteRepositoryContext.getRouteRepository().get(nameVersion);
         if (targetRoute == null) {
-            return null;
+            return chain.filter(exchange);
         }
         String serviceId = targetRoute.getServiceRouteInfo().fetchServiceIdLowerCase();
         // 如果服务在灰度阶段，返回一个灰度版本号

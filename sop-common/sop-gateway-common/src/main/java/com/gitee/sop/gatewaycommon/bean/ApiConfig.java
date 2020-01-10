@@ -1,7 +1,5 @@
 package com.gitee.sop.gatewaycommon.bean;
 
-import com.gitee.sop.gatewaycommon.gateway.param.GatewayParamBuilder;
-import com.gitee.sop.gatewaycommon.gateway.result.GatewayResult;
 import com.gitee.sop.gatewaycommon.gateway.result.GatewayResultExecutor;
 import com.gitee.sop.gatewaycommon.limit.DefaultLimitManager;
 import com.gitee.sop.gatewaycommon.limit.LimitManager;
@@ -60,7 +58,7 @@ public class ApiConfig {
     /**
      * gateway合并结果处理
      */
-    private ResultExecutor<ServerWebExchange, GatewayResult> gatewayResultExecutor = new GatewayResultExecutor();
+    private ResultExecutor<ServerWebExchange, String> gatewayResultExecutor = new GatewayResultExecutor();
 
     /**
      * zuul合并结果处理
@@ -81,11 +79,6 @@ public class ApiConfig {
      * 签名工具
      */
     private Signer signer = new ApiSigner();
-
-    /**
-     * 参数解析，gateway
-     */
-    private ParamBuilder<ServerWebExchange> gatewayParamBuilder = new GatewayParamBuilder();
 
     /**
      * 参数解析，zuul

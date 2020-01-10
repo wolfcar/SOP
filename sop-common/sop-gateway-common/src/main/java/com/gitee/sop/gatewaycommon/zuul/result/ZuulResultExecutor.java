@@ -6,6 +6,7 @@ import com.gitee.sop.gatewaycommon.bean.SopConstants;
 import com.gitee.sop.gatewaycommon.exception.ApiException;
 import com.gitee.sop.gatewaycommon.message.Error;
 import com.gitee.sop.gatewaycommon.message.ErrorEnum;
+import com.gitee.sop.gatewaycommon.param.ApiParam;
 import com.gitee.sop.gatewaycommon.result.BaseExecutorAdapter;
 import com.gitee.sop.gatewaycommon.zuul.ZuulContext;
 import com.netflix.util.Pair;
@@ -14,7 +15,6 @@ import com.netflix.zuul.exception.ZuulException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author tanghc
@@ -62,7 +62,7 @@ public class ZuulResultExecutor extends BaseExecutorAdapter<RequestContext, Stri
     }
 
     @Override
-    public Map<String, Object> getApiParam(RequestContext requestContext) {
+    public ApiParam getApiParam(RequestContext requestContext) {
         return ZuulContext.getApiParam();
     }
 

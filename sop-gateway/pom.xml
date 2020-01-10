@@ -26,22 +26,14 @@
     </properties>
 
     <dependencies>
-        <dependency>
+         <dependency>
             <groupId>com.gitee.sop</groupId>
-            <artifactId>sop-gateway-common</artifactId>
+             <!-- 使用zuul作为网关 -->
+             <!--<artifactId>sop-bridge-zuul</artifactId>-->
+             <!-- 使用spring cloud gateway作为网关 -->
+             <artifactId>sop-bridge-gateway</artifactId>
             <version>2.5.10-SNAPSHOT</version>
         </dependency>
-
-        <!-- ↓↓↓ 使用spring cloud zuul ↓↓↓ -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-zuul</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.retry</groupId>
-            <artifactId>spring-retry</artifactId>
-        </dependency>
-        <!-- ↑↑↑ 使用spring cloud zuul ↑↑↑ -->
 
         <dependency>
             <groupId>net.oschina.durcframework</groupId>
@@ -69,17 +61,6 @@
             <version>${nacos-client.version}</version>
         </dependency>
         <!-- 注册中心end -->
-
-        <!--
-            这里依赖springboot版本，非cloud版本。
-            如果依赖了spring-cloud-starter-alibaba-nacos-config，需要额外配置一个bootstrap.properties
-        -->
-        <dependency>
-            <groupId>com.alibaba.boot</groupId>
-            <artifactId>nacos-config-spring-boot-starter</artifactId>
-            <version>${nacos-spring-boot-starter.version}</version>
-        </dependency>
-
 
         <!-- test -->
         <dependency>

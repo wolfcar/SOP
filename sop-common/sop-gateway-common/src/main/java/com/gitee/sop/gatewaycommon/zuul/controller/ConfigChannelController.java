@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -26,7 +27,7 @@ import java.util.Map;
  * @author tanghc
  */
 @Slf4j
-@Controller
+@RestController
 public class ConfigChannelController {
 
     private static Map<String, Class<? extends ChannelMsgProcessor>> processorMap = new HashMap<>(16);
@@ -40,7 +41,7 @@ public class ConfigChannelController {
         processorMap.put(NacosConfigs.GROUP_CHANNEL + NacosConfigs.DATA_ID_ROUTE_CONFIG, RouteConfigManager.class);
     }
 
-    @Value("${zuul.secret}")
+    @Value("${sop.secret}")
     private String secret;
 
     @PostMapping("/sop/configChannelMsg")

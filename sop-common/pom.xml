@@ -36,7 +36,9 @@
 	<modules>
 		<module>sop-gateway-common</module>
 		<module>sop-service-common</module>
-    </modules>
+        <module>sop-bridge-zuul</module>
+		<module>sop-bridge-gateway</module>
+	</modules>
 
 	<dependencyManagement>
 		<dependencies>

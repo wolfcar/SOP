@@ -5,10 +5,8 @@ import com.gitee.sop.gatewaycommon.result.ResultExecutor;
 import com.gitee.sop.gatewaycommon.zuul.ZuulContext;
 import com.netflix.zuul.context.RequestContext;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.web.servlet.error.ErrorController;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,16 +17,14 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author tanghc
  */
-@Controller
+@ControllerAdvice
 @Slf4j
-public class ZuulErrorController implements ErrorController {
-
-    private static final String ERROR_PATH = "/error";
+public class ZuulErrorController {
 
     /**
      * 错误最终会到这里来
      */
-    @RequestMapping(ERROR_PATH)
+    @ExceptionHandler(Exception.class)
     @ResponseBody
     public Object error(HttpServletRequest request, HttpServletResponse response) {
         RequestContext ctx = RequestContext.getCurrentContext();
@@ -49,8 +45,4 @@ public class ZuulErrorController implements ErrorController {
         return resultExecutor.buildErrorResult(RequestContext.getCurrentContext(), throwable);
     }
 
-    @Override
-    public String getErrorPath() {
-        return ERROR_PATH;
-    }
 }

@@ -169,8 +169,7 @@ public class BaseZuulConfiguration extends AbstractConfiguration {
      * 统一错误处理
      */
     @Bean
-    @ConditionalOnMissingBean
-    ZuulErrorController baseZuulController() {
+    ZuulErrorController sopZuulController() {
         return ApiContext.getApiConfig().getZuulErrorController();
     }
 

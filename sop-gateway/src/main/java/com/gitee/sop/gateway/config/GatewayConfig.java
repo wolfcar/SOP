@@ -1,6 +1,7 @@
 package com.gitee.sop.gateway.config;
 
 import com.gitee.sop.gatewaycommon.gateway.configuration.AlipayGatewayConfiguration;
+import org.springframework.context.annotation.Configuration;
 
 
 /**
