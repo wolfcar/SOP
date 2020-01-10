@@ -9,7 +9,7 @@
      <!--<artifactId>sop-bridge-zuul</artifactId>-->
      <!-- 使用spring cloud gateway作为网关 -->
      <artifactId>sop-bridge-gateway</artifactId>
-    <version>2.5.10-SNAPSHOT</version>
+    <version>对应版本</version>
 </dependency>
 ```
 
