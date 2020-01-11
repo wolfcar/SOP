@@ -136,7 +136,7 @@ public class LogApi {
 
     private void checkInstance(String ipPort) {
         try {
-            String json = this.requestLogServer(ipPort, "listErrors");
+            String json = this.requestLogServer(ipPort, SOP_LIST_ERRORS_PATH);
             JSONObject jsonObject = JSON.parseObject(json);
             if (!CODE_SUCCESS.equals(jsonObject.getString(CODE_KEY))) {
                 log.error("请求结果:{}", json);

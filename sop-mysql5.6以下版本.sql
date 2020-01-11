@@ -1,6 +1,4 @@
-/**
-适用于MYSQL 5.6+版本
-**/
+
 CREATE DATABASE IF NOT EXISTS `sop` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
 USE `sop`;
 
@@ -29,212 +27,212 @@ DROP TABLE IF EXISTS `config_service_route`;
 
 
 CREATE TABLE `admin_user_info` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `username` varchar(64) NOT NULL DEFAULT '' COMMENT '用户名',
-  `password` varchar(128) NOT NULL DEFAULT '' COMMENT '密码',
-  `status` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '状态，1：启用，2：禁用',
-  `gmt_create` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `gmt_modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(64) NOT NULL DEFAULT '' COMMENT '用户名',
+  `password` VARCHAR(128) NOT NULL DEFAULT '' COMMENT '密码',
+  `status` TINYINT(3) UNSIGNED NOT NULL DEFAULT '1' COMMENT '状态，1：启用，2：禁用',
+  `gmt_create` DATETIME  DEFAULT NULL,
+  `gmt_modified` DATETIME DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_username` (`username`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='后台用户表';
+) ENGINE=INNODB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='后台用户表';
 
 
 CREATE TABLE `config_common` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `config_group` varchar(64) NOT NULL DEFAULT '' COMMENT '配置分组',
-  `config_key` varchar(64) NOT NULL DEFAULT '' COMMENT '配置key',
-  `content` varchar(128) NOT NULL DEFAULT '' COMMENT '内容',
-  `remark` varchar(128) DEFAULT NULL COMMENT '备注',
-  `gmt_create` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `gmt_modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `config_group` VARCHAR(64) NOT NULL DEFAULT '' COMMENT '配置分组',
+  `config_key` VARCHAR(64) NOT NULL DEFAULT '' COMMENT '配置key',
+  `content` VARCHAR(128) NOT NULL DEFAULT '' COMMENT '内容',
+  `remark` VARCHAR(128) DEFAULT NULL COMMENT '备注',
+  `gmt_create` DATETIME  DEFAULT NULL,
+  `gmt_modified` DATETIME DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_groupkey` (`config_group`,`config_key`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='通用配置表';
+) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT='通用配置表';
 
 
 CREATE TABLE `config_gray` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `service_id` varchar(64) NOT NULL DEFAULT '',
-  `user_key_content` text COMMENT '用户key，多个用引文逗号隔开',
-  `name_version_content` text COMMENT '需要灰度的接口，goods.get1.0=1.2，多个用英文逗号隔开',
-  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
-  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `service_id` VARCHAR(64) NOT NULL DEFAULT '',
+  `user_key_content` TEXT COMMENT '用户key，多个用引文逗号隔开',
+  `name_version_content` TEXT COMMENT '需要灰度的接口，goods.get1.0=1.2，多个用英文逗号隔开',
+  `gmt_create` DATETIME DEFAULT NULL,
+  `gmt_modified` DATETIME DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_serviceid` (`service_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='服务灰度配置';
+) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT='服务灰度配置';
 
 
 CREATE TABLE `config_gray_instance` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `instance_id` varchar(128) NOT NULL DEFAULT '' COMMENT 'instance_id',
-  `service_id` varchar(64) NOT NULL DEFAULT '' COMMENT 'service_id',
-  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0：禁用，1：启用',
-  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
-  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `instance_id` VARCHAR(128) NOT NULL DEFAULT '' COMMENT 'instance_id',
+  `service_id` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'service_id',
+  `status` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '0：禁用，1：启用',
+  `gmt_create` DATETIME DEFAULT NULL,
+  `gmt_modified` DATETIME DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_instanceid` (`instance_id`) USING BTREE,
   KEY `idx_serviceid` (`service_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='开启灰度服务器实例';
+) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT='开启灰度服务器实例';
 
 
 CREATE TABLE `config_ip_blacklist` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `ip` varchar(64) NOT NULL DEFAULT '' COMMENT 'ip',
-  `remark` varchar(128) DEFAULT NULL COMMENT '备注',
-  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
-  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `ip` VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'ip',
+  `remark` VARCHAR(128) DEFAULT NULL COMMENT '备注',
+  `gmt_create` DATETIME DEFAULT NULL,
+  `gmt_modified` DATETIME DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_ip` (`ip`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='IP黑名单';
+) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT='IP黑名单';
 
 
 CREATE TABLE `config_limit` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `route_id` varchar(128) DEFAULT NULL COMMENT '路由id',
-  `app_key` varchar(128) DEFAULT NULL,
-  `limit_ip` varchar(300) DEFAULT NULL COMMENT '限流ip，多个用英文逗号隔开',
-  `service_id` varchar(64) NOT NULL DEFAULT '' COMMENT '服务id',
-  `limit_type` tinyint(4) NOT NULL DEFAULT '1' COMMENT '限流策略，1：漏桶策略，2：令牌桶策略',
-  `exec_count_per_second` int(11) DEFAULT NULL COMMENT '每秒可处理请求数',
-  `duration_seconds` int(11) NOT NULL DEFAULT '1' COMMENT '限流持续时间，默认1秒，即每durationSeconds秒允许多少请求（当limit_type=1时有效）',
-  `limit_code` varchar(64) DEFAULT NULL COMMENT '返回的错误码',
-  `limit_msg` varchar(100) DEFAULT NULL COMMENT '返回的错误信息',
-  `token_bucket_count` int(11) DEFAULT NULL COMMENT '令牌桶容量',
-  `limit_status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '限流开启状态，1:开启，0关闭',
-  `order_index` int(11) NOT NULL DEFAULT '0' COMMENT '顺序，值小的优先执行',
-  `remark` varchar(128) DEFAULT NULL COMMENT '备注',
-  `gmt_create` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `gmt_modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `route_id` VARCHAR(128) DEFAULT NULL COMMENT '路由id',
+  `app_key` VARCHAR(128) DEFAULT NULL,
+  `limit_ip` VARCHAR(300) DEFAULT NULL COMMENT '限流ip，多个用英文逗号隔开',
+  `service_id` VARCHAR(64) NOT NULL DEFAULT '' COMMENT '服务id',
+  `limit_type` TINYINT(4) NOT NULL DEFAULT '1' COMMENT '限流策略，1：漏桶策略，2：令牌桶策略',
+  `exec_count_per_second` INT(11) DEFAULT NULL COMMENT '每秒可处理请求数',
+  `duration_seconds` INT(11) NOT NULL DEFAULT '1' COMMENT '限流持续时间，默认1秒，即每durationSeconds秒允许多少请求（当limit_type=1时有效）',
+  `limit_code` VARCHAR(64) DEFAULT NULL COMMENT '返回的错误码',
+  `limit_msg` VARCHAR(100) DEFAULT NULL COMMENT '返回的错误信息',
+  `token_bucket_count` INT(11) DEFAULT NULL COMMENT '令牌桶容量',
+  `limit_status` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '限流开启状态，1:开启，0关闭',
+  `order_index` INT(11) NOT NULL DEFAULT '0' COMMENT '顺序，值小的优先执行',
+  `remark` VARCHAR(128) DEFAULT NULL COMMENT '备注',
+  `gmt_create` DATETIME  DEFAULT NULL,
+  `gmt_modified` DATETIME DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='限流配置';
+) ENGINE=INNODB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='限流配置';
 
 
 CREATE TABLE `config_route_base` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `route_id` varchar(64) NOT NULL DEFAULT '' COMMENT '路由id',
-  `status` tinyint(4) NOT NULL DEFAULT '1' COMMENT '状态，1：启用，2：禁用',
-  `gmt_create` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `gmt_modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `route_id` VARCHAR(64) NOT NULL DEFAULT '' COMMENT '路由id',
+  `status` TINYINT(4) NOT NULL DEFAULT '1' COMMENT '状态，1：启用，2：禁用',
+  `gmt_create` DATETIME  DEFAULT NULL,
+  `gmt_modified` DATETIME DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_routeid` (`route_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='路由配置表';
+) ENGINE=INNODB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='路由配置表';
 
 
 CREATE TABLE `config_route_limit` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `route_id` varchar(64) NOT NULL COMMENT '路由id',
-  `service_id` varchar(64) NOT NULL DEFAULT '',
-  `limit_type` tinyint(4) NOT NULL DEFAULT '1' COMMENT '限流策略，1：漏桶策略，2：令牌桶策略',
-  `exec_count_per_second` int(11) DEFAULT NULL COMMENT '每秒可处理请求数',
-  `limit_code` varchar(64) DEFAULT NULL COMMENT '返回的错误码',
-  `limit_msg` varchar(100) DEFAULT NULL COMMENT '返回的错误信息',
-  `token_bucket_count` int(11) DEFAULT NULL COMMENT '令牌桶容量',
-  `limit_status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '限流开启状态，1:开启，0关闭',
-  `gmt_create` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `gmt_modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `route_id` VARCHAR(64) NOT NULL COMMENT '路由id',
+  `service_id` VARCHAR(64) NOT NULL DEFAULT '',
+  `limit_type` TINYINT(4) NOT NULL DEFAULT '1' COMMENT '限流策略，1：漏桶策略，2：令牌桶策略',
+  `exec_count_per_second` INT(11) DEFAULT NULL COMMENT '每秒可处理请求数',
+  `limit_code` VARCHAR(64) DEFAULT NULL COMMENT '返回的错误码',
+  `limit_msg` VARCHAR(100) DEFAULT NULL COMMENT '返回的错误信息',
+  `token_bucket_count` INT(11) DEFAULT NULL COMMENT '令牌桶容量',
+  `limit_status` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '限流开启状态，1:开启，0关闭',
+  `gmt_create` DATETIME  DEFAULT NULL,
+  `gmt_modified` DATETIME DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_routeid` (`route_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='路由限流配置';
+) ENGINE=INNODB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='路由限流配置';
 
 
 CREATE TABLE `isv_info` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `app_key` varchar(100) NOT NULL COMMENT 'appKey',
-  `secret` varchar(200) DEFAULT NULL COMMENT 'secret',
-  `pub_key` text COMMENT '公钥',
-  `pri_key` text COMMENT '私钥',
-  `status` tinyint(4) unsigned NOT NULL DEFAULT '0' COMMENT '1启用，2禁用',
-  `sign_type` tinyint(4) NOT NULL DEFAULT '1' COMMENT '1:RSA2,2:MD5',
-  `remark` varchar(128) DEFAULT NULL COMMENT '备注',
-  `gmt_create` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `gmt_modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `app_key` VARCHAR(100) NOT NULL COMMENT 'appKey',
+  `secret` VARCHAR(200) DEFAULT NULL COMMENT 'secret',
+  `pub_key` TEXT COMMENT '公钥',
+  `pri_key` TEXT COMMENT '私钥',
+  `status` TINYINT(4) UNSIGNED NOT NULL DEFAULT '0' COMMENT '1启用，2禁用',
+  `sign_type` TINYINT(4) NOT NULL DEFAULT '1' COMMENT '1:RSA2,2:MD5',
+  `remark` VARCHAR(128) DEFAULT NULL COMMENT '备注',
+  `gmt_create` DATETIME  DEFAULT NULL,
+  `gmt_modified` DATETIME DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_app_key` (`app_key`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COMMENT='isv信息表';
+) ENGINE=INNODB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COMMENT='isv信息表';
 
 
 CREATE TABLE `isv_keys` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `app_key` varchar(128) NOT NULL DEFAULT '',
-  `sign_type` tinyint(4) NOT NULL DEFAULT '1' COMMENT '1:RSA2,2:MD5',
-  `secret` varchar(200) NOT NULL DEFAULT '' COMMENT 'sign_type=2时使用',
-  `key_format` tinyint(4) NOT NULL DEFAULT '1' COMMENT '秘钥格式，1：PKCS8(JAVA适用)，2：PKCS1(非JAVA适用)',
-  `public_key_isv` text NOT NULL COMMENT '开发者生成的公钥',
-  `private_key_isv` text NOT NULL COMMENT '开发者生成的私钥（交给开发者）',
-  `public_key_platform` text NOT NULL COMMENT '平台生成的公钥（交给开发者）',
-  `private_key_platform` text NOT NULL COMMENT '平台生成的私钥',
-  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
-  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `app_key` VARCHAR(128) NOT NULL DEFAULT '',
+  `sign_type` TINYINT(4) NOT NULL DEFAULT '1' COMMENT '1:RSA2,2:MD5',
+  `secret` VARCHAR(200) NOT NULL DEFAULT '' COMMENT 'sign_type=2时使用',
+  `key_format` TINYINT(4) NOT NULL DEFAULT '1' COMMENT '秘钥格式，1：PKCS8(JAVA适用)，2：PKCS1(非JAVA适用)',
+  `public_key_isv` TEXT NOT NULL COMMENT '开发者生成的公钥',
+  `private_key_isv` TEXT NOT NULL COMMENT '开发者生成的私钥（交给开发者）',
+  `public_key_platform` TEXT NOT NULL COMMENT '平台生成的公钥（交给开发者）',
+  `private_key_platform` TEXT NOT NULL COMMENT '平台生成的私钥',
+  `gmt_create` DATETIME DEFAULT NULL,
+  `gmt_modified` DATETIME DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_appkey` (`app_key`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COMMENT='ISV秘钥';
+) ENGINE=INNODB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COMMENT='ISV秘钥';
 
 
 CREATE TABLE `perm_isv_role` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `isv_id` bigint(20) NOT NULL COMMENT 'isv_info表id',
-  `role_code` varchar(64) NOT NULL COMMENT '角色code',
-  `gmt_create` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `gmt_modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `isv_id` BIGINT(20) NOT NULL COMMENT 'isv_info表id',
+  `role_code` VARCHAR(64) NOT NULL COMMENT '角色code',
+  `gmt_create` DATETIME  DEFAULT NULL,
+  `gmt_modified` DATETIME DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_user_role` (`isv_id`,`role_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8 COMMENT='isv角色';
+) ENGINE=INNODB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8 COMMENT='isv角色';
 
 
 CREATE TABLE `perm_role` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `role_code` varchar(64) NOT NULL COMMENT '角色代码',
-  `description` varchar(64) NOT NULL COMMENT '角色描述',
-  `gmt_create` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `gmt_modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `role_code` VARCHAR(64) NOT NULL COMMENT '角色代码',
+  `description` VARCHAR(64) NOT NULL COMMENT '角色描述',
+  `gmt_create` DATETIME  DEFAULT NULL,
+  `gmt_modified` DATETIME DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_code` (`role_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='角色表';
+) ENGINE=INNODB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='角色表';
 
 
 CREATE TABLE `perm_role_permission` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `role_code` varchar(64) NOT NULL COMMENT '角色表code',
-  `route_id` varchar(64) NOT NULL COMMENT 'api_id',
-  `gmt_create` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `gmt_modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `role_code` VARCHAR(64) NOT NULL COMMENT '角色表code',
+  `route_id` VARCHAR(64) NOT NULL COMMENT 'api_id',
+  `gmt_create` DATETIME  DEFAULT NULL,
+  `gmt_modified` DATETIME DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_role_perm` (`role_code`,`route_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 COMMENT='角色权限表';
+) ENGINE=INNODB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 COMMENT='角色权限表';
 
 
 CREATE TABLE `user_info` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `username` varchar(64) NOT NULL DEFAULT '' COMMENT '用户名',
-  `password` varchar(128) NOT NULL DEFAULT '' COMMENT '密码',
-  `nickname` varchar(64) NOT NULL DEFAULT '' COMMENT '昵称',
-  `gmt_create` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `gmt_modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(64) NOT NULL DEFAULT '' COMMENT '用户名',
+  `password` VARCHAR(128) NOT NULL DEFAULT '' COMMENT '密码',
+  `nickname` VARCHAR(64) NOT NULL DEFAULT '' COMMENT '昵称',
+  `gmt_create` DATETIME  DEFAULT NULL,
+  `gmt_modified` DATETIME DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_unamepwd` (`username`,`password`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='用户信息表';
+) ENGINE=INNODB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='用户信息表';
 
 CREATE TABLE `config_service_route` (
-  `id` varchar(128) NOT NULL DEFAULT '' COMMENT '路由id',
-  `service_id` varchar(128) NOT NULL DEFAULT '',
-  `name` varchar(128) NOT NULL DEFAULT '' COMMENT '接口名',
-  `version` varchar(64) NOT NULL DEFAULT '' COMMENT '版本号',
-  `predicates` varchar(256) DEFAULT NULL COMMENT '路由断言（SpringCloudGateway专用）',
-  `filters` varchar(256) DEFAULT NULL COMMENT '路由过滤器（SpringCloudGateway专用）',
-  `uri` varchar(128) NOT NULL DEFAULT '' COMMENT '路由规则转发的目标uri',
-  `path` varchar(128) NOT NULL DEFAULT '' COMMENT 'uri后面跟的path',
-  `order` int(11) NOT NULL DEFAULT '0' COMMENT '路由执行的顺序',
-  `ignore_validate` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否忽略验证，业务参数验证除外',
-  `status` tinyint(4) NOT NULL DEFAULT '1' COMMENT '状态，0：待审核，1：启用，2：禁用',
-  `merge_result` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否合并结果',
-  `permission` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否需要授权才能访问',
-  `need_token` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否需要token',
-  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
-  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` VARCHAR(128) NOT NULL DEFAULT '' COMMENT '路由id',
+  `service_id` VARCHAR(128) NOT NULL DEFAULT '',
+  `name` VARCHAR(128) NOT NULL DEFAULT '' COMMENT '接口名',
+  `version` VARCHAR(64) NOT NULL DEFAULT '' COMMENT '版本号',
+  `predicates` VARCHAR(256) DEFAULT NULL COMMENT '路由断言（SpringCloudGateway专用）',
+  `filters` VARCHAR(256) DEFAULT NULL COMMENT '路由过滤器（SpringCloudGateway专用）',
+  `uri` VARCHAR(128) NOT NULL DEFAULT '' COMMENT '路由规则转发的目标uri',
+  `path` VARCHAR(128) NOT NULL DEFAULT '' COMMENT 'uri后面跟的path',
+  `order` INT(11) NOT NULL DEFAULT '0' COMMENT '路由执行的顺序',
+  `ignore_validate` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '是否忽略验证，业务参数验证除外',
+  `status` TINYINT(4) NOT NULL DEFAULT '1' COMMENT '状态，0：待审核，1：启用，2：禁用',
+  `merge_result` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '是否合并结果',
+  `permission` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '是否需要授权才能访问',
+  `need_token` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '是否需要token',
+  `gmt_create` DATETIME DEFAULT NULL,
+  `gmt_modified` DATETIME DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_serviceid` (`service_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='路由配置';
+) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT='路由配置';
 
 
 SET FOREIGN_KEY_CHECKS = @PREVIOUS_FOREIGN_KEY_CHECKS;
