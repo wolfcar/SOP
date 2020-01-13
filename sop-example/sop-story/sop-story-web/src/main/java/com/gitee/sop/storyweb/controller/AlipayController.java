@@ -54,7 +54,7 @@ public class AlipayController {
         return result;
     }
 
-    // http://localhost:2222/story.get/
+    // http://localhost:2222/story.get/1.0/
     // 接口名，使用默认版本号
     @ApiMapping(value = "story.get")
     public StoryResult storyget() {
@@ -67,7 +67,7 @@ public class AlipayController {
         return result;
     }
 
-    // http://localhost:2222/story.get/?version=1.1
+    // http://localhost:2222/story.get/1.1/
     // 接口名 + 版本号
     @ApiMapping(value = "story.get", version = "1.1")
     public StoryResult getStory2() {
@@ -77,7 +77,7 @@ public class AlipayController {
         return result;
     }
 
-    // http://localhost:2222/story.get/?name=111&version=2.0
+    // http://localhost:2222/story.get/2.0/?name=111
     // 接口名 + 版本号
     // StoryParam对应biz_content内容
     @ApiMapping(value = "story.get", version = "2.0")
@@ -179,7 +179,7 @@ public class AlipayController {
         return story;
     }
 
-    // http://localhost:2222/alipay.story.get/
+    // http://localhost:2222/alipay.story.get/1.0/?name=Jim
     @ApiOperation(value="获取故事信息", notes = "获取故事信息的详细信息")
     @ApiMapping(value = "alipay.story.get")
     public StoryResult getStory(StoryParam param) {
