@@ -1,10 +1,11 @@
 # changelog
 
-## 2.6.0
+## 3.0.0
 
 - 重构spring cloud gateway网关
 - zuul和gateway网关二合一
-- 代码优化
+- 精简配置文件
+- 优化文档中心页面
 
 ## 2.5.10
 

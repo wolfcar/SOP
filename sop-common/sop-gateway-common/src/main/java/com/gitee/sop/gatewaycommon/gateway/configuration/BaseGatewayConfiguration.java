@@ -4,12 +4,12 @@ import com.gitee.sop.gatewaycommon.bean.ApiConfig;
 import com.gitee.sop.gatewaycommon.gateway.controller.ConfigChannelController;
 import com.gitee.sop.gatewaycommon.gateway.controller.ErrorLogController;
 import com.gitee.sop.gatewaycommon.gateway.controller.GatewayController;
-import com.gitee.sop.gatewaycommon.gateway.filter.EnvGrayFilter;
 import com.gitee.sop.gatewaycommon.gateway.filter.GatewayModifyResponseGatewayFilter;
 import com.gitee.sop.gatewaycommon.gateway.filter.IndexFilter;
 import com.gitee.sop.gatewaycommon.gateway.filter.LimitFilter;
 import com.gitee.sop.gatewaycommon.gateway.filter.ParameterFormatterFilter;
 import com.gitee.sop.gatewaycommon.gateway.handler.GatewayExceptionHandler;
+import com.gitee.sop.gatewaycommon.gateway.route.GatewayForwardChooser;
 import com.gitee.sop.gatewaycommon.gateway.route.GatewayRouteCache;
 import com.gitee.sop.gatewaycommon.gateway.route.GatewayRouteRepository;
 import com.gitee.sop.gatewaycommon.manager.AbstractConfiguration;
@@ -107,10 +107,8 @@ public class BaseGatewayConfiguration extends AbstractConfiguration {
         return gatewayRouteRepository;
     }
 
-
     @Bean
-    EnvGrayFilter envGrayFilter() {
-        return new EnvGrayFilter();
+    GatewayForwardChooser gatewayForwardChooser() {
+        return new GatewayForwardChooser();
     }
-
 }

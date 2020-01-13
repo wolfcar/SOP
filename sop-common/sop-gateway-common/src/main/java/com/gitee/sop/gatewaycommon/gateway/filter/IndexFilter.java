@@ -1,11 +1,11 @@
 package com.gitee.sop.gatewaycommon.gateway.filter;
 
-import com.gitee.sop.gatewaycommon.bean.SopConstants;
 import com.gitee.sop.gatewaycommon.exception.ApiException;
 import com.gitee.sop.gatewaycommon.gateway.ServerWebExchangeUtil;
-import com.gitee.sop.gatewaycommon.manager.EnvironmentContext;
+import com.gitee.sop.gatewaycommon.gateway.route.GatewayForwardChooser;
 import com.gitee.sop.gatewaycommon.manager.EnvironmentKeys;
 import com.gitee.sop.gatewaycommon.param.ApiParam;
+import com.gitee.sop.gatewaycommon.route.ForwardInfo;
 import com.gitee.sop.gatewaycommon.validate.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +16,10 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.codec.HttpMessageReader;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
 import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.server.HandlerStrategies;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
@@ -30,8 +28,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -49,6 +45,9 @@ public class IndexFilter implements WebFilter {
 
     @Autowired
     private Validator validator;
+
+    @Autowired
+    private GatewayForwardChooser gatewayForwardChooser;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
@@ -92,9 +91,11 @@ public class IndexFilter implements WebFilter {
                         exchange, headers);
                 return bodyInserter.insert(outputMessage, new BodyInserterContext())
                         .then(Mono.defer(() -> {
+                            ForwardInfo forwardInfo = gatewayForwardChooser.getForwardInfo(exchange);
                             ServerHttpRequest decorator = decorate(exchange, headers, outputMessage);
                             ServerWebExchange newExchange = exchange.mutate().request(decorator).build();
-                            return chain.filter(newExchange);
+                            ServerWebExchange forwardExchange = ServerWebExchangeUtil.getForwardExchange(newExchange, forwardInfo);
+                            return chain.filter(forwardExchange);
                         }));
 
             } else {
@@ -105,8 +106,9 @@ public class IndexFilter implements WebFilter {
                 ApiParam apiParam = ServerWebExchangeUtil.getApiParam(exchange, originalQuery);
                 // 签名验证
                 doValidate(apiParam);
-                ServerWebExchange newExchange = ServerWebExchangeUtil.getForwardExchange(exchange, apiParam);
-                return chain.filter(newExchange);
+                ForwardInfo forwardInfo = gatewayForwardChooser.getForwardInfo(exchange);
+                ServerWebExchange forwardExchange = ServerWebExchangeUtil.getForwardExchange(exchange, forwardInfo);
+                return chain.filter(forwardExchange);
             }
         } else {
             return ServerWebExchangeUtil.forwardUnknown(exchange, chain);
@@ -127,9 +129,7 @@ public class IndexFilter implements WebFilter {
             , HttpHeaders headers
             , CachedBodyOutputMessage outputMessage
     ) {
-        ApiParam apiParam = ServerWebExchangeUtil.getApiParam(exchange);
-        ServerHttpRequest newRequest = ServerWebExchangeUtil.getForwardRequest(exchange.getRequest(), apiParam);
-        return new ServerHttpRequestDecorator(newRequest) {
+        return new ServerHttpRequestDecorator(exchange.getRequest()) {
             @Override
             public HttpHeaders getHeaders() {
                 long contentLength = headers.getContentLength();
@@ -140,7 +140,6 @@ public class IndexFilter implements WebFilter {
                 } else {
                     httpHeaders.set(HttpHeaders.TRANSFER_ENCODING, "chunked");
                 }
-                httpHeaders.set(SopConstants.REDIRECT_VERSION_KEY, apiParam.fetchVersion());
                 return httpHeaders;
             }
 

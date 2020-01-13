@@ -180,7 +180,7 @@ public class AlipayController {
     }
 
     // http://localhost:2222/alipay.story.get/
-    @ApiOperation(value="获取故事信息2", notes = "获取故事信息2的详细信息")
+    @ApiOperation(value="获取故事信息", notes = "获取故事信息的详细信息")
     @ApiMapping(value = "alipay.story.get")
     public StoryResult getStory(StoryParam param) {
         StoryResult story = new StoryResult();
@@ -193,6 +193,7 @@ public class AlipayController {
      * @param param 对应biz_content中的内容，并自动JSR-303校验
      * @return
      */
+    @ApiOperation(value="获取故事信息", notes = "获取故事信息的详细信息")
     @ApiMapping(value = "alipay.story.get", version = "1.2")
     public StoryResult getStory11(StoryParam param) {
         StoryResult story2 = new StoryResult();

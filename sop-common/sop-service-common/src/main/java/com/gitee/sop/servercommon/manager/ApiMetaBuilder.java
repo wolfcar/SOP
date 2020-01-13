@@ -95,6 +95,7 @@ public class ApiMetaBuilder {
             apiMeta.setMergeResult(BooleanUtils.toInteger(apiMappingInfo.isMergeResult()));
             apiMeta.setPermission(BooleanUtils.toInteger(apiMappingInfo.isPermission()));
             apiMeta.setNeedToken(BooleanUtils.toInteger(apiMappingInfo.isNeedToken()));
+            apiMeta.setCompatibleMode(BooleanUtils.toInteger(apiMappingInfo.isCompatibleMode()));
             return apiMeta;
         } else {
             if (!ServiceContext.getCurrentContext().getBoolean(ServiceContext.RESTFUL_KEY, false)) {

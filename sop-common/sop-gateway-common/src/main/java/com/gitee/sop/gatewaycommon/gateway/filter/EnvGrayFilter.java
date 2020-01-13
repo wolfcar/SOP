@@ -15,7 +15,10 @@ import reactor.core.publisher.Mono;
 
 /**
  * @author tanghc
+ * @deprecated
+ * @see com.gitee.sop.gatewaycommon.gateway.route.GatewayForwardChooser
  */
+@Deprecated
 public class EnvGrayFilter implements GlobalFilter, Ordered {
 
     @Autowired

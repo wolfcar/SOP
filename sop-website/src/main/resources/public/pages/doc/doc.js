@@ -61,7 +61,7 @@ layui.config({
                 </li>
                      */
                     html.push('<li class="site-tree-noicon" nameversion="'+docItem.nameVersion+'">');
-                    html.push('<a href="#"><cite>' + docItem['summary'] + '</cite></a>')
+                    html.push('<a href="#"><cite>' + docItem['summary'] + ' ' + docItem.version + '</cite></a>')
                 }
             }
 

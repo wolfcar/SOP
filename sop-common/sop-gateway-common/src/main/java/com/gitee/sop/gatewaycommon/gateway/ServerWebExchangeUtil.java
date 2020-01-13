@@ -8,6 +8,8 @@ import com.gitee.sop.gatewaycommon.gateway.common.RequestContentDataExtractor;
 import com.gitee.sop.gatewaycommon.gateway.common.SopServerHttpRequestDecorator;
 import com.gitee.sop.gatewaycommon.param.ApiParam;
 import com.gitee.sop.gatewaycommon.param.FormHttpOutputMessage;
+import com.gitee.sop.gatewaycommon.route.ForwardInfo;
+import com.gitee.sop.gatewaycommon.param.ParamNames;
 import com.gitee.sop.gatewaycommon.util.RequestUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -57,20 +59,17 @@ public class ServerWebExchangeUtil {
      * 重定向
      *
      * @param exchange exchange
-     * @param apiParam apiParam
+     * @param forwardInfo forwardInfo
      * @return 返回新的ServerWebExchange，配合chain.filter(newExchange);使用
      */
-    public static ServerWebExchange getForwardExchange(ServerWebExchange exchange, ApiParam apiParam) {
-        ServerHttpRequest newRequest = getForwardRequest(exchange.getRequest(), apiParam);
+    public static ServerWebExchange getForwardExchange(ServerWebExchange exchange, ForwardInfo forwardInfo) {
+        ServerHttpRequest newRequest = exchange.getRequest()
+                .mutate()
+                .header(ParamNames.HEADER_VERSION_NAME, forwardInfo.getVersion())
+                .path(forwardInfo.getPath()).build();
         return exchange.mutate().request(newRequest).build();
     }
 
-    public static ServerHttpRequest getForwardRequest(ServerHttpRequest request, ApiParam apiParam) {
-        return request
-                .mutate()
-                .header(SopConstants.REDIRECT_VERSION_KEY, apiParam.fetchVersion())
-                .path(getForwardPath(apiParam)).build();
-    }
 
     /**
      * 构建一个接受请求体的request
@@ -111,19 +110,6 @@ public class ServerWebExchangeUtil {
         // 非法访问
         ServerWebExchange newExchange = ServerWebExchangeUtil.getForwardExchange(exchange, UNKNOWN_PATH);
         return chain.filter(newExchange);
-    }
-
-    private static String getForwardPath(ApiParam apiParam) {
-        // 如果有异常，则重定向到这个path
-        if (apiParam.getThrowable() != null) {
-            return VALIDATE_ERROR_PATH;
-        }
-        String forwardPath = UNKNOWN_PATH;
-        String method = apiParam.fetchName();
-        if (org.springframework.util.StringUtils.hasText(method)) {
-            forwardPath = "/" + method + "/";
-        }
-        return forwardPath;
     }
 
     public static ApiParam getApiParam(ServerWebExchange exchange, String body) {

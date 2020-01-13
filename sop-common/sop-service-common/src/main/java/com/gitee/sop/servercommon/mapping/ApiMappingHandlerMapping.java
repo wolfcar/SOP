@@ -5,6 +5,7 @@ import com.gitee.sop.servercommon.annotation.ApiMapping;
 import com.gitee.sop.servercommon.bean.ServiceConfig;
 import com.gitee.sop.servercommon.bean.ServiceContext;
 import com.gitee.sop.servercommon.util.OpenUtil;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.core.PriorityOrdered;
 import org.springframework.util.StringValueResolver;
 import org.springframework.web.servlet.mvc.condition.RequestCondition;
@@ -29,7 +30,11 @@ public class ApiMappingHandlerMapping extends RequestMappingHandlerMapping imple
         ApiAbility apiAbility = OpenUtil.getAnnotationFromMethodOrClass(method, ApiAbility.class);
         StringValueResolver valueResolver = null;
         if (apiMapping != null) {
-            valueResolver = stringValueResolver;
+            String version = apiMapping.version();
+            if (StringUtils.isBlank(version)) {
+                version = ServiceConfig.getInstance().getDefaultVersion();
+            }
+            valueResolver = new ApiMappingStringValueResolverVersion(version);
         }
         if (isMvc || apiAbility != null) {
             valueResolver = stringValueResolverMVC;
@@ -46,7 +51,8 @@ public class ApiMappingHandlerMapping extends RequestMappingHandlerMapping imple
         boolean ignoreValidate;
         boolean mergeResult;
         boolean permission;
-        boolean needToken = false;
+        boolean needToken;
+        boolean compatibleMode = false;
         ApiMapping apiMapping = method.getAnnotation(ApiMapping.class);
         if (apiMapping != null) {
             name = apiMapping.value()[0];
@@ -63,6 +69,7 @@ public class ApiMappingHandlerMapping extends RequestMappingHandlerMapping imple
                 mergeResult = apiAbility.mergeResult();
                 permission = apiAbility.permission();
                 needToken = apiAbility.needToken();
+                compatibleMode = true;
             } else {
                 return super.getCustomMethodCondition(method);
             }
@@ -87,6 +94,7 @@ public class ApiMappingHandlerMapping extends RequestMappingHandlerMapping imple
         apiMappingInfo.setMergeResult(mergeResult);
         apiMappingInfo.setPermission(permission);
         apiMappingInfo.setNeedToken(needToken);
+        apiMappingInfo.setCompatibleMode(compatibleMode);
         logger.info("注册接口，name:" + method + "， version:" + version);
         return new ApiMappingRequestCondition(apiMappingInfo);
     }
