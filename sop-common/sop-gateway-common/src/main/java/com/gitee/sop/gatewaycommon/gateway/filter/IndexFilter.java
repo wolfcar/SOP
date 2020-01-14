@@ -9,6 +9,7 @@ import com.gitee.sop.gatewaycommon.route.ForwardInfo;
 import com.gitee.sop.gatewaycommon.validate.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.support.BodyInserterContext;
 import org.springframework.cloud.gateway.support.CachedBodyOutputMessage;
 import org.springframework.core.Ordered;
@@ -39,9 +40,11 @@ import java.util.Objects;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class IndexFilter implements WebFilter {
 
-    private static final String INDEX_PATH = "/";
     private static final String REST_PATH_PREFIX = "/rest";
     private static final String SOP_PATH_PREFIX = "/sop";
+
+    @Value("${gateway.index-path:/}")
+    private String indexPath;
 
     @Autowired
     private Validator validator;
@@ -67,7 +70,7 @@ public class IndexFilter implements WebFilter {
             ServerWebExchange newExchange = ServerWebExchangeUtil.getRestfulExchange(exchange, path);
             return chain.filter(newExchange);
         }
-        if (Objects.equals(path, INDEX_PATH)) {
+        if (Objects.equals(path, indexPath)) {
             if (request.getMethod() == HttpMethod.POST) {
                 ServerRequest serverRequest = ServerWebExchangeUtil.createReadBodyRequest(exchange);
                 // 读取请求体中的内容
