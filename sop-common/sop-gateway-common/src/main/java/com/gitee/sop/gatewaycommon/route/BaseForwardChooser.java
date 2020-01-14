@@ -21,12 +21,11 @@ public abstract class BaseForwardChooser<T> implements ForwardChooser<T> {
     @Override
     public ForwardInfo getForwardInfo(T t) {
         ApiParam apiParam = getApiParam(t);
-        ForwardInfo forwardInfo = new ForwardInfo();
         String nameVersion = apiParam.fetchNameVersion();
         TargetRoute targetRoute = RouteRepositoryContext.getRouteRepository().get(nameVersion);
         RouteDefinition routeDefinitionOrig = targetRoute.getRouteDefinition();
         String path = routeDefinitionOrig.getPath();
-        String versionInHead = apiParam.fetchVersion();
+        String version = apiParam.fetchVersion();
         String serviceId = targetRoute.getServiceRouteInfo().fetchServiceIdLowerCase();
         // 如果服务在灰度阶段，返回一个灰度版本号
         String grayVersion = envGrayManager.getVersion(serviceId, nameVersion);
@@ -36,7 +35,7 @@ public abstract class BaseForwardChooser<T> implements ForwardChooser<T> {
             TargetRoute targetRouteDest = RouteRepositoryContext.getRouteRepository().get(newNameVersion);
             if (targetRouteDest != null) {
                 if (BooleanUtils.toBoolean(routeDefinitionOrig.getCompatibleMode())) {
-                    versionInHead = grayVersion;
+                    version = grayVersion;
                 } else {
                     // 获取灰度接口
                     RouteDefinition routeDefinition = targetRouteDest.getRouteDefinition();
@@ -44,11 +43,7 @@ public abstract class BaseForwardChooser<T> implements ForwardChooser<T> {
                 }
             }
         }
-
-        forwardInfo.setPath(path);
-        forwardInfo.setVersion(versionInHead);
-
-        return forwardInfo;
+        return new ForwardInfo(path, version);
     }
 
 }

@@ -79,7 +79,7 @@ public class IndexFilter implements WebFilter {
                             // 构建ApiParam
                             ApiParam apiParam = ServerWebExchangeUtil.getApiParam(exchange, body);
                             // 签名验证
-                            doValidate(apiParam);
+                            doValidate(exchange, apiParam);
                             return Mono.just(body);
                         });
                 BodyInserter bodyInserter = BodyInserters.fromPublisher(modifiedBody, (Class) String.class);
@@ -108,7 +108,8 @@ public class IndexFilter implements WebFilter {
                 // 构建ApiParam
                 ApiParam apiParam = ServerWebExchangeUtil.getApiParam(exchange, originalQuery);
                 // 签名验证
-                doValidate(apiParam);
+                doValidate(exchange, apiParam);
+
                 ForwardInfo forwardInfo = gatewayForwardChooser.getForwardInfo(exchange);
                 ServerWebExchange forwardExchange = ServerWebExchangeUtil.getForwardExchange(exchange, forwardInfo);
                 return chain.filter(forwardExchange);
@@ -118,12 +119,12 @@ public class IndexFilter implements WebFilter {
         }
     }
 
-    private void doValidate(ApiParam apiParam) {
+    private void doValidate(ServerWebExchange exchange, ApiParam apiParam) {
         try {
             validator.validate(apiParam);
         } catch (ApiException e) {
             log.error("验证失败，ip:{}, params:{}, errorMsg:{}", apiParam.fetchIp(), apiParam.toJSONString(), e.getMessage());
-            apiParam.setThrowable(e);
+            ServerWebExchangeUtil.setThrowable(exchange, e);
         }
     }
 

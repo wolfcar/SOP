@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public class ApiParam extends JSONObject implements Param {
 
-    private static final String THROWABLE_KEY = "Throwable";
+
 
     public ApiParam() {
     }
@@ -32,14 +32,6 @@ public class ApiParam extends JSONObject implements Param {
     private String ip;
 
     private transient UploadContext uploadContext;
-
-    public void setThrowable(Throwable throwable) {
-        this.put(THROWABLE_KEY, throwable);
-    }
-
-    public Throwable getThrowable() {
-        return (Throwable)get(THROWABLE_KEY);
-    }
 
     public void fitNameVersion() {
         if (restName != null) {

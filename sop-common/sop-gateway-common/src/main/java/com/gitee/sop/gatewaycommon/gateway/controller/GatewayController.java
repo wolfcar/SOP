@@ -4,7 +4,6 @@ import com.gitee.sop.gatewaycommon.bean.ApiContext;
 import com.gitee.sop.gatewaycommon.exception.ApiException;
 import com.gitee.sop.gatewaycommon.gateway.ServerWebExchangeUtil;
 import com.gitee.sop.gatewaycommon.message.ErrorEnum;
-import com.gitee.sop.gatewaycommon.param.ApiParam;
 import com.gitee.sop.gatewaycommon.result.ResultExecutor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,10 +24,10 @@ public class GatewayController {
      */
     @RequestMapping("/sop/validateError")
     public Mono<String> validateError(ServerWebExchange exchange) {
-        ApiParam apiParam = ServerWebExchangeUtil.getApiParam(exchange);
+        Throwable throwable = ServerWebExchangeUtil.getThrowable(exchange);
         // 合并微服务传递过来的结果，变成最终结果
         ResultExecutor<ServerWebExchange, String> resultExecutor = ApiContext.getApiConfig().getGatewayResultExecutor();
-        String gatewayResult = resultExecutor.buildErrorResult(exchange, apiParam.getThrowable());
+        String gatewayResult = resultExecutor.buildErrorResult(exchange, throwable);
         return Mono.just(gatewayResult);
     }
 

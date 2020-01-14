@@ -43,8 +43,8 @@ import java.util.function.Consumer;
 @Slf4j
 public class ServerWebExchangeUtil {
 
+    private static final String THROWABLE_KEY = "sop.throwable";
     private static final String UNKNOWN_PATH = "/sop/unknown";
-    private static final String VALIDATE_ERROR_PATH = "/sop/validateError";
     private static final String REST_PATH = "/rest";
 
     private static FormHttpMessageConverter formHttpMessageConverter = new FormHttpMessageConverter();
@@ -63,8 +63,9 @@ public class ServerWebExchangeUtil {
      * @return 返回新的ServerWebExchange，配合chain.filter(newExchange);使用
      */
     public static ServerWebExchange getForwardExchange(ServerWebExchange exchange, ForwardInfo forwardInfo) {
-        ServerHttpRequest newRequest = exchange.getRequest()
-                .mutate()
+        ServerHttpRequest.Builder builder = exchange.getRequest()
+                .mutate();
+        ServerHttpRequest newRequest = builder
                 .header(ParamNames.HEADER_VERSION_NAME, forwardInfo.getVersion())
                 .path(forwardInfo.getPath()).build();
         return exchange.mutate().request(newRequest).build();
@@ -151,6 +152,14 @@ public class ServerWebExchangeUtil {
         apiParam.putAll(params);
         setApiParam(exchange, apiParam);
         return apiParam;
+    }
+
+    public static void setThrowable(ServerWebExchange exchange, Throwable throwable) {
+        exchange.getAttributes().put(THROWABLE_KEY, throwable);
+    }
+
+    public static Throwable getThrowable(ServerWebExchange exchange) {
+        return (Throwable)exchange.getAttribute(THROWABLE_KEY);
     }
 
     /**
