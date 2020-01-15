@@ -109,7 +109,7 @@
         <el-tabs v-model="tabsActiveName" type="card">
           <el-tab-pane label="灰度用户" name="first">
             <el-alert
-              title="可以是appId，或userId，多个用英文逗号隔开"
+              title="可以是appId或IP地址，多个用英文逗号隔开"
               type="info"
               :closable="false"
               style="margin-bottom: 20px;"
@@ -117,7 +117,7 @@
             <el-form-item prop="userKeyContent">
               <el-input
                 v-model="grayForm.userKeyContent"
-                placeholder="可以是appId，或userId，多个用英文逗号隔开"
+                placeholder="可以是appId或IP地址，多个用英文逗号隔开"
                 type="textarea"
                 :rows="6"
               />
