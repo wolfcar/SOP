@@ -31,6 +31,8 @@ public class ApiParam extends JSONObject implements Param {
 
     private String ip;
 
+    private boolean isGrayRequest;
+
     private transient UploadContext uploadContext;
 
     public void fitNameVersion() {
@@ -247,5 +249,13 @@ public class ApiParam extends JSONObject implements Param {
 
     public String fetchIp() {
         return ip;
+    }
+
+    public boolean isGrayRequest() {
+        return isGrayRequest;
+    }
+
+    public void setGrayRequest(boolean grayRequest) {
+        isGrayRequest = grayRequest;
     }
 }

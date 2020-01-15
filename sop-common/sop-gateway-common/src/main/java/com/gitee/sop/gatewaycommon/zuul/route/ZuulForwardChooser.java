@@ -11,7 +11,7 @@ import com.netflix.zuul.context.RequestContext;
 public class ZuulForwardChooser extends BaseForwardChooser<RequestContext> {
 
     @Override
-    protected ApiParam getApiParam(RequestContext requestContext) {
+    public ApiParam getApiParam(RequestContext requestContext) {
         return ZuulContext.getApiParam();
     }
 

@@ -14,7 +14,7 @@ public class GatewayForwardChooser extends BaseForwardChooser<ServerWebExchange>
     private static final String VALIDATE_ERROR_PATH = "/sop/validateError";
 
     @Override
-    protected ApiParam getApiParam(ServerWebExchange exchange) {
+    public ApiParam getApiParam(ServerWebExchange exchange) {
         return ServerWebExchangeUtil.getApiParam(exchange);
     }
 

@@ -8,7 +8,9 @@ import com.gitee.sop.gatewaycommon.gateway.filter.GatewayModifyResponseGatewayFi
 import com.gitee.sop.gatewaycommon.gateway.filter.IndexFilter;
 import com.gitee.sop.gatewaycommon.gateway.filter.LimitFilter;
 import com.gitee.sop.gatewaycommon.gateway.filter.ParameterFormatterFilter;
+import com.gitee.sop.gatewaycommon.gateway.filter.SopLoadBalancerClientFilter;
 import com.gitee.sop.gatewaycommon.gateway.handler.GatewayExceptionHandler;
+import com.gitee.sop.gatewaycommon.gateway.loadbalancer.SopLoadBalancerClient;
 import com.gitee.sop.gatewaycommon.gateway.route.GatewayForwardChooser;
 import com.gitee.sop.gatewaycommon.gateway.route.GatewayRouteCache;
 import com.gitee.sop.gatewaycommon.gateway.route.GatewayRouteRepository;
@@ -17,6 +19,10 @@ import com.gitee.sop.gatewaycommon.manager.RouteRepositoryContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
+import org.springframework.cloud.gateway.config.LoadBalancerProperties;
+import org.springframework.cloud.gateway.filter.LoadBalancerClientFilter;
+import org.springframework.cloud.netflix.ribbon.SpringClientFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
@@ -111,4 +117,28 @@ public class BaseGatewayConfiguration extends AbstractConfiguration {
     GatewayForwardChooser gatewayForwardChooser() {
         return new GatewayForwardChooser();
     }
+
+    /**
+     * 扩展默认的负载均衡选择，默认使用的是RibbonLoadBalancerClient。当配置了pre.domain时才生效
+     * @param clientFactory
+     * @return
+     */
+    @Primary
+    @Bean
+    LoadBalancerClient sopLoadBalancerClient(SpringClientFactory clientFactory) {
+        return new SopLoadBalancerClient(clientFactory);
+    }
+
+    /**
+     * 扩展默认的负载均衡过滤器，默认是LoadBalancerClientFilter。当配置了pre.domain时才生效
+     * @param sopLoadBalancerClient SopLoadBalancerClient
+     * @param loadBalancerProperties loadBalancerProperties
+     * @return
+     */
+    @Primary
+    @Bean
+    LoadBalancerClientFilter loadBalancerClientFilter(LoadBalancerClient sopLoadBalancerClient, LoadBalancerProperties loadBalancerProperties) {
+        return new SopLoadBalancerClientFilter(sopLoadBalancerClient, loadBalancerProperties);
+    }
+
 }

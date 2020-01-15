@@ -43,7 +43,7 @@ public class IndexFilter implements WebFilter {
     private static final String REST_PATH_PREFIX = "/rest";
     private static final String SOP_PATH_PREFIX = "/sop";
 
-    @Value("${gateway.index-path:/}")
+    @Value("${sop.gateway-index-path:/}")
     private String indexPath;
 
     @Autowired

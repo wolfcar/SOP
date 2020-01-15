@@ -3,6 +3,9 @@ package com.gitee.sop.gatewaycommon.bean;
 import com.gitee.sop.gatewaycommon.gateway.result.GatewayResultExecutor;
 import com.gitee.sop.gatewaycommon.limit.DefaultLimitManager;
 import com.gitee.sop.gatewaycommon.limit.LimitManager;
+import com.gitee.sop.gatewaycommon.loadbalancer.builder.AppIdGrayUserBuilder;
+import com.gitee.sop.gatewaycommon.loadbalancer.builder.GrayUserBuilder;
+import com.gitee.sop.gatewaycommon.loadbalancer.builder.IpGrayUserBuilder;
 import com.gitee.sop.gatewaycommon.manager.DefaultEnvGrayManager;
 import com.gitee.sop.gatewaycommon.manager.DefaultIPBlacklistManager;
 import com.gitee.sop.gatewaycommon.manager.DefaultIsvRoutePermissionManager;
@@ -41,6 +44,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -53,6 +57,9 @@ public class ApiConfig {
     private static ApiConfig instance = new ApiConfig();
 
     private ApiConfig() {
+        grayUserBuilders = new ArrayList<>(4);
+        grayUserBuilders.add(new AppIdGrayUserBuilder());
+        grayUserBuilders.add(new IpGrayUserBuilder());
     }
 
     /**
@@ -192,6 +199,13 @@ public class ApiConfig {
     private int storeErrorCapacity = 20;
 
     private boolean useGateway;
+
+    private List<GrayUserBuilder> grayUserBuilders;
+
+    public void addGrayUserBuilder(GrayUserBuilder grayUserBuilder) {
+        grayUserBuilders.add(grayUserBuilder);
+        grayUserBuilders.sort(Comparator.comparing(GrayUserBuilder::order));
+    }
 
     public void addAppSecret(Map<String, String> appSecretPair) {
         for (Map.Entry<String, String> entry : appSecretPair.entrySet()) {

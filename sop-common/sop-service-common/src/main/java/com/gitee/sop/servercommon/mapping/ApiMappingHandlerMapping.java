@@ -19,7 +19,6 @@ import java.lang.reflect.Method;
  */
 public class ApiMappingHandlerMapping extends RequestMappingHandlerMapping implements PriorityOrdered {
 
-    private static StringValueResolver stringValueResolver = new ApiMappingStringValueResolver();
     private static StringValueResolver stringValueResolverMVC = new ApiMappingStringValueResolverMVC();
 
     @Override
