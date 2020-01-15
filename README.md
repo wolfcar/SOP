@@ -48,6 +48,7 @@ SOP封装了开放平台大部分功能包括：签名验证、统一异常处�
 - 监控日志
 - 支持nacos
 - 网关动态修改参数
+- 预发布/灰度环境切换
 
 ## 界面预览
 
@@ -69,7 +70,7 @@ SOP封装了开放平台大部分功能包括：签名验证、统一异常处�
 
 - doc：开发文档
 - sop-common：公共模块，封装常用功能，包含签名校验、错误处理、限流等功能
-- sop-gateway：网关，统一访问入口，Spring Cloud Zuul实现，可切换成Spring Cloud Gateway
+- sop-gateway：网关，统一访问入口，含`Spring Cloud Zuul`和`Spring Cloud Gateway`实现
 - sop-example：微服务示例，含springboot,springmvc示例
 - sop-website：开放平台对应网站，提供文档API、沙箱测试等内容
 - sop-auth：应用授权服务
