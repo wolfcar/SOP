@@ -119,7 +119,7 @@ public class BaseGatewayConfiguration extends AbstractConfiguration {
     }
 
     /**
-     * 扩展默认的负载均衡选择，默认使用的是RibbonLoadBalancerClient。当配置了pre.domain时才生效
+     * 扩展默认的负载均衡选择，默认使用的是RibbonLoadBalancerClient
      * @param clientFactory
      * @return
      */
@@ -129,7 +129,7 @@ public class BaseGatewayConfiguration extends AbstractConfiguration {
     }
 
     /**
-     * 扩展默认的负载均衡过滤器，默认是LoadBalancerClientFilter。当配置了pre.domain时才生效
+     * 扩展默认的负载均衡过滤器，默认是LoadBalancerClientFilter
      * @param sopLoadBalancerClient SopLoadBalancerClient
      * @param loadBalancerProperties loadBalancerProperties
      * @return
