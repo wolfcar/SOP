@@ -56,6 +56,7 @@ public class AlipayClientPostTest extends TestBase {
 
         System.out.println("----------- 请求信息 -----------");
         System.out.println("请求参数：" + buildParamQuery(params));
+        System.out.println("URL参数：" + buildUrlQuery(params));
         System.out.println("商户秘钥：" + privateKey);
         String content = AlipaySignature.getSignContent(params);
         System.out.println("待签名内容：" + content);
