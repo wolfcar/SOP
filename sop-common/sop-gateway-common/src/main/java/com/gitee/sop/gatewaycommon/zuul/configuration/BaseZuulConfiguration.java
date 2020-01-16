@@ -6,14 +6,17 @@ import com.gitee.sop.gatewaycommon.manager.AbstractConfiguration;
 import com.gitee.sop.gatewaycommon.manager.RouteRepositoryContext;
 import com.gitee.sop.gatewaycommon.param.ParamBuilder;
 import com.gitee.sop.gatewaycommon.zuul.ValidateService;
+import com.gitee.sop.gatewaycommon.zuul.controller.ConfigChannelController;
+import com.gitee.sop.gatewaycommon.zuul.controller.ErrorLogController;
+import com.gitee.sop.gatewaycommon.zuul.controller.ZuulIndexController;
 import com.gitee.sop.gatewaycommon.zuul.filter.ErrorFilter;
 import com.gitee.sop.gatewaycommon.zuul.filter.FormBodyWrapperFilterExt;
 import com.gitee.sop.gatewaycommon.zuul.filter.PostResultFilter;
+import com.gitee.sop.gatewaycommon.zuul.filter.PreEnvGrayFilter;
 import com.gitee.sop.gatewaycommon.zuul.filter.PreHttpServletRequestWrapperFilter;
 import com.gitee.sop.gatewaycommon.zuul.filter.PreLimitFilter;
 import com.gitee.sop.gatewaycommon.zuul.filter.PreParameterFormatterFilter;
 import com.gitee.sop.gatewaycommon.zuul.filter.PreValidateFilter;
-import com.gitee.sop.gatewaycommon.zuul.filter.PreEnvGrayFilter;
 import com.gitee.sop.gatewaycommon.zuul.filter.Servlet30WrapperFilterExt;
 import com.gitee.sop.gatewaycommon.zuul.route.SopRouteLocator;
 import com.gitee.sop.gatewaycommon.zuul.route.ZuulRouteCache;
@@ -38,6 +41,21 @@ public class BaseZuulConfiguration extends AbstractConfiguration {
 
     @Autowired
     protected ServerProperties server;
+
+    @Bean
+    public ConfigChannelController configChannelController() {
+        return new ConfigChannelController();
+    }
+
+    @Bean
+    public ErrorLogController errorLogController() {
+        return new ErrorLogController();
+    }
+
+    @Bean
+    public ZuulIndexController zuulIndexController() {
+        return new ZuulIndexController();
+    }
 
     @Bean
     @ConditionalOnMissingBean
