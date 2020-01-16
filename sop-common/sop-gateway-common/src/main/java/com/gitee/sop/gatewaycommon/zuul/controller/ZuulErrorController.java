@@ -1,31 +1,31 @@
-package com.gitee.sop.gatewaycommon.zuul.configuration;
+package com.gitee.sop.gatewaycommon.zuul.controller;
 
 import com.gitee.sop.gatewaycommon.bean.ApiContext;
 import com.gitee.sop.gatewaycommon.result.ResultExecutor;
 import com.gitee.sop.gatewaycommon.zuul.ZuulContext;
 import com.netflix.zuul.context.RequestContext;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 处理网关自身异常
+ * zuul的异常处理
  *
  * @author tanghc
  */
-@ControllerAdvice
 @Slf4j
-public class ZuulErrorController {
+@RestController
+public class ZuulErrorController implements ErrorController {
 
     /**
      * 错误最终会到这里来
      */
-    @ExceptionHandler(Exception.class)
-    @ResponseBody
+    @RequestMapping("/error")
     public Object error(HttpServletRequest request, HttpServletResponse response) {
         RequestContext ctx = RequestContext.getCurrentContext();
         if (ctx.getResponse() == null) {
@@ -45,4 +45,8 @@ public class ZuulErrorController {
         return resultExecutor.buildErrorResult(RequestContext.getCurrentContext(), throwable);
     }
 
+    @Override
+    public String getErrorPath() {
+        return "/error";
+    }
 }

@@ -8,6 +8,7 @@ import com.gitee.sop.gatewaycommon.param.ParamBuilder;
 import com.gitee.sop.gatewaycommon.zuul.ValidateService;
 import com.gitee.sop.gatewaycommon.zuul.controller.ConfigChannelController;
 import com.gitee.sop.gatewaycommon.zuul.controller.ErrorLogController;
+import com.gitee.sop.gatewaycommon.zuul.controller.ZuulErrorController;
 import com.gitee.sop.gatewaycommon.zuul.controller.ZuulIndexController;
 import com.gitee.sop.gatewaycommon.zuul.filter.ErrorFilter;
 import com.gitee.sop.gatewaycommon.zuul.filter.FormBodyWrapperFilterExt;
@@ -166,7 +167,7 @@ public class BaseZuulConfiguration extends AbstractConfiguration {
      * 统一错误处理
      */
     @Bean
-    ZuulErrorController sopZuulController() {
+    ZuulErrorController zuulErrorController() {
         return ApiContext.getApiConfig().getZuulErrorController();
     }
 

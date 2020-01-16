@@ -35,7 +35,7 @@ import com.gitee.sop.gatewaycommon.validate.Encrypter;
 import com.gitee.sop.gatewaycommon.validate.Signer;
 import com.gitee.sop.gatewaycommon.validate.TokenValidator;
 import com.gitee.sop.gatewaycommon.validate.Validator;
-import com.gitee.sop.gatewaycommon.zuul.configuration.ZuulErrorController;
+import com.gitee.sop.gatewaycommon.zuul.controller.ZuulErrorController;
 import com.gitee.sop.gatewaycommon.zuul.param.ZuulParamBuilder;
 import com.gitee.sop.gatewaycommon.zuul.result.ZuulResultExecutor;
 import com.netflix.zuul.context.RequestContext;
