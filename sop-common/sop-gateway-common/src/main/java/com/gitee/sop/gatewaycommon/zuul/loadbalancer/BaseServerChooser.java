@@ -53,7 +53,7 @@ public abstract class BaseServerChooser extends ZoneAvoidanceRule {
         ILoadBalancer lb = getLoadBalancer();
         // 获取服务实例列表
         List<Server> servers = lb.getReachableServers();
-        HttpServletRequest request = RequestContext.getCurrentContext().getRequest();
+        RequestContext currentContext = RequestContext.getCurrentContext();
         // 存放预发服务器
         List<Server> preServers = new ArrayList<>(4);
         // 存放灰度发布服务器
@@ -77,11 +77,11 @@ public abstract class BaseServerChooser extends ZoneAvoidanceRule {
             return super.choose(key);
         }
         // 如果是从预发布域名访问过来，则认为是预发布请求
-        if (this.isRequestFromPreDomain(request)) {
+        if (this.isRequestFromPreDomain(currentContext.getRequest())) {
             return doChoose(preServers, key);
         }
         // 如果是灰度请求
-        if (this.isRequestGrayServer(RequestContext.getCurrentContext())) {
+        if (this.isRequestGrayServer(currentContext)) {
             return doChoose(grayServers, key);
         }
 
