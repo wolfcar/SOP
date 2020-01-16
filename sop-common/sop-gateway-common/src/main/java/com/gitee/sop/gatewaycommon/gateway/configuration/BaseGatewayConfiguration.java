@@ -123,9 +123,8 @@ public class BaseGatewayConfiguration extends AbstractConfiguration {
      * @param clientFactory
      * @return
      */
-    @Primary
     @Bean
-    LoadBalancerClient sopLoadBalancerClient(SpringClientFactory clientFactory) {
+    LoadBalancerClient loadBalancerClient(SpringClientFactory clientFactory) {
         return new SopLoadBalancerClient(clientFactory);
     }
 
@@ -135,7 +134,6 @@ public class BaseGatewayConfiguration extends AbstractConfiguration {
      * @param loadBalancerProperties loadBalancerProperties
      * @return
      */
-    @Primary
     @Bean
     LoadBalancerClientFilter loadBalancerClientFilter(LoadBalancerClient sopLoadBalancerClient, LoadBalancerProperties loadBalancerProperties) {
         return new SopLoadBalancerClientFilter(sopLoadBalancerClient, loadBalancerProperties);
