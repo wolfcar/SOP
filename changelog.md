@@ -4,7 +4,7 @@
 
 - 重构spring cloud gateway网关
 - 重构`预发布/灰度发布环境选择`
-- zuul和gateway网关二合一
+- zuul和gateway网关二合一，可随意切换
 - 精简配置文件
 - 优化文档中心页面
 
