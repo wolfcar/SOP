@@ -1,4 +1,4 @@
-package com.gitee.sop.gatewaycommon.env;
+package com.gitee.sop.gatewaycommon.config;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
@@ -14,7 +14,7 @@ import java.util.Properties;
 /**
  * 自定义环境处理，在运行SpringApplication之前加载任意配置文件到Environment环境中
  */
-public class SopEnvironmentPostProcessor implements EnvironmentPostProcessor {
+public class SopGatewayEnvironmentPostProcessor implements EnvironmentPostProcessor {
 
     private final Properties properties = new Properties();
 
