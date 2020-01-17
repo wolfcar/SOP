@@ -21,7 +21,7 @@ public class SopAdminEnvironmentPostProcessor implements EnvironmentPostProcesso
 
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-        Resource resource = new ClassPathResource("sop-admin.properties");
+        Resource resource = new ClassPathResource("META-INF/sop-admin.properties");
         // 加载成PropertySource对象，并添加到Environment环境中
         environment.getPropertySources().addLast(loadProfiles(resource));
     }
