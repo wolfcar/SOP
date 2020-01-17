@@ -8,6 +8,7 @@ import com.gitee.sop.gatewaycommon.message.Error;
 import com.gitee.sop.gatewaycommon.message.ErrorEnum;
 import com.gitee.sop.gatewaycommon.param.ApiParam;
 import com.gitee.sop.gatewaycommon.result.BaseExecutorAdapter;
+import com.gitee.sop.gatewaycommon.result.ResultExecutorForZuul;
 import com.gitee.sop.gatewaycommon.zuul.ZuulContext;
 import com.netflix.util.Pair;
 import com.netflix.zuul.context.RequestContext;
@@ -20,7 +21,7 @@ import java.util.List;
  * @author tanghc
  */
 @Slf4j
-public class ZuulResultExecutor extends BaseExecutorAdapter<RequestContext, String> {
+public class ZuulResultExecutor extends BaseExecutorAdapter<RequestContext, String> implements ResultExecutorForZuul {
 
     @Override
     protected boolean isMergeResult(RequestContext request) {

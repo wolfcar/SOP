@@ -9,6 +9,7 @@ import com.gitee.sop.gatewaycommon.message.Error;
 import com.gitee.sop.gatewaycommon.message.ErrorEnum;
 import com.gitee.sop.gatewaycommon.param.ApiParam;
 import com.gitee.sop.gatewaycommon.result.BaseExecutorAdapter;
+import com.gitee.sop.gatewaycommon.result.ResultExecutorForGateway;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
@@ -22,7 +23,8 @@ import java.util.Map;
  * @author tanghc
  */
 @Slf4j
-public class GatewayResultExecutor extends BaseExecutorAdapter<ServerWebExchange, String> {
+public class GatewayResultExecutor extends BaseExecutorAdapter<ServerWebExchange, String>
+        implements ResultExecutorForGateway {
 
     @Override
     public int getResponseStatus(ServerWebExchange exchange) {

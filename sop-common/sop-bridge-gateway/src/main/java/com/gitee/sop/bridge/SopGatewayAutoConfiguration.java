@@ -1,5 +1,6 @@
 package com.gitee.sop.bridge;
 
+import com.gitee.sop.gatewaycommon.config.BaseGatewayAutoConfiguration;
 import com.gitee.sop.gatewaycommon.gateway.configuration.AlipayGatewayConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.cloud.netflix.ribbon.RibbonAutoConfiguration;
@@ -13,5 +14,5 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @Import(AlipayGatewayConfiguration.class)
 @AutoConfigureBefore(RibbonAutoConfiguration.class)
-public class SopGatewayAutoConfiguration {
+public class SopGatewayAutoConfiguration extends BaseGatewayAutoConfiguration {
 }

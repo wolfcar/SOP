@@ -18,12 +18,12 @@ import com.gitee.sop.gatewaycommon.manager.IsvRoutePermissionManager;
 import com.gitee.sop.gatewaycommon.manager.LimitConfigManager;
 import com.gitee.sop.gatewaycommon.manager.RouteConfigManager;
 import com.gitee.sop.gatewaycommon.manager.ServiceErrorManager;
-import com.gitee.sop.gatewaycommon.param.ParamBuilder;
 import com.gitee.sop.gatewaycommon.param.ParameterFormatter;
 import com.gitee.sop.gatewaycommon.result.DataNameBuilder;
 import com.gitee.sop.gatewaycommon.result.DefaultDataNameBuilder;
 import com.gitee.sop.gatewaycommon.result.ResultAppender;
-import com.gitee.sop.gatewaycommon.result.ResultExecutor;
+import com.gitee.sop.gatewaycommon.result.ResultExecutorForGateway;
+import com.gitee.sop.gatewaycommon.result.ResultExecutorForZuul;
 import com.gitee.sop.gatewaycommon.secret.CacheIsvManager;
 import com.gitee.sop.gatewaycommon.secret.IsvManager;
 import com.gitee.sop.gatewaycommon.session.ApiSessionManager;
@@ -38,10 +38,8 @@ import com.gitee.sop.gatewaycommon.validate.Validator;
 import com.gitee.sop.gatewaycommon.zuul.controller.ZuulErrorController;
 import com.gitee.sop.gatewaycommon.zuul.param.ZuulParamBuilder;
 import com.gitee.sop.gatewaycommon.zuul.result.ZuulResultExecutor;
-import com.netflix.zuul.context.RequestContext;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.server.ServerWebExchange;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -65,12 +63,12 @@ public class ApiConfig {
     /**
      * gateway合并结果处理
      */
-    private ResultExecutor<ServerWebExchange, String> gatewayResultExecutor = new GatewayResultExecutor();
+    private ResultExecutorForGateway gatewayResultExecutor = new GatewayResultExecutor();
 
     /**
      * zuul合并结果处理
      */
-    private ResultExecutor<RequestContext, String> zuulResultExecutor = new ZuulResultExecutor();
+    private ResultExecutorForZuul zuulResultExecutor = new ZuulResultExecutor();
 
     /**
      * isv管理
@@ -90,7 +88,7 @@ public class ApiConfig {
     /**
      * 参数解析，zuul
      */
-    private ParamBuilder<RequestContext> zuulParamBuilder = new ZuulParamBuilder();
+    private ZuulParamBuilder zuulParamBuilder = new ZuulParamBuilder();
 
     /**
      * 验证
