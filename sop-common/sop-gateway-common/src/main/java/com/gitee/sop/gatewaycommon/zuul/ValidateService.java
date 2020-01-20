@@ -38,8 +38,11 @@ public class ValidateService {
         currentContext.setRequest(RequestUtil.wrapRequest(request));
         currentContext.setResponse(response);
         // 解析参数
-        ApiParam param = paramBuilder.build(currentContext);
-        ZuulContext.setApiParam(param);
+        ApiParam param = ZuulContext.getApiParam();
+        if (param == null) {
+            param = paramBuilder.build(currentContext);
+            ZuulContext.setApiParam(param);
+        }
         doValidate(currentContext, param, callback);
     }
 
