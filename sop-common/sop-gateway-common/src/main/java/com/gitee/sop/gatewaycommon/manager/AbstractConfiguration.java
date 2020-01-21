@@ -18,8 +18,11 @@ import com.gitee.sop.gatewaycommon.secret.IsvManager;
 import com.gitee.sop.gatewaycommon.session.SessionManager;
 import com.gitee.sop.gatewaycommon.validate.SignConfig;
 import com.gitee.sop.gatewaycommon.validate.Validator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.client.discovery.event.HeartbeatEvent;
@@ -37,11 +40,20 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import javax.annotation.PostConstruct;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author tanghc
  */
-public class AbstractConfiguration implements ApplicationContextAware {
+@Slf4j
+public class AbstractConfiguration implements ApplicationContextAware, ApplicationRunner {
+
+    private Lock lock = new ReentrantLock();
+    private Condition condition = lock.newCondition();
+
+    private volatile boolean isStartupCompleted;
 
     @Autowired
     protected Environment environment;
@@ -63,6 +75,17 @@ public class AbstractConfiguration implements ApplicationContextAware {
      */
     @EventListener(classes = HeartbeatEvent.class)
     public void listenNacosEvent(ApplicationEvent heartbeatEvent) {
+        // 没有启动完毕先等待
+        if (!isStartupCompleted) {
+            lock.lock();
+            try {
+                condition.await();
+            } catch (InterruptedException e) {
+                log.error("condition.await() error", e);
+            } finally {
+                lock.unlock();
+            }
+        }
         registryListener.onEvent(heartbeatEvent);
     }
 
@@ -200,10 +223,22 @@ public class AbstractConfiguration implements ApplicationContextAware {
         return corsConfiguration;
     }
 
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+        this.isStartupCompleted = true;
+        lock.lock();
+        condition.signal();
+        lock.unlock();
+        after();
+    }
+
     @PostConstruct
-    public final void after() {
+    private void post() {
         EnvironmentContext.setEnvironment(environment);
         SpringContext.setApplicationContext(applicationContext);
+    }
+
+    public final void after() {
         if (RouteRepositoryContext.getRouteRepository() == null) {
             throw new IllegalArgumentException("RouteRepositoryContext.setRouteRepository()方法未使用");
         }
@@ -219,7 +254,6 @@ public class AbstractConfiguration implements ApplicationContextAware {
         initMessage();
         initBeanInitializer();
         doAfter();
-
     }
 
     protected void initBeanInitializer() {
