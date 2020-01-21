@@ -190,18 +190,6 @@ public class AllInOneTest extends TestBase {
     }
 
     /**
-     * 演示将接口名版本号跟在url后面，规则:http://host:port/{method}/{version}/
-     */
-    public void testRestful() {
-        Client.RequestBuilder requestBuilder = new Client.RequestBuilder()
-                .url("http://localhost:8081/alipay.story.get/1.0/")
-                .bizContent(new BizContent().add("name", "name111"))
-                .httpMethod(HttpTool.HTTPMethod.GET);
-
-        client.execute(requestBuilder);
-    }
-
-    /**
      * 演示文件上传
      */
     public void testFile() {
