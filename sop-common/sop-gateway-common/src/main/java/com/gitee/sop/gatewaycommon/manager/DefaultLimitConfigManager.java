@@ -61,27 +61,23 @@ public class DefaultLimitConfigManager implements LimitConfigManager {
      */
     protected Set<String> buildKeys(ConfigLimitDto configLimitDto) {
         Set<String> keys = new HashSet<>();
-        Set<String> baseKeys = new HashSet<>();
         String routeId = Optional.ofNullable(configLimitDto.getRouteId()).orElse("");
         String appKey = Optional.ofNullable(configLimitDto.getAppKey()).orElse("");
         String limitIp = Optional.ofNullable(configLimitDto.getLimitIp()).orElse("").replaceAll("\\s", "");
 
-
         // 根据路由ID限流
         if (StringUtils.isNotBlank(routeId) && StringUtils.isBlank(appKey) && StringUtils.isBlank(limitIp)) {
             keys.add(routeId);
-            baseKeys.add(routeId);
         }
         // 根据appKey限流
         if (StringUtils.isBlank(routeId) && StringUtils.isNotBlank(appKey) && StringUtils.isBlank(limitIp)) {
             keys.add(appKey);
-            baseKeys.add(appKey);
         }
         // 根据路由ID + appKey限流
         if (StringUtils.isNotBlank(routeId) && StringUtils.isNotBlank(appKey) && StringUtils.isBlank(limitIp)) {
             keys.add(routeId.trim() + appKey.trim());
-            baseKeys.add(routeId.trim() + appKey.trim());
         }
+        Set<String> baseKeys = new HashSet<>(keys);
         // 根据ip限流
         if (StringUtils.isBlank(routeId) && StringUtils.isBlank(appKey) && StringUtils.isNotBlank(limitIp)) {
             String[] ips = limitIp.split("\\,|\\，");
