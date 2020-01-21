@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.gitee.sop.gatewaycommon.message.Error;
 import com.gitee.sop.gatewaycommon.result.ApiResult;
-import com.gitee.sop.gatewaycommon.result.ResultExecutor;
+import com.gitee.sop.gatewaycommon.result.ResultExecutorForZuul;
 import com.gitee.sop.gatewaycommon.zuul.result.ZuulResultExecutor;
 import com.netflix.zuul.context.RequestContext;
 
@@ -13,7 +13,7 @@ import java.util.Optional;
 /**
  * @author tanghc
  */
-public class EasyopenResultExecutor implements ResultExecutor<RequestContext, String> {
+public class EasyopenResultExecutor implements ResultExecutorForZuul {
 
     boolean onlyReturnData;
 

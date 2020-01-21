@@ -1,15 +1,19 @@
 package com.gitee.sop.gatewaycommon.gateway.route;
 
+import com.gitee.sop.gatewaycommon.bean.AbstractTargetRoute;
 import com.gitee.sop.gatewaycommon.bean.RouteDefinition;
-import com.gitee.sop.gatewaycommon.bean.TargetRoute;
 import com.gitee.sop.gatewaycommon.manager.RouteRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.cloud.gateway.route.RouteDefinitionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
+import org.springframework.cloud.gateway.route.Route;
+import org.springframework.cloud.gateway.route.RouteLocator;
+import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
+import org.springframework.context.ApplicationContext;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -25,28 +29,37 @@ import static java.util.Collections.synchronizedMap;
  * @author tanghc
  */
 @Slf4j
-public class GatewayRouteRepository implements RouteDefinitionRepository, RouteRepository<GatewayTargetRoute> {
+public class GatewayRouteRepository implements RouteRepository<GatewayTargetRoute>, RouteLocator {
 
     private PathMatcher pathMatcher = new AntPathMatcher();
 
     private final Map<String, GatewayTargetRoute> routes = synchronizedMap(new LinkedHashMap<>());
 
+    @Autowired
+    private RouteLocatorBuilder routeLocatorBuilder;
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    private RouteLocator routeLocator;
+
     @Override
-    public Flux<org.springframework.cloud.gateway.route.RouteDefinition> getRouteDefinitions() {
-        List<org.springframework.cloud.gateway.route.RouteDefinition> list = routes.values().parallelStream()
-                .map(TargetRoute::getTargetRouteDefinition)
+    public Flux<Route> getRoutes() {
+        return routeLocator.getRoutes();
+    }
+
+    public void refresh() {
+        RouteLocatorBuilder.Builder builder = routeLocatorBuilder.routes();
+        List<RouteDefinition> routeDefinitionList = this.routes.values()
+                .stream()
+                .map(AbstractTargetRoute::getRouteDefinition)
                 .collect(Collectors.toList());
-        return Flux.fromIterable(list);
-    }
-
-    @Override
-    public Mono<Void> save(Mono<org.springframework.cloud.gateway.route.RouteDefinition> route) {
-        return null;
-    }
-
-    @Override
-    public Mono<Void> delete(Mono<String> routeId) {
-        return null;
+        routeDefinitionList.forEach(routeDefinition -> builder.route(routeDefinition.getId(),
+                r -> r.path(routeDefinition.getPath())
+                        .uri(routeDefinition.getUri())));
+        this.routeLocator = builder.build();
+        // 触发
+        applicationContext.publishEvent(new RefreshRoutesEvent(new Object()));
     }
 
     /**

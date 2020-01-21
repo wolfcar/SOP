@@ -25,12 +25,14 @@ public class RouteRepositoryContext {
      * 检查路由是否存在，不存在报错
      * @param routeId 路由id
      * @param errorEnum 报错信息
+     * @return 返回TargetRoute
      */
-    public static void checkExist(String routeId, ErrorEnum errorEnum) {
+    public static TargetRoute checkExist(String routeId, ErrorEnum errorEnum) {
         TargetRoute targetRoute = routeRepository.get(routeId);
         if (targetRoute == null) {
             throw errorEnum.getErrorMeta().getException();
         }
+        return targetRoute;
     }
 
 }

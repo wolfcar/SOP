@@ -29,7 +29,7 @@ public class DbLimitConfigManager extends DefaultLimitConfigManager {
     public void load() {
         Query query = new Query();
         configLimitMapper.list(query)
-                .forEach(configLimit -> putVal(configLimit));
+                .forEach(this::putVal);
 
     }
 

@@ -5,14 +5,15 @@ import com.alibaba.fastjson.JSONObject;
 import com.gitee.sop.gatewaycommon.bean.ApiConfig;
 import com.gitee.sop.gatewaycommon.bean.ApiContext;
 import com.gitee.sop.gatewaycommon.bean.ErrorDefinition;
-import com.gitee.sop.gatewaycommon.bean.RouteDefinition;
 import com.gitee.sop.gatewaycommon.bean.Isv;
+import com.gitee.sop.gatewaycommon.bean.RouteDefinition;
 import com.gitee.sop.gatewaycommon.bean.ServiceRouteInfo;
 import com.gitee.sop.gatewaycommon.bean.SopConstants;
 import com.gitee.sop.gatewaycommon.bean.TargetRoute;
 import com.gitee.sop.gatewaycommon.manager.RouteRepositoryContext;
 import com.gitee.sop.gatewaycommon.message.ErrorEnum;
 import com.gitee.sop.gatewaycommon.message.ErrorMeta;
+import com.gitee.sop.gatewaycommon.param.ApiParam;
 import com.gitee.sop.gatewaycommon.param.ParamNames;
 import com.gitee.sop.gatewaycommon.secret.IsvManager;
 import com.gitee.sop.gatewaycommon.validate.alipay.AlipayConstants;
@@ -69,7 +70,7 @@ public abstract class BaseExecutorAdapter<T, R> implements ResultExecutor<T, R> 
      * @param t request
      * @return 返回api参数
      */
-    public abstract Map<String, Object> getApiParam(T t);
+    public abstract ApiParam getApiParam(T t);
 
     @Override
     public String mergeResult(T request, String serviceResult) {
@@ -91,12 +92,12 @@ public abstract class BaseExecutorAdapter<T, R> implements ResultExecutor<T, R> 
             responseData = JSON.parseObject(serviceResult);
             responseData.put(GATEWAY_CODE_NAME, ISP_BIZ_ERROR.getCode());
             responseData.put(GATEWAY_MSG_NAME, ISP_BIZ_ERROR.getError().getMsg());
-        } else if(responseStatus == HttpStatus.NOT_FOUND.value()) {
+        } else if (responseStatus == HttpStatus.NOT_FOUND.value()) {
             responseData = JSON.parseObject(serviceResult);
             responseData.put(GATEWAY_CODE_NAME, ISV_MISSING_METHOD_META.getCode());
             responseData.put(GATEWAY_MSG_NAME, ISV_MISSING_METHOD_META.getError().getCode());
         } else {
-            Map<String, Object> params = this.getApiParam(request);
+            ApiParam params = this.getApiParam(request);
             log.error("微服务端报错，params:{}, 微服务返回结果:{}", params, serviceResult);
             this.storeError(request, ErrorType.UNKNOWN);
             // 微服务端有可能返回500错误
@@ -140,8 +141,11 @@ public abstract class BaseExecutorAdapter<T, R> implements ResultExecutor<T, R> 
         if (defaultSetting != null) {
             return defaultSetting;
         }
-        ApiInfo apiInfo = this.getApiInfo(request);
-        RouteDefinition baseRouteDefinition = apiInfo.gatewayRouteDefinition;
+        ApiParam params = this.getApiParam(request);
+        TargetRoute targetRoute = RouteRepositoryContext.getRouteRepository().get(params.fetchNameVersion());
+        RouteDefinition baseRouteDefinition = Optional.ofNullable(targetRoute)
+                .map(TargetRoute::getRouteDefinition)
+                .orElse(null);
         return Optional.ofNullable(baseRouteDefinition)
                 .map(routeDefinition -> {
                     int mergeResult = baseRouteDefinition.getMergeResult();
@@ -151,11 +155,8 @@ public abstract class BaseExecutorAdapter<T, R> implements ResultExecutor<T, R> 
     }
 
     protected ApiInfo getApiInfo(T request) {
-        Map<String, Object> params = this.getApiParam(request);
-        String name = this.getParamValue(params, ParamNames.API_NAME, SopConstants.UNKNOWN_METHOD);
-        String version = this.getParamValue(params, ParamNames.VERSION_NAME, SopConstants.UNKNOWN_VERSION);
-
-        TargetRoute targetRoute = RouteRepositoryContext.getRouteRepository().get(name + version);
+        ApiParam params = this.getApiParam(request);
+        TargetRoute targetRoute = RouteRepositoryContext.getRouteRepository().get(params.fetchNameVersion());
 
         String serviceId = Optional.ofNullable(targetRoute)
                 .flatMap(route -> Optional.ofNullable(route.getServiceRouteInfo()))
@@ -167,8 +168,8 @@ public abstract class BaseExecutorAdapter<T, R> implements ResultExecutor<T, R> 
                 .orElse(null);
 
         ApiInfo apiInfo = new ApiInfo();
-        apiInfo.name = name;
-        apiInfo.version = version;
+        apiInfo.name = params.fetchName();
+        apiInfo.version = params.fetchVersion();
         apiInfo.serviceId = serviceId;
         apiInfo.gatewayRouteDefinition = baseRouteDefinition;
         return apiInfo;
@@ -190,8 +191,11 @@ public abstract class BaseExecutorAdapter<T, R> implements ResultExecutor<T, R> 
 
     public String merge(T exchange, JSONObject responseData) {
         JSONObject finalData = new JSONObject(true);
-        Map<String, Object> params = this.getApiParam(exchange);
-        String name = this.getParamValue(params, ParamNames.API_NAME, ERROR_METHOD);
+        ApiParam params = this.getApiParam(exchange);
+        if (params == null) {
+            return responseData.toJSONString();
+        }
+        String name = params.fetchName();
         ApiConfig apiConfig = ApiConfig.getInstance();
         // 点换成下划线
         DataNameBuilder dataNameBuilder = apiConfig.getDataNameBuilder();

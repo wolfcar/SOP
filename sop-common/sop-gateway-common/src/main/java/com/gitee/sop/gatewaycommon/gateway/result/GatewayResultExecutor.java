@@ -4,12 +4,14 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.gitee.sop.gatewaycommon.bean.SopConstants;
 import com.gitee.sop.gatewaycommon.exception.ApiException;
+import com.gitee.sop.gatewaycommon.gateway.ServerWebExchangeUtil;
 import com.gitee.sop.gatewaycommon.message.Error;
 import com.gitee.sop.gatewaycommon.message.ErrorEnum;
+import com.gitee.sop.gatewaycommon.param.ApiParam;
 import com.gitee.sop.gatewaycommon.result.BaseExecutorAdapter;
+import com.gitee.sop.gatewaycommon.result.ResultExecutorForGateway;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 
@@ -21,7 +23,8 @@ import java.util.Map;
  * @author tanghc
  */
 @Slf4j
-public class GatewayResultExecutor extends BaseExecutorAdapter<ServerWebExchange, GatewayResult> {
+public class GatewayResultExecutor extends BaseExecutorAdapter<ServerWebExchange, String>
+        implements ResultExecutorForGateway {
 
     @Override
     public int getResponseStatus(ServerWebExchange exchange) {
@@ -46,12 +49,12 @@ public class GatewayResultExecutor extends BaseExecutorAdapter<ServerWebExchange
     }
 
     @Override
-    public Map<String, Object> getApiParam(ServerWebExchange exchange) {
-        return exchange.getAttribute(SopConstants.CACHE_REQUEST_BODY_FOR_MAP);
+    public ApiParam getApiParam(ServerWebExchange exchange) {
+        return ServerWebExchangeUtil.getApiParam(exchange);
     }
 
     @Override
-    public GatewayResult buildErrorResult(ServerWebExchange exchange, Throwable ex) {
+    public String buildErrorResult(ServerWebExchange exchange, Throwable ex) {
         Error error;
         if (ex instanceof ApiException) {
             ApiException apiException = (ApiException) ex;
@@ -59,11 +62,8 @@ public class GatewayResultExecutor extends BaseExecutorAdapter<ServerWebExchange
         } else {
             error = ErrorEnum.ISP_UNKNOWN_ERROR.getErrorMeta().getError();
         }
-
         JSONObject jsonObject = (JSONObject) JSON.toJSON(error);
-        String body = this.merge(exchange, jsonObject);
-
-        return new GatewayResult(HttpStatus.OK, MediaType.APPLICATION_JSON_UTF8, body);
+        return this.merge(exchange, jsonObject);
     }
 
 }

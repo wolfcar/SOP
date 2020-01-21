@@ -1,10 +1,11 @@
 package com.gitee.sop.gatewaycommon.bean;
 
-import com.gitee.sop.gatewaycommon.gateway.param.GatewayParamBuilder;
-import com.gitee.sop.gatewaycommon.gateway.result.GatewayResult;
 import com.gitee.sop.gatewaycommon.gateway.result.GatewayResultExecutor;
 import com.gitee.sop.gatewaycommon.limit.DefaultLimitManager;
 import com.gitee.sop.gatewaycommon.limit.LimitManager;
+import com.gitee.sop.gatewaycommon.loadbalancer.builder.AppIdGrayUserBuilder;
+import com.gitee.sop.gatewaycommon.loadbalancer.builder.GrayUserBuilder;
+import com.gitee.sop.gatewaycommon.loadbalancer.builder.IpGrayUserBuilder;
 import com.gitee.sop.gatewaycommon.manager.DefaultEnvGrayManager;
 import com.gitee.sop.gatewaycommon.manager.DefaultIPBlacklistManager;
 import com.gitee.sop.gatewaycommon.manager.DefaultIsvRoutePermissionManager;
@@ -17,12 +18,12 @@ import com.gitee.sop.gatewaycommon.manager.IsvRoutePermissionManager;
 import com.gitee.sop.gatewaycommon.manager.LimitConfigManager;
 import com.gitee.sop.gatewaycommon.manager.RouteConfigManager;
 import com.gitee.sop.gatewaycommon.manager.ServiceErrorManager;
-import com.gitee.sop.gatewaycommon.param.ParamBuilder;
 import com.gitee.sop.gatewaycommon.param.ParameterFormatter;
 import com.gitee.sop.gatewaycommon.result.DataNameBuilder;
 import com.gitee.sop.gatewaycommon.result.DefaultDataNameBuilder;
 import com.gitee.sop.gatewaycommon.result.ResultAppender;
-import com.gitee.sop.gatewaycommon.result.ResultExecutor;
+import com.gitee.sop.gatewaycommon.result.ResultExecutorForGateway;
+import com.gitee.sop.gatewaycommon.result.ResultExecutorForZuul;
 import com.gitee.sop.gatewaycommon.secret.CacheIsvManager;
 import com.gitee.sop.gatewaycommon.secret.IsvManager;
 import com.gitee.sop.gatewaycommon.session.ApiSessionManager;
@@ -34,15 +35,14 @@ import com.gitee.sop.gatewaycommon.validate.Encrypter;
 import com.gitee.sop.gatewaycommon.validate.Signer;
 import com.gitee.sop.gatewaycommon.validate.TokenValidator;
 import com.gitee.sop.gatewaycommon.validate.Validator;
-import com.gitee.sop.gatewaycommon.zuul.configuration.ZuulErrorController;
+import com.gitee.sop.gatewaycommon.zuul.controller.ZuulErrorController;
 import com.gitee.sop.gatewaycommon.zuul.param.ZuulParamBuilder;
 import com.gitee.sop.gatewaycommon.zuul.result.ZuulResultExecutor;
-import com.netflix.zuul.context.RequestContext;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.server.ServerWebExchange;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -55,17 +55,20 @@ public class ApiConfig {
     private static ApiConfig instance = new ApiConfig();
 
     private ApiConfig() {
+        grayUserBuilders = new ArrayList<>(4);
+        grayUserBuilders.add(new AppIdGrayUserBuilder());
+        grayUserBuilders.add(new IpGrayUserBuilder());
     }
 
     /**
      * gateway合并结果处理
      */
-    private ResultExecutor<ServerWebExchange, GatewayResult> gatewayResultExecutor = new GatewayResultExecutor();
+    private ResultExecutorForGateway gatewayResultExecutor = new GatewayResultExecutor();
 
     /**
      * zuul合并结果处理
      */
-    private ResultExecutor<RequestContext, String> zuulResultExecutor = new ZuulResultExecutor();
+    private ResultExecutorForZuul zuulResultExecutor = new ZuulResultExecutor();
 
     /**
      * isv管理
@@ -83,14 +86,9 @@ public class ApiConfig {
     private Signer signer = new ApiSigner();
 
     /**
-     * 参数解析，gateway
-     */
-    private ParamBuilder<ServerWebExchange> gatewayParamBuilder = new GatewayParamBuilder();
-
-    /**
      * 参数解析，zuul
      */
-    private ParamBuilder<RequestContext> zuulParamBuilder = new ZuulParamBuilder();
+    private ZuulParamBuilder zuulParamBuilder = new ZuulParamBuilder();
 
     /**
      * 验证
@@ -199,6 +197,13 @@ public class ApiConfig {
     private int storeErrorCapacity = 20;
 
     private boolean useGateway;
+
+    private List<GrayUserBuilder> grayUserBuilders;
+
+    public void addGrayUserBuilder(GrayUserBuilder grayUserBuilder) {
+        grayUserBuilders.add(grayUserBuilder);
+        grayUserBuilders.sort(Comparator.comparing(GrayUserBuilder::order));
+    }
 
     public void addAppSecret(Map<String, String> appSecretPair) {
         for (Map.Entry<String, String> entry : appSecretPair.entrySet()) {

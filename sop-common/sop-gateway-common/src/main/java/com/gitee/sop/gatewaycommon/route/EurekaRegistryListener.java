@@ -1,9 +1,6 @@
 package com.gitee.sop.gatewaycommon.route;
 
 import com.gitee.sop.gatewaycommon.bean.InstanceDefinition;
-import com.gitee.sop.gatewaycommon.loadbalancer.EurekaEnvironmentServerChooser;
-import com.gitee.sop.gatewaycommon.loadbalancer.SopPropertiesFactory;
-import com.gitee.sop.gatewaycommon.manager.EnvironmentKeys;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.shared.Application;
 import com.netflix.discovery.shared.Applications;
@@ -25,10 +22,6 @@ import java.util.stream.Collectors;
  * @author tanghc
  */
 public class EurekaRegistryListener extends BaseRegistryListener {
-
-    static {
-        System.setProperty(EnvironmentKeys.ZUUL_CUSTOM_RULE_CLASSNAME.getKey(), EurekaEnvironmentServerChooser.class.getName());
-    }
 
     private Set<ServiceHolder> cacheServices = new HashSet<>();
 

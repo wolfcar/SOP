@@ -63,6 +63,7 @@ public class AlipayClientPostTest extends TestBase {
         System.out.println("签名(sign)：" + sign);
 
         params.put("sign", sign);
+        System.out.println("URL参数：" + buildUrlQuery(params));
 
         System.out.println("----------- 返回结果 -----------");
         String responseData = get(url, params);// 发送请求

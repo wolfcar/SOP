@@ -48,6 +48,8 @@ SOP封装了开放平台大部分功能包括：签名验证、统一异常处�
 - 监控日志
 - 支持nacos
 - 网关动态修改参数
+- 预发布/灰度环境切换
+- 支持eureka注册中心
 
 ## 界面预览
 
@@ -69,7 +71,7 @@ SOP封装了开放平台大部分功能包括：签名验证、统一异常处�
 
 - doc：开发文档
 - sop-common：公共模块，封装常用功能，包含签名校验、错误处理、限流等功能
-- sop-gateway：网关，统一访问入口，Spring Cloud Zuul实现，可切换成Spring Cloud Gateway
+- sop-gateway：网关，统一访问入口，含`Spring Cloud Zuul`和`Spring Cloud Gateway`实现
 - sop-example：微服务示例，含springboot,springmvc示例
 - sop-website：开放平台对应网站，提供文档API、沙箱测试等内容
 - sop-auth：应用授权服务
@@ -79,11 +81,9 @@ SOP封装了开放平台大部分功能包括：签名验证、统一异常处�
 
 ## 分支说明
 
-- master：发版分支
-- spring-cloud-gateway：Spring Cloud Gateway作为网关（不推荐）
+- master：发版分支（当前为3.0版本，2.x版本见`2.x`分支）
 - develop：日常开发分支
 - eureka：使用eureka注册中心
-- 1.x：老的1.x版本代码
 
 ## 相关文档
 
@@ -91,4 +91,4 @@ SOP封装了开放平台大部分功能包括：签名验证、统一异常处�
 
 ## 沟通交流
 
-Q群：328419269
+Q群：50212229
