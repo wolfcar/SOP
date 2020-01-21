@@ -54,4 +54,8 @@ public class SopConstants {
     public static final String UNKNOWN_METHOD = "_sop_unknown_method_";
     public static final String UNKNOWN_VERSION = "_sop_unknown_version_";
 
+    public static final String METADATA_ENV_KEY = "env";
+    public static final String METADATA_ENV_PRE_VALUE = "pre";
+    public static final String METADATA_ENV_GRAY_VALUE = "gray";
+
 }

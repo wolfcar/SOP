@@ -14,6 +14,8 @@ import java.util.Map;
  */
 public class ApiParam extends JSONObject implements Param {
 
+
+
     public ApiParam() {
     }
 
@@ -28,6 +30,8 @@ public class ApiParam extends JSONObject implements Param {
     private String restVersion;
 
     private String ip;
+
+    private boolean isGrayRequest;
 
     private transient UploadContext uploadContext;
 
@@ -245,5 +249,13 @@ public class ApiParam extends JSONObject implements Param {
 
     public String fetchIp() {
         return ip;
+    }
+
+    public boolean isGrayRequest() {
+        return isGrayRequest;
+    }
+
+    public void setGrayRequest(boolean grayRequest) {
+        isGrayRequest = grayRequest;
     }
 }

@@ -2,9 +2,12 @@ package com.gitee.sop.test;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
@@ -245,6 +248,23 @@ public class AllInOneTest extends TestBase {
                 ;
 
         client.execute(requestBuilder);
+    }
+
+    /**
+     * 下载文件
+     */
+    public void testDownloadFile() throws IOException {
+        Client.RequestBuilder requestBuilder = new Client.RequestBuilder()
+                .method("story.download")
+                .version("1.0")
+                .bizContent(new BizContent().add("id",1).add("name","Jim"))
+                .httpMethod(HttpTool.HTTPMethod.GET);
+
+        // 文件流
+        InputStream download = client.download(requestBuilder);
+        String content = IOUtils.toString(download, "UTF-8");
+        System.out.println("下载文件内容：" + content);
+        Assert.assertEquals(content, "spring.profiles.active=dev");
     }
 
     /**

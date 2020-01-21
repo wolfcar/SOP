@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.ServletException;
@@ -75,15 +74,4 @@ public class ZuulIndexController {
         request.getRequestDispatcher(this.path).forward(request, response);
     }
 
-    @RequestMapping("/{method}/{version}/")
-    public void redirect(
-            @PathVariable("method") String method
-            , @PathVariable("version") String version
-            , HttpServletRequest request
-            , HttpServletResponse response
-    ) {
-        request.setAttribute(SopConstants.REDIRECT_METHOD_KEY, method);
-        request.setAttribute(SopConstants.REDIRECT_VERSION_KEY, version);
-        validateService.validate(request, response, callback);
-    }
 }

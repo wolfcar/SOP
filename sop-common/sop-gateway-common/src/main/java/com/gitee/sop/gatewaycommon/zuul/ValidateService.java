@@ -37,7 +37,13 @@ public class ValidateService {
         RequestContext currentContext = RequestContext.getCurrentContext();
         currentContext.setRequest(RequestUtil.wrapRequest(request));
         currentContext.setResponse(response);
-        doValidate(currentContext, callback);
+        // 解析参数
+        ApiParam param = ZuulContext.getApiParam();
+        if (param == null) {
+            param = paramBuilder.build(currentContext);
+            ZuulContext.setApiParam(param);
+        }
+        doValidate(currentContext, param, callback);
     }
 
     /**
@@ -45,10 +51,7 @@ public class ValidateService {
      *
      * @param currentContext currentContext
      */
-    private void doValidate(RequestContext currentContext, ValidateCallback callback) {
-        // 解析参数
-        ApiParam param = paramBuilder.build(currentContext);
-        ZuulContext.setApiParam(param);
+    private void doValidate(RequestContext currentContext, ApiParam param, ValidateCallback callback) {
         Exception error = null;
         // 验证操作，这里有负责验证签名参数
         try {
