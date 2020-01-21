@@ -38,7 +38,7 @@ public abstract class BaseRegistryListener implements RegistryListener {
      *
      * @param serviceId serviceId
      */
-    public void removeRoutes(String serviceId) {
+    public synchronized void removeRoutes(String serviceId) {
         serviceListener.onRemoveService(serviceId.toLowerCase());
     }
 
@@ -47,7 +47,7 @@ public abstract class BaseRegistryListener implements RegistryListener {
      *
      * @param instance 服务实例
      */
-    public void pullRoutes(InstanceDefinition instance) {
+    public synchronized void pullRoutes(InstanceDefinition instance) {
         // serviceId统一小写
         instance.setServiceId(instance.getServiceId().toLowerCase());
         serviceListener.onAddInstance(instance);
