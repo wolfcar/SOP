@@ -227,7 +227,7 @@ public class AbstractConfiguration implements ApplicationContextAware, Applicati
     public void run(ApplicationArguments args) throws Exception {
         this.isStartupCompleted = true;
         lock.lock();
-        condition.signal();
+        condition.signalAll();
         lock.unlock();
         after();
     }
