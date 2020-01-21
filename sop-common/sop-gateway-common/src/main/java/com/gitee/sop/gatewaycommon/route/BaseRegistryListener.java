@@ -26,6 +26,7 @@ public abstract class BaseRegistryListener implements RegistryListener {
 
     static {
         EXCLUDE_SERVICE_ID_LIST.add("sop-gateway");
+        EXCLUDE_SERVICE_ID_LIST.add("sop-website");
         EXCLUDE_SERVICE_ID_LIST.add("website-server");
     }
 
