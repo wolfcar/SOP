@@ -1,5 +1,10 @@
 # changelog
 
+## 3.0.1
+
+- 增强国际化消息（现SpringCouldGateway支持英文国际化）
+- 优化限流配置页
+
 ## 3.0.0
 
 - 重构spring cloud gateway网关

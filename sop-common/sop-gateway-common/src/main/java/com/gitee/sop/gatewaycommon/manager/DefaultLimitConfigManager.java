@@ -26,6 +26,11 @@ public class DefaultLimitConfigManager implements LimitConfigManager {
     protected static Map<Long, Set<String>> idKeyMap = new HashMap<>();
 
     @Override
+    public void load(String serviceId) {
+
+    }
+
+    @Override
     public void update(ConfigLimitDto configLimitDto) {
         Long id = configLimitDto.getId();
         this.remove(id);
@@ -119,8 +124,4 @@ public class DefaultLimitConfigManager implements LimitConfigManager {
         return limitCache.get(limitKey);
     }
 
-    @Override
-    public void load() {
-
-    }
 }
