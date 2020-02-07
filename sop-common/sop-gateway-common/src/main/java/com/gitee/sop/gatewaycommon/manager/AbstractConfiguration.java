@@ -40,6 +40,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import javax.annotation.PostConstruct;
+import java.util.Map;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -257,13 +258,8 @@ public class AbstractConfiguration implements ApplicationContextAware, Applicati
     }
 
     protected void initBeanInitializer() {
-        String[] beanNames = applicationContext.getBeanNamesForType(BeanInitializer.class);
-        if (beanNames != null) {
-            for (String beanName : beanNames) {
-                BeanInitializer beanInitializer = applicationContext.getBean(beanName, BeanInitializer.class);
-                beanInitializer.load();
-            }
-        }
+        Map<String, BeanInitializer> beanInitializerMap = applicationContext.getBeansOfType(BeanInitializer.class);
+        beanInitializerMap.values().forEach(BeanInitializer::load);
     }
 
     protected void doAfter() {

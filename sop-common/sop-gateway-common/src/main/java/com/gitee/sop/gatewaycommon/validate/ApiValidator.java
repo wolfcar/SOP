@@ -115,7 +115,10 @@ public class ApiValidator implements Validator {
         }
         String routeId = param.fetchNameVersion();
         // 检查路由是否存在
-        TargetRoute targetRoute = RouteRepositoryContext.checkExist(routeId, ErrorEnum.ISV_INVALID_METHOD);
+        TargetRoute targetRoute = RouteRepositoryContext.getTargetRoute(routeId);
+        if (targetRoute == null) {
+            throw ErrorEnum.ISV_INVALID_METHOD.getErrorMeta().getException();
+        }
         // 检查路由是否启用
         RouteConfig routeConfig = routeConfigManager.get(routeId);
         if (!routeConfig.enable()) {

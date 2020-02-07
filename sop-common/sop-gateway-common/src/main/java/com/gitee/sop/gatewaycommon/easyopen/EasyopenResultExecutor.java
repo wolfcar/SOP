@@ -8,6 +8,7 @@ import com.gitee.sop.gatewaycommon.result.ResultExecutorForZuul;
 import com.gitee.sop.gatewaycommon.zuul.result.ZuulResultExecutor;
 import com.netflix.zuul.context.RequestContext;
 
+import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -32,9 +33,10 @@ public class EasyopenResultExecutor implements ResultExecutorForZuul {
     }
 
     @Override
-    public String buildErrorResult(RequestContext request, Throwable ex) {
+    public String buildErrorResult(RequestContext requestContext, Throwable ex) {
         ApiResult apiResult = new ApiResult();
-        Error error = ZuulResultExecutor.getError(ex);
+        Locale locale = requestContext.getRequest().getLocale();
+        Error error = ZuulResultExecutor.getError(locale, ex);
         apiResult.setCode(error.getSub_code());
         apiResult.setMsg(error.getSub_msg());
         return JSON.toJSONString(apiResult);

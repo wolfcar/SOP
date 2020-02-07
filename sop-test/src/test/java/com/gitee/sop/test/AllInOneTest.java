@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -289,11 +290,14 @@ public class AllInOneTest extends TestBase {
                 public void run() {
                     try {
                         countDownLatch.await(); // 等在这里，执行countDownLatch.countDown();集体触发
+                        Map<String, String> header = new HashMap<>(4);
+                        header.put("Accept-Language", "en-US");
                         // 业务方法
                         Client.RequestBuilder requestBuilder = new Client.RequestBuilder()
                                 .method("alipay.story.get")
                                 .version("1.2")
                                 .bizContent(new BizContent().add("id", "1").add("name", "葫芦娃"))
+                                //.header(header)
                                 .httpMethod(HttpTool.HTTPMethod.GET);
 
                         client.execute(requestBuilder);
@@ -317,6 +321,29 @@ public class AllInOneTest extends TestBase {
                 .bizContent(new BizContent().add("id", "1").add("name", "葫芦娃"))
                 .appAuthToken("asdfasdfadsf")
                 .httpMethod(HttpTool.HTTPMethod.GET);
+
+        client.execute(requestBuilder);
+    }
+
+    /**
+     * 国际化测试，返回英文错误
+     */
+    public void testLanguage() {
+        // Accept-Language
+        Map<String, String> header = new HashMap<>(4);
+        header.put("Accept-Language", "en-US");
+        Client.RequestBuilder requestBuilder = new Client.RequestBuilder()
+                .method("alipay.story.get__")
+                .version("1.0")
+                .header(header)
+                .bizContent(new BizContent().add("id", "1").add("name", "葫芦娃"))
+                .httpMethod(HttpTool.HTTPMethod.GET)
+                .callback((requestInfo, responseData) -> {
+                    System.out.println(responseData);
+                    String node = requestInfo.getDataNode();
+                    JSONObject jsonObject = JSON.parseObject(responseData).getJSONObject(node);
+                    Assert.assertEquals("Nonexistent method name", jsonObject.getString("sub_msg"));
+                });
 
         client.execute(requestBuilder);
     }

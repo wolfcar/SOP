@@ -27,6 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -72,6 +73,13 @@ public abstract class BaseExecutorAdapter<T, R> implements ResultExecutor<T, R> 
      */
     public abstract ApiParam getApiParam(T t);
 
+    /**
+     * 获取locale
+     * @param t request
+     * @return 返回locale
+     */
+    protected abstract Locale getLocale(T t);
+
     @Override
     public String mergeResult(T request, String serviceResult) {
         boolean isMergeResult = this.isMergeResult(request);
@@ -85,17 +93,17 @@ public abstract class BaseExecutorAdapter<T, R> implements ResultExecutor<T, R> 
             // 200正常返回
             responseData = JSON.parseObject(serviceResult);
             responseData.put(GATEWAY_CODE_NAME, SUCCESS_META.getCode());
-            responseData.put(GATEWAY_MSG_NAME, SUCCESS_META.getError().getMsg());
+            responseData.put(GATEWAY_MSG_NAME, SUCCESS_META.getError(getLocale(request)).getMsg());
         } else if (responseStatus == SopConstants.BIZ_ERROR_STATUS) {
             // 如果是业务出错
             this.storeError(request, ErrorType.BIZ);
             responseData = JSON.parseObject(serviceResult);
             responseData.put(GATEWAY_CODE_NAME, ISP_BIZ_ERROR.getCode());
-            responseData.put(GATEWAY_MSG_NAME, ISP_BIZ_ERROR.getError().getMsg());
+            responseData.put(GATEWAY_MSG_NAME, ISP_BIZ_ERROR.getError(getLocale(request)).getMsg());
         } else if (responseStatus == HttpStatus.NOT_FOUND.value()) {
             responseData = JSON.parseObject(serviceResult);
             responseData.put(GATEWAY_CODE_NAME, ISV_MISSING_METHOD_META.getCode());
-            responseData.put(GATEWAY_MSG_NAME, ISV_MISSING_METHOD_META.getError().getCode());
+            responseData.put(GATEWAY_MSG_NAME, ISV_MISSING_METHOD_META.getError(getLocale(request)).getCode());
         } else {
             ApiParam params = this.getApiParam(request);
             log.error("微服务端报错，params:{}, 微服务返回结果:{}", params, serviceResult);
@@ -104,7 +112,7 @@ public abstract class BaseExecutorAdapter<T, R> implements ResultExecutor<T, R> 
             // {"path":"/book/getBook3","error":"Internal Server Error","message":"id不能为空","timestamp":"2019-02-13T07:41:00.495+0000","status":500}
             responseData = new JSONObject();
             responseData.put(GATEWAY_CODE_NAME, ISP_UNKNOW_ERROR_META.getCode());
-            responseData.put(GATEWAY_MSG_NAME, ISP_UNKNOW_ERROR_META.getError().getMsg());
+            responseData.put(GATEWAY_MSG_NAME, ISP_UNKNOW_ERROR_META.getError(getLocale(request)).getMsg());
         }
         return this.merge(request, responseData);
     }

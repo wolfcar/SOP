@@ -16,6 +16,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 
@@ -54,13 +55,19 @@ public class GatewayResultExecutor extends BaseExecutorAdapter<ServerWebExchange
     }
 
     @Override
+    protected Locale getLocale(ServerWebExchange exchange) {
+        return exchange.getLocaleContext().getLocale();
+    }
+
+    @Override
     public String buildErrorResult(ServerWebExchange exchange, Throwable ex) {
+        Locale locale = getLocale(exchange);
         Error error;
         if (ex instanceof ApiException) {
             ApiException apiException = (ApiException) ex;
-            error = apiException.getError();
+            error = apiException.getError(locale);
         } else {
-            error = ErrorEnum.ISP_UNKNOWN_ERROR.getErrorMeta().getError();
+            error = ErrorEnum.ISP_UNKNOWN_ERROR.getErrorMeta().getError(locale);
         }
         JSONObject jsonObject = (JSONObject) JSON.toJSON(error);
         return this.merge(exchange, jsonObject);

@@ -16,6 +16,7 @@ import com.netflix.zuul.exception.ZuulException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author tanghc
@@ -68,27 +69,33 @@ public class ZuulResultExecutor extends BaseExecutorAdapter<RequestContext, Stri
     }
 
     @Override
-    public String buildErrorResult(RequestContext request, Throwable throwable) {
-        Error error = getError(throwable);
-        return isMergeResult(request) ? this.merge(request, (JSONObject) JSON.toJSON(error))
+    protected Locale getLocale(RequestContext requestContext) {
+        return requestContext.getRequest().getLocale();
+    }
+
+    @Override
+    public String buildErrorResult(RequestContext requestContext, Throwable throwable) {
+        Locale locale = getLocale(requestContext);
+        Error error = getError(locale, throwable);
+        return isMergeResult(requestContext) ? this.merge(requestContext, (JSONObject) JSON.toJSON(error))
                 : JSON.toJSONString(error);
     }
 
-    public static Error getError(Throwable throwable) {
+    public static Error getError(Locale locale, Throwable throwable) {
         Error error = null;
         if (throwable instanceof ZuulException) {
             ZuulException ex = (ZuulException) throwable;
             Throwable cause = ex.getCause();
             if (cause instanceof ApiException) {
                 ApiException apiException = (ApiException) cause;
-                error = apiException.getError();
+                error = apiException.getError(locale);
             }
         } else if (throwable instanceof ApiException) {
             ApiException apiException = (ApiException) throwable;
-            error = apiException.getError();
+            error = apiException.getError(locale);
         }
         if (error == null) {
-            error = ErrorEnum.ISP_UNKNOWN_ERROR.getErrorMeta().getError();
+            error = ErrorEnum.ISP_UNKNOWN_ERROR.getErrorMeta().getError(locale);
         }
         return error;
     }
