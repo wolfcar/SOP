@@ -155,6 +155,7 @@ public class LogApi {
         String sign = md5Verifier.buildSign(params, secret);
         params.put("sign", sign);
         String query = QueryUtil.buildQueryString(params);
+        path = path.startsWith("/") ? path.substring(1) : path;
         String url = "http://" + ipPort + "/" + path + "?" + query;
         ResponseEntity<String> entity = restTemplate.getForEntity(url, String.class);
         if (entity.getStatusCode() != HttpStatus.OK) {
