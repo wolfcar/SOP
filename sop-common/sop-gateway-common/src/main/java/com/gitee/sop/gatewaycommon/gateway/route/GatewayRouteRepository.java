@@ -5,6 +5,7 @@ import com.gitee.sop.gatewaycommon.bean.RouteDefinition;
 import com.gitee.sop.gatewaycommon.manager.RouteRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
 import org.springframework.cloud.gateway.route.Route;
@@ -77,11 +78,25 @@ public class GatewayRouteRepository implements RouteRepository<GatewayTargetRout
         for (Map.Entry<String, GatewayTargetRoute> entry : routes.entrySet()) {
             // /food/get/?id?
             String pattern = entry.getKey();
-            if (StringUtils.containsAny(pattern, "{") && this.pathMatcher.match(pattern, id)) {
-                return entry.getValue();
+            if (this.pathMatcher.match(pattern, id)) {
+                return clone(id, entry.getValue());
             }
         }
         return null;
+    }
+
+    private GatewayTargetRoute clone(String path, GatewayTargetRoute gatewayTargetRoute) {
+        String prefix = "/" + gatewayTargetRoute.getServiceRouteInfo().getServiceId();
+        if (path.startsWith(prefix)) {
+            path = path.substring(prefix.length());
+        }
+        RouteDefinition routeDefinition = gatewayTargetRoute.getRouteDefinition();
+        RouteDefinition newRouteDefinition = new RouteDefinition();
+        BeanUtils.copyProperties(routeDefinition, newRouteDefinition);
+        newRouteDefinition.setPath(path);
+        return new GatewayTargetRoute(gatewayTargetRoute.getServiceRouteInfo()
+                , newRouteDefinition
+                , gatewayTargetRoute.getTargetRouteDefinition());
     }
 
 

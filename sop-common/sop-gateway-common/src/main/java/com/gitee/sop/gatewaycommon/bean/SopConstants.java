@@ -16,14 +16,6 @@ public class SopConstants {
     public static final String DEFAULT_SIGN_METHOD = "md5";
     public static final String EMPTY_JSON = "{}";
 
-    public static final String REDIRECT_METHOD_KEY = "r-method";
-
-    public static final String REDIRECT_VERSION_KEY = "r-version";
-
-    public static final String REDIRECT_PATH_KEY = "r-path";
-
-    public static final String SOP_NOT_MERGE = "sop.not-merge";
-
     public static final String METADATA_SERVER_CONTEXT_PATH = "server.servlet.context-path";
 
     public static final String METADATA_SERVER_CONTEXT_PATH_COMPATIBILITY = "context-path";
@@ -57,5 +49,7 @@ public class SopConstants {
     public static final String METADATA_ENV_KEY = "env";
     public static final String METADATA_ENV_PRE_VALUE = "pre";
     public static final String METADATA_ENV_GRAY_VALUE = "gray";
+
+    public static final String CACHE_ROUTE_INTERCEPTOR_CONTEXT = "cacheRouteInterceptorContext";
 
 }

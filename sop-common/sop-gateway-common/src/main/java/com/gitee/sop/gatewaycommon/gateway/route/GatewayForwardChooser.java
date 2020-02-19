@@ -11,8 +11,6 @@ import org.springframework.web.server.ServerWebExchange;
  */
 public class GatewayForwardChooser extends BaseForwardChooser<ServerWebExchange> {
 
-    private static final String VALIDATE_ERROR_PATH = "/sop/validateError";
-
     @Override
     public ApiParam getApiParam(ServerWebExchange exchange) {
         return ServerWebExchangeUtil.getApiParam(exchange);
@@ -22,7 +20,7 @@ public class GatewayForwardChooser extends BaseForwardChooser<ServerWebExchange>
     public ForwardInfo getForwardInfo(ServerWebExchange exchange) {
         // 如果有异常，直接跳转到异常处理
         if (ServerWebExchangeUtil.getThrowable(exchange) != null) {
-            return new ForwardInfo(VALIDATE_ERROR_PATH, "");
+            return ForwardInfo.getErrorForwardInfo();
         }
         return super.getForwardInfo(exchange);
     }

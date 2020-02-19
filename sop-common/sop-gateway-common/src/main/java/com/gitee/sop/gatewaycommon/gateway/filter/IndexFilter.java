@@ -1,11 +1,14 @@
 package com.gitee.sop.gatewaycommon.gateway.filter;
 
+import com.gitee.sop.gatewaycommon.bean.DefaultRouteInterceptorContext;
+import com.gitee.sop.gatewaycommon.bean.SopConstants;
 import com.gitee.sop.gatewaycommon.exception.ApiException;
 import com.gitee.sop.gatewaycommon.gateway.ServerWebExchangeUtil;
 import com.gitee.sop.gatewaycommon.gateway.route.GatewayForwardChooser;
 import com.gitee.sop.gatewaycommon.manager.EnvironmentKeys;
 import com.gitee.sop.gatewaycommon.param.ApiParam;
 import com.gitee.sop.gatewaycommon.route.ForwardInfo;
+import com.gitee.sop.gatewaycommon.util.RouteInterceptorUtil;
 import com.gitee.sop.gatewaycommon.validate.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +70,10 @@ public class IndexFilter implements WebFilter {
                 log.error("尝试调用restful请求，但sop.restful.enable未开启");
                 return ServerWebExchangeUtil.forwardUnknown(exchange, chain);
             }
-            ServerWebExchange newExchange = ServerWebExchangeUtil.getRestfulExchange(exchange, path);
+            ApiParam apiParam = ServerWebExchangeUtil.getApiParamForRestful(exchange, path);
+            this.doValidate(exchange, apiParam);
+            ForwardInfo forwardInfo = gatewayForwardChooser.getForwardInfo(exchange);
+            ServerWebExchange newExchange = ServerWebExchangeUtil.getForwardExchange(exchange, forwardInfo);
             return chain.filter(newExchange);
         }
         if (Objects.equals(path, indexPath)) {
@@ -122,10 +128,19 @@ public class IndexFilter implements WebFilter {
     private void doValidate(ServerWebExchange exchange, ApiParam apiParam) {
         try {
             validator.validate(apiParam);
+            this.afterValidate(exchange, apiParam);
         } catch (ApiException e) {
             log.error("验证失败，ip:{}, params:{}, errorMsg:{}", apiParam.fetchIp(), apiParam.toJSONString(), e.getMessage());
             ServerWebExchangeUtil.setThrowable(exchange, e);
         }
+    }
+
+    private void afterValidate(ServerWebExchange exchange, ApiParam param) {
+        RouteInterceptorUtil.runPreRoute(exchange, param, context ->  {
+            DefaultRouteInterceptorContext defaultRouteInterceptorContext = (DefaultRouteInterceptorContext) context;
+            defaultRouteInterceptorContext.setRequestDataSize(exchange.getRequest().getHeaders().getContentLength());
+            exchange.getAttributes().put(SopConstants.CACHE_ROUTE_INTERCEPTOR_CONTEXT, context);
+        });
     }
 
     private ServerHttpRequestDecorator decorate(

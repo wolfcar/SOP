@@ -1,6 +1,7 @@
 package com.gitee.sop.gatewaycommon.bean;
 
 import com.gitee.sop.gatewaycommon.gateway.result.GatewayResultExecutor;
+import com.gitee.sop.gatewaycommon.interceptor.RouteInterceptor;
 import com.gitee.sop.gatewaycommon.limit.DefaultLimitManager;
 import com.gitee.sop.gatewaycommon.limit.LimitManager;
 import com.gitee.sop.gatewaycommon.loadbalancer.builder.AppIdGrayUserBuilder;
@@ -18,6 +19,7 @@ import com.gitee.sop.gatewaycommon.manager.IsvRoutePermissionManager;
 import com.gitee.sop.gatewaycommon.manager.LimitConfigManager;
 import com.gitee.sop.gatewaycommon.manager.RouteConfigManager;
 import com.gitee.sop.gatewaycommon.manager.ServiceErrorManager;
+import com.gitee.sop.gatewaycommon.monitor.MonitorManager;
 import com.gitee.sop.gatewaycommon.param.ParameterFormatter;
 import com.gitee.sop.gatewaycommon.result.DataNameBuilder;
 import com.gitee.sop.gatewaycommon.result.DefaultDataNameBuilder;
@@ -156,6 +158,16 @@ public class ApiConfig {
      * 校验token
      */
     private TokenValidator tokenValidator = apiParam -> apiParam != null && StringUtils.isNotBlank(apiParam.fetchAccessToken());
+
+    /**
+     * 路由拦截器
+     */
+    private List<RouteInterceptor> routeInterceptors = new ArrayList<>(4);
+
+    /**
+     * 监控管理
+     */
+    private MonitorManager monitorManager = new MonitorManager();
 
     // -------- fields ---------
 

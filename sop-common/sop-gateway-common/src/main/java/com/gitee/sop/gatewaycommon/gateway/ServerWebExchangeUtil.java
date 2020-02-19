@@ -8,8 +8,8 @@ import com.gitee.sop.gatewaycommon.gateway.common.RequestContentDataExtractor;
 import com.gitee.sop.gatewaycommon.gateway.common.SopServerHttpRequestDecorator;
 import com.gitee.sop.gatewaycommon.param.ApiParam;
 import com.gitee.sop.gatewaycommon.param.FormHttpOutputMessage;
-import com.gitee.sop.gatewaycommon.route.ForwardInfo;
 import com.gitee.sop.gatewaycommon.param.ParamNames;
+import com.gitee.sop.gatewaycommon.route.ForwardInfo;
 import com.gitee.sop.gatewaycommon.util.RequestUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -82,15 +82,13 @@ public class ServerWebExchangeUtil {
         return ServerRequest.create(exchange, messageReaders);
     }
 
-    public static ServerWebExchange getRestfulExchange(ServerWebExchange exchange, String path) {
+    public static ApiParam getApiParamForRestful(ServerWebExchange exchange, String path) {
         int index = path.indexOf(REST_PATH);
         // 取"/rest"的后面部分
         String newPath = path.substring(index + REST_PATH.length());
-        ApiParam apiParam = new ApiParam();
-        apiParam.setName(newPath);
-        apiParam.setVersion("");
+        ApiParam apiParam = ApiParam.createRestfulApiParam(newPath);
         setApiParam(exchange, apiParam);
-        return getForwardExchange(exchange, newPath);
+        return apiParam;
     }
 
     /**
@@ -100,7 +98,7 @@ public class ServerWebExchangeUtil {
      * @param forwardPath 重定向path
      * @return 返回新的ServerWebExchange，配合chain.filter(newExchange);使用
      */
-    public static ServerWebExchange getForwardExchange(ServerWebExchange exchange, String forwardPath) {
+    private static ServerWebExchange getForwardExchange(ServerWebExchange exchange, String forwardPath) {
         ServerHttpRequest newRequest = exchange.getRequest()
                 .mutate()
                 .path(forwardPath).build();

@@ -28,7 +28,7 @@ public interface ServerChooserContext<T> extends ApiParamAware<T> {
 
     default boolean isRequestGrayServer(T t) {
         ApiParam apiParam = getApiParam(t);
-        return apiParam.isGrayRequest();
+        return apiParam.fetchGrayRequest();
     }
 
     String getHost(T t);

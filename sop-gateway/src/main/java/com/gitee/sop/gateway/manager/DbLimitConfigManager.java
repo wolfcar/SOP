@@ -1,6 +1,7 @@
 package com.gitee.sop.gateway.manager;
 
 import com.gitee.fastmybatis.core.query.Query;
+import com.gitee.sop.gateway.entity.ConfigLimit;
 import com.gitee.sop.gateway.mapper.ConfigLimitMapper;
 import com.gitee.sop.gatewaycommon.bean.ChannelMsg;
 import com.gitee.sop.gatewaycommon.bean.ConfigLimitDto;
@@ -37,7 +38,7 @@ public class DbLimitConfigManager extends DefaultLimitConfigManager {
 
     }
 
-    protected void putVal(Object object) {
+    protected void putVal(ConfigLimit object) {
         ConfigLimitDto configLimitDto = new ConfigLimitDto();
         MyBeanUtil.copyPropertiesIgnoreNull(object, configLimitDto);
         this.update(configLimitDto);

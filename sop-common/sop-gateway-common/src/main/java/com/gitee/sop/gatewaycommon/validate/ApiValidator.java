@@ -69,6 +69,7 @@ public class ApiValidator implements Validator {
     public void validate(ApiParam param) {
         checkIP(param);
         TargetRoute targetRoute = checkEnable(param);
+        initFields(targetRoute, param);
         ApiConfig apiConfig = ApiContext.getApiConfig();
         if (apiConfig.isIgnoreValidate()
                 || BooleanUtils.toBoolean(targetRoute.getRouteDefinition().getIgnoreValidate())) {
@@ -125,6 +126,19 @@ public class ApiValidator implements Validator {
             throw ErrorEnum.ISP_API_DISABLED.getErrorMeta().getException();
         }
         return targetRoute;
+    }
+
+    private void initFields(TargetRoute targetRoute, ApiParam apiParam) {
+        apiParam.setServiceId(targetRoute.getServiceRouteInfo().getServiceId());
+        boolean mergeResult;
+        Boolean defaultSetting = ApiContext.getApiConfig().getMergeResult();
+        if (defaultSetting != null) {
+            mergeResult = defaultSetting;
+        } else {
+            RouteDefinition routeDefinition = targetRoute.getRouteDefinition();
+            mergeResult = routeDefinition == null || BooleanUtils.toBoolean(routeDefinition.getMergeResult());
+        }
+        apiParam.setMergeResult(mergeResult);
     }
 
     /**
