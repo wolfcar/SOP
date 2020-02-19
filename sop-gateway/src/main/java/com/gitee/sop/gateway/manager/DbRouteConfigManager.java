@@ -42,7 +42,7 @@ public class DbRouteConfigManager extends DefaultRouteConfigManager {
 
     @Override
     public void process(ChannelMsg channelMsg) {
-        final RouteConfig routeConfig = channelMsg.toObject( RouteConfig.class);
+        final RouteConfig routeConfig = channelMsg.toObject(RouteConfig.class);
         switch (channelMsg.getOperation()) {
             case "reload":
                 log.info("重新加载路由配置信息，routeConfigDto:{}", routeConfig);

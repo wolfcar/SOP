@@ -1,18 +1,14 @@
 package com.gitee.sop.gatewaycommon.route;
 
 import com.gitee.sop.gatewaycommon.bean.ApiConfig;
-import com.gitee.sop.gatewaycommon.bean.RouteDefinition;
 import com.gitee.sop.gatewaycommon.bean.ApiParamAware;
 import com.gitee.sop.gatewaycommon.bean.TargetRoute;
 import com.gitee.sop.gatewaycommon.loadbalancer.builder.GrayUserBuilder;
 import com.gitee.sop.gatewaycommon.manager.EnvGrayManager;
 import com.gitee.sop.gatewaycommon.manager.RouteRepositoryContext;
 import com.gitee.sop.gatewaycommon.param.ApiParam;
-import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.PostConstruct;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -28,9 +24,6 @@ public abstract class BaseForwardChooser<T> implements ForwardChooser<T>, ApiPar
         ApiParam apiParam = getApiParam(t);
         String nameVersion = apiParam.fetchNameVersion();
         TargetRoute targetRoute = RouteRepositoryContext.getRouteRepository().get(nameVersion);
-        RouteDefinition routeDefinitionOrig = targetRoute.getRouteDefinition();
-        String path = routeDefinitionOrig.getPath();
-        String version = apiParam.fetchVersion();
         String serviceId = targetRoute.getServiceRouteInfo().fetchServiceIdLowerCase();
         // 如果服务在灰度阶段，返回一个灰度版本号
         String grayVersion = envGrayManager.getVersion(serviceId, nameVersion);
@@ -40,16 +33,10 @@ public abstract class BaseForwardChooser<T> implements ForwardChooser<T>, ApiPar
             TargetRoute targetRouteDest = RouteRepositoryContext.getRouteRepository().get(newNameVersion);
             if (targetRouteDest != null) {
                 apiParam.setGrayRequest(true);
-                if (BooleanUtils.toBoolean(routeDefinitionOrig.getCompatibleMode())) {
-                    version = grayVersion;
-                } else {
-                    // 获取灰度接口
-                    RouteDefinition routeDefinition = targetRouteDest.getRouteDefinition();
-                    path = routeDefinition.getPath();
-                }
+                targetRoute = targetRouteDest;
             }
         }
-        return new ForwardInfo(path, version);
+        return new ForwardInfo(targetRoute);
     }
 
     protected boolean isGrayUser(String serviceId, ApiParam apiParam) {

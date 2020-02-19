@@ -3,6 +3,7 @@ package com.gitee.sop.gatewaycommon.gateway.loadbalancer;
 import com.gitee.sop.gatewaycommon.gateway.ServerWebExchangeUtil;
 import com.gitee.sop.gatewaycommon.loadbalancer.ServerChooserContext;
 import com.gitee.sop.gatewaycommon.param.ApiParam;
+import com.gitee.sop.gatewaycommon.util.LoadBalanceUtil;
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.Server;
 import org.springframework.cloud.client.ServiceInstance;
@@ -14,7 +15,6 @@ import org.springframework.cloud.netflix.ribbon.SpringClientFactory;
 import org.springframework.web.server.ServerWebExchange;
 
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * 重写负载均衡处理。
@@ -58,7 +58,7 @@ public class SopLoadBalancerClient extends RibbonLoadBalancerClient implements S
     }
 
     private RibbonServer getRibbonServer(String serviceId, List<Server> servers) {
-        Server server = this.chooseRandomServer(servers);
+        Server server = LoadBalanceUtil.chooseByRoundRobin(serviceId, servers);
         if (server == null) {
             return null;
         }
@@ -68,26 +68,6 @@ public class SopLoadBalancerClient extends RibbonLoadBalancerClient implements S
                 , isSecure(server, serviceId)
                 , serverIntrospector(serviceId).getMetadata(server)
         );
-    }
-
-    /**
-     * 随机选取一台实例
-     *
-     * @param servers 服务列表
-     * @return 返回实例，没有返回null
-     */
-    private Server chooseRandomServer(List<Server> servers) {
-        if (servers.isEmpty()) {
-            return null;
-        }
-        int serverCount = servers.size();
-        // 随机选取一台实例
-        int index = chooseRandomInt(serverCount);
-        return servers.get(index);
-    }
-
-    private int chooseRandomInt(int serverCount) {
-        return ThreadLocalRandom.current().nextInt(serverCount);
     }
 
     private ServerIntrospector serverIntrospector(String serviceId) {

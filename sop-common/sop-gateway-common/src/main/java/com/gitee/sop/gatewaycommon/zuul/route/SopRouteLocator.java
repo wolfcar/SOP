@@ -45,24 +45,15 @@ public class SopRouteLocator implements RouteLocator, Ordered {
     /**
      * 这里决定使用哪个路由
      *
-     * @param path
+     * @param path 当前请求路径
      * @return 返回跳转的路由
      */
     @Override
     public Route getMatchingRoute(String path) {
-        ApiParam param = ZuulContext.getApiParam();
-        String nameVersion = param.fetchNameVersion();
-        ZuulTargetRoute zuulTargetRoute = zuulRouteRepository.get(nameVersion);
-        if (zuulTargetRoute == null) {
-            return null;
-        }
-        Route targetRouteDefinition = zuulTargetRoute.getTargetRouteDefinition();
         ForwardInfo forwardInfo = zuulForwardChooser.getForwardInfo(RequestContext.getCurrentContext());
-        String forwardPath = forwardInfo.getPath();
-        targetRouteDefinition.setPath(forwardPath);
-        String versionInHead = forwardInfo.getVersion();
-        RequestContext.getCurrentContext().addZuulRequestHeader(ParamNames.HEADER_VERSION_NAME, versionInHead);
-        return targetRouteDefinition;
+        String version = forwardInfo.getVersion();
+        RequestContext.getCurrentContext().addZuulRequestHeader(ParamNames.HEADER_VERSION_NAME, version);
+        return (Route)forwardInfo.getTargetRoute().getTargetRouteDefinition();
     }
 
     @Override

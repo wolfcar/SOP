@@ -10,13 +10,13 @@ import com.gitee.sop.gatewaycommon.zuul.controller.ConfigChannelController;
 import com.gitee.sop.gatewaycommon.zuul.controller.ErrorLogController;
 import com.gitee.sop.gatewaycommon.zuul.controller.ZuulErrorController;
 import com.gitee.sop.gatewaycommon.zuul.controller.ZuulIndexController;
+import com.gitee.sop.gatewaycommon.zuul.controller.ZuulMonitorController;
 import com.gitee.sop.gatewaycommon.zuul.filter.ErrorFilter;
 import com.gitee.sop.gatewaycommon.zuul.filter.FormBodyWrapperFilterExt;
 import com.gitee.sop.gatewaycommon.zuul.filter.PostResultFilter;
 import com.gitee.sop.gatewaycommon.zuul.filter.PreHttpServletRequestWrapperFilter;
 import com.gitee.sop.gatewaycommon.zuul.filter.PreLimitFilter;
 import com.gitee.sop.gatewaycommon.zuul.filter.PreParameterFormatterFilter;
-import com.gitee.sop.gatewaycommon.zuul.filter.PreValidateFilter;
 import com.gitee.sop.gatewaycommon.zuul.filter.Servlet30WrapperFilterExt;
 import com.gitee.sop.gatewaycommon.zuul.route.SopRouteLocator;
 import com.gitee.sop.gatewaycommon.zuul.route.ZuulForwardChooser;
@@ -55,6 +55,11 @@ public class BaseZuulConfiguration extends AbstractConfiguration {
     @Bean
     public ZuulIndexController zuulIndexController() {
         return new ZuulIndexController();
+    }
+
+    @Bean
+    public ZuulMonitorController zuulMonitorController() {
+        return new ZuulMonitorController();
     }
 
     @Bean
@@ -118,14 +123,6 @@ public class BaseZuulConfiguration extends AbstractConfiguration {
     @Bean
     ZuulRouteCache zuulRouteCache(ZuulRouteRepository zuulRouteRepository) {
         return new ZuulRouteCache(zuulRouteRepository);
-    }
-
-    /**
-     * 前置校验
-     */
-    @Bean
-    PreValidateFilter preValidateFilter() {
-        return new PreValidateFilter();
     }
 
     @Bean

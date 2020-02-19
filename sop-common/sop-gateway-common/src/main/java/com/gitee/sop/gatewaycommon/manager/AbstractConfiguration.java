@@ -3,8 +3,10 @@ package com.gitee.sop.gatewaycommon.manager;
 import com.gitee.sop.gatewaycommon.bean.ApiConfig;
 import com.gitee.sop.gatewaycommon.bean.ApiContext;
 import com.gitee.sop.gatewaycommon.bean.BeanInitializer;
+import com.gitee.sop.gatewaycommon.interceptor.RouteInterceptor;
 import com.gitee.sop.gatewaycommon.bean.SpringContext;
 import com.gitee.sop.gatewaycommon.gateway.loadbalancer.NacosServerIntrospector;
+import com.gitee.sop.gatewaycommon.interceptor.MonitorRouteInterceptor;
 import com.gitee.sop.gatewaycommon.limit.LimitManager;
 import com.gitee.sop.gatewaycommon.loadbalancer.SopPropertiesFactory;
 import com.gitee.sop.gatewaycommon.message.ErrorFactory;
@@ -16,6 +18,7 @@ import com.gitee.sop.gatewaycommon.route.ServiceListener;
 import com.gitee.sop.gatewaycommon.route.ServiceRouteListener;
 import com.gitee.sop.gatewaycommon.secret.IsvManager;
 import com.gitee.sop.gatewaycommon.session.SessionManager;
+import com.gitee.sop.gatewaycommon.util.RouteInterceptorUtil;
 import com.gitee.sop.gatewaycommon.validate.SignConfig;
 import com.gitee.sop.gatewaycommon.validate.Validator;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +43,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -254,12 +259,20 @@ public class AbstractConfiguration implements ApplicationContextAware, Applicati
 
         initMessage();
         initBeanInitializer();
+        initRouteInterceptor();
         doAfter();
     }
 
     protected void initBeanInitializer() {
         Map<String, BeanInitializer> beanInitializerMap = applicationContext.getBeansOfType(BeanInitializer.class);
         beanInitializerMap.values().forEach(BeanInitializer::load);
+    }
+
+    protected void initRouteInterceptor() {
+        Map<String, RouteInterceptor> routeInterceptorMap = applicationContext.getBeansOfType(RouteInterceptor.class);
+        Collection<RouteInterceptor> routeInterceptors = new ArrayList<>(routeInterceptorMap.values());
+        routeInterceptors.add(new MonitorRouteInterceptor());
+        RouteInterceptorUtil.addInterceptors(routeInterceptors);
     }
 
     protected void doAfter() {
