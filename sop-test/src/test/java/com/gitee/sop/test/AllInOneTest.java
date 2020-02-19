@@ -333,7 +333,7 @@ public class AllInOneTest extends TestBase {
         Map<String, String> header = new HashMap<>(4);
         header.put("Accept-Language", "en-US");
         Client.RequestBuilder requestBuilder = new Client.RequestBuilder()
-                .method("alipay.story.get__")
+                .method("alipay.story.get9")
                 .version("1.0")
                 .header(header)
                 .bizContent(new BizContent().add("id", "1").add("name", "葫芦娃"))
