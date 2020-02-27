@@ -7,19 +7,6 @@
 3. 执行`npm install --registry=https://registry.npm.taobao.org`
 4. 执行`npm run dev`，访问`http://localhost:9528/`，用户名密码：`admin/123456`
 
-```
-# 建议不要用cnpm  安装有各种诡异的bug 可以通过如下操作解决npm速度慢的问题
-npm install --registry=https://registry.npm.taobao.org
-
-# 开发调试 localhost:9528
-npm run dev
-
-# 打包发布
-npm run build:prod
-
-# Build for production and view the bundle analyzer report
-npm run build:prod --report
-```
 
 - 修改端口号：打开`vue.config.js`，找到`port`属性
 
