@@ -23,6 +23,9 @@ public class DefaultDataNameBuilder implements DataNameBuilder {
 
     @Override
     public String build(String method) {
+        if (method == null) {
+            method = "error";
+        }
         return method.replace(DOT, UNDERLINE) + DATA_SUFFIX;
     }
 }
