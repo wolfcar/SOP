@@ -32,7 +32,7 @@ public class UploadUtil {
             fileMap = multiRequest.getFileMap();
         }
         return Optional.ofNullable(fileMap)
-                .map(map -> map.values())
+                .map(Map::values)
                 .orElse(Collections.emptyList());
     }
 }

@@ -52,6 +52,9 @@ public class SidebarTest {
         output.append("* [首页](/?t=" + System.currentTimeMillis() + ")\n");
         for (Map.Entry<String, List<FileExt>> entry : menuMap.entrySet()) {
             Menu menu = levelMap.get(entry.getKey());
+            if (menu == null) {
+                continue;
+            }
             output.append(menu.parentName);
             for (FileExt fileExt : entry.getValue()) {
                 String filename = fileExt.file.getName();
