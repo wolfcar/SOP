@@ -2,6 +2,7 @@ package com.gitee.sop.storyweb.config;
 
 import com.gitee.sop.servercommon.bean.ServiceConfig;
 import com.gitee.sop.servercommon.configuration.AlipayServiceConfiguration;
+import com.gitee.sop.servercommon.configuration.TaobaoServiceConfiguration;
 import com.gitee.sop.servercommon.swagger.SwaggerSupport;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -11,7 +12,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  * @author tanghc
  */
 @Configuration
-public class OpenServiceConfig extends AlipayServiceConfiguration {
+public class OpenServiceConfig extends TaobaoServiceConfiguration {
 
     static {
         ServiceConfig.getInstance().getI18nModules().add("i18n/isp/goods_error");
