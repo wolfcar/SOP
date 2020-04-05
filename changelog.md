@@ -1,5 +1,10 @@
 # changelog
 
+## 3.1.1
+
+- 修复继承WebMvcConfigurationSupport导致的jackson序列化时间问题
+- 修复微服务接口返回void网关不会返回code和msg问题
+
 ## 3.1.0
 
 - 新增路由监控功能
