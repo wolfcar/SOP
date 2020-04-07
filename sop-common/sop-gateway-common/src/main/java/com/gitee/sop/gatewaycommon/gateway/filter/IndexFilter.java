@@ -130,7 +130,9 @@ public class IndexFilter implements WebFilter {
             validator.validate(apiParam);
             this.afterValidate(exchange, apiParam);
         } catch (ApiException e) {
-            log.error("验证失败，ip:{}, params:{}, errorMsg:{}", apiParam.fetchIp(), apiParam.toJSONString(), e.getMessage());
+            log.error("验证失败，url:{}, ip:{}, params:{}, errorMsg:{}",
+                    exchange.getRequest().getURI().toString(),
+                    apiParam.fetchIp(), apiParam.toJSONString(), e.getMessage());
             ServerWebExchangeUtil.setThrowable(exchange, e);
         }
     }
