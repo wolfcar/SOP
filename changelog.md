@@ -1,5 +1,9 @@
 # changelog
 
+## 3.1.2
+
+- 修复图片上传保存后图片破损问题
+
 ## 3.1.1
 
 - 修复继承WebMvcConfigurationSupport导致的jackson序列化时间问题
