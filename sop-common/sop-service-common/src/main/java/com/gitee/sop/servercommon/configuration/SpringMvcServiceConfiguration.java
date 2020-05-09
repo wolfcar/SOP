@@ -6,12 +6,14 @@ import com.gitee.sop.servercommon.manager.EnvironmentContext;
 import com.gitee.sop.servercommon.manager.ServiceRouteController;
 import com.gitee.sop.servercommon.mapping.ApiMappingHandlerMapping;
 import com.gitee.sop.servercommon.message.ServiceErrorFactory;
+import com.gitee.sop.servercommon.param.SopHandlerMethodArgumentResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import javax.annotation.PostConstruct;
@@ -25,6 +27,8 @@ public class SpringMvcServiceConfiguration {
 
     static {
         System.setProperty(ServiceContext.SOP_MVC, "true");
+        // 默认版本号为1.0
+        ServiceConfig.getInstance().setDefaultVersion("1.0");
     }
 
     public SpringMvcServiceConfiguration() {
@@ -32,6 +36,9 @@ public class SpringMvcServiceConfiguration {
     }
 
     private ApiMappingHandlerMapping apiMappingHandlerMapping = new ApiMappingHandlerMapping();
+
+    @Autowired
+    private RequestMappingHandlerAdapter requestMappingHandlerAdapter;
 
     @Autowired
     private Environment environment;
@@ -72,7 +79,8 @@ public class SpringMvcServiceConfiguration {
      * spring容器加载完毕后执行
      */
     protected void doAfter() {
-
+        SopHandlerMethodArgumentResolver sopHandlerMethodArgumentResolver = ServiceConfig.getInstance().getMethodArgumentResolver();
+        sopHandlerMethodArgumentResolver.setRequestMappingHandlerAdapter(requestMappingHandlerAdapter);
     }
 
     protected void initMessage() {
