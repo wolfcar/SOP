@@ -197,12 +197,12 @@ public class AbstractConfiguration implements ApplicationContextAware, Applicati
     }
 
     /**
-     * 跨域过滤器，gateway
+     * 跨域过滤器，gateway采用react形式，需要使用reactive包下的UrlBasedCorsConfigurationSource
      */
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty("sop.gateway-index-path")
-    public CorsWebFilter corsFilterReact() {
+    public CorsWebFilter corsWebFilter() {
         org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", createCorsConfiguration());
         return new CorsWebFilter(source);
