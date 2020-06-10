@@ -82,9 +82,8 @@ public class IndexFilter implements WebFilter {
                 // 读取请求体中的内容
                 Mono<?> modifiedBody = serverRequest.bodyToMono(byte[].class)
                         .flatMap(data -> {
-                            String body = new String(data, SopConstants.CHARSET_UTF8);
                             // 构建ApiParam
-                            ApiParam apiParam = ServerWebExchangeUtil.getApiParam(exchange, body);
+                            ApiParam apiParam = ServerWebExchangeUtil.getApiParam(exchange, data);
                             // 签名验证
                             doValidate(exchange, apiParam);
                             return Mono.just(data);
@@ -113,7 +112,7 @@ public class IndexFilter implements WebFilter {
                 // 原始参数
                 String originalQuery = uri.getRawQuery();
                 // 构建ApiParam
-                ApiParam apiParam = ServerWebExchangeUtil.getApiParam(exchange, originalQuery);
+                ApiParam apiParam = ServerWebExchangeUtil.getApiParamByQuery(exchange, originalQuery);
                 // 签名验证
                 doValidate(exchange, apiParam);
 
