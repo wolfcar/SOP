@@ -6,11 +6,11 @@
     <parent>
         <groupId>com.gitee.sop</groupId>
         <artifactId>sop-common</artifactId>
-        <version>3.1.5-SNAPSHOT</version>
+        <version>3.2.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>sop-service-common</artifactId>
-    <version>3.1.5-SNAPSHOT</version>
+    <version>3.2.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>sop-service-common</name>
@@ -26,6 +26,16 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>27.1-jre</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
         </dependency>
 
         <!-- optional -->
@@ -75,6 +85,17 @@
             <artifactId>javax.el</artifactId>
             <version>3.0.0</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
