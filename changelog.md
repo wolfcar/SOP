@@ -6,6 +6,9 @@
 
 Hoxton.SR3（Spring Cloud Version）， 2.2.1.RELEASE（Spring Cloud Alibaba Version）， 2.2.5.RELEASE（Spring Boot Version）
 
+- 优化pom文件
+- 优化灰度发布
+
 ## 3.1.5
 
 修复文件上传大小不一致问题
