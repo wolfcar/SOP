@@ -33,6 +33,9 @@ public class NacosRegistryListener extends BaseRegistryListener {
     @Autowired
     private NacosDiscoveryProperties nacosDiscoveryProperties;
 
+    @Autowired(required = false)
+    private List<RegistryEvent> registryEventList;
+
     @Override
     public synchronized void onEvent(ApplicationEvent applicationEvent) {
         NamingService namingService = nacosDiscoveryProperties.namingServiceInstance();
@@ -86,13 +89,21 @@ public class NacosRegistryListener extends BaseRegistryListener {
                 instanceDefinition.setPort(instance.getPort());
                 instanceDefinition.setMetadata(instance.getMetadata());
                 pullRoutes(instanceDefinition);
+                if (registryEventList != null) {
+                    registryEventList.forEach(registryEvent -> registryEvent.onRegistry(instanceDefinition));
+                }
             });
         }
 
         // 如果有服务删除
         Set<String> removedServiceIdList = getRemovedServiceId(serviceNames);
         if (removedServiceIdList.size() > 0) {
-            removedServiceIdList.forEach(this::removeRoutes);
+            removedServiceIdList.forEach(serviceId->{
+                this.removeRoutes(serviceId);
+                if (registryEventList != null) {
+                    registryEventList.forEach(registryEvent -> registryEvent.onRemove(serviceId));
+                }
+            });
         }
 
         cacheServices = new HashSet<>(serviceNames);
@@ -110,7 +121,6 @@ public class NacosRegistryListener extends BaseRegistryListener {
         cache.removeAll(serviceList);
         return cache;
     }
-
 
     @Data
     @AllArgsConstructor
