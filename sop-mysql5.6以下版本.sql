@@ -222,7 +222,7 @@ CREATE TABLE `config_service_route` (
   `filters` VARCHAR(256) DEFAULT NULL COMMENT '路由过滤器（SpringCloudGateway专用）',
   `uri` VARCHAR(128) NOT NULL DEFAULT '' COMMENT '路由规则转发的目标uri',
   `path` VARCHAR(128) NOT NULL DEFAULT '' COMMENT 'uri后面跟的path',
-  `order` INT(11) NOT NULL DEFAULT '0' COMMENT '路由执行的顺序',
+  `order_index` INT(11) NOT NULL DEFAULT '0' COMMENT '路由执行的顺序',
   `ignore_validate` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '是否忽略验证，业务参数验证除外',
   `status` TINYINT(4) NOT NULL DEFAULT '1' COMMENT '状态，0：待审核，1：启用，2：禁用',
   `merge_result` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '是否合并结果',

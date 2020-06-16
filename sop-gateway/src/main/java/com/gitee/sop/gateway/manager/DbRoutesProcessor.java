@@ -59,7 +59,7 @@ public class DbRoutesProcessor implements RoutesProcessor {
                     configServiceRoute.setMergeResult((byte) routeDefinition.getMergeResult());
                     configServiceRoute.setStatus((byte) routeDefinition.getStatus());
                     configServiceRoute.setPermission((byte) routeDefinition.getPermission());
-                    configServiceRoute.setOrder(routeDefinition.getOrder());
+                    configServiceRoute.setOrderIndex(routeDefinition.getOrder());
                     configServiceRoute.setNeedToken((byte)routeDefinition.getNeedToken());
                     configServiceRoute.setServiceId(serviceId);
                     return configServiceRoute;
