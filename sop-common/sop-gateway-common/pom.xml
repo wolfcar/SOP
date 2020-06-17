@@ -48,6 +48,11 @@
             <artifactId>spring-cloud-netflix-ribbon</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
+
         <!-- optional -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
