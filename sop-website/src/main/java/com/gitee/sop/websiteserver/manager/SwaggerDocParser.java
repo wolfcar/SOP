@@ -208,8 +208,11 @@ public class SwaggerDocParser implements DocParser {
     protected List<DocParameter> buildDocParameters(String ref, JSONObject docRoot, boolean doSubRef) {
         JSONObject responseObject = docRoot.getJSONObject("definitions").getJSONObject(ref);
         JSONObject properties = responseObject.getJSONObject("properties");
-        Set<String> fieldNames = properties.keySet();
         List<DocParameter> docParameterList = new ArrayList<>();
+        if (properties == null) {
+            return docParameterList;
+        }
+        Set<String> fieldNames = properties.keySet();
         for (String fieldName : fieldNames) {
             /*
                {
