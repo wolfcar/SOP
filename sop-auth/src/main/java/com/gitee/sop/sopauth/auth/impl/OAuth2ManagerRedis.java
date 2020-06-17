@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
  * oauth2管理redis实现，这个类跟OAuth2ManagerCache类只能用一个，
  * 如果要用这个类，
  * 1、注释掉OAuth2ManagerCache的@Service。
- * 2、打开yml中redis部分
+ * 2、在properties中配置redis
  * 3、启用这个类的@Service
  *
  * @author tanghc

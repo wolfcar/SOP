@@ -84,33 +84,6 @@ public class AllInOneTest extends TestBase {
     }
 
     /**
-     * 测试feign。gateway -> book-service(consumer) -> story-service(provider)
-     */
-    public void testFeign() {
-        Client.RequestBuilder requestBuilder = new Client.RequestBuilder()
-                .method("alipay.book.story.get")
-                .version("1.0")
-                .bizContent(new BizContent())
-                .httpMethod(HttpTool.HTTPMethod.GET);
-
-        client.execute(requestBuilder);
-    }
-
-    /**
-     * 测试dubbo服务，book会调用story提供的服务。参见：DemoConsumerController.java
-     */
-    public void testDubbo() {
-        Client.RequestBuilder requestBuilder = new Client.RequestBuilder()
-                .method("dubbo.story.get")
-                .version("1.0")
-                .bizContent(new BizContent().add("id", "222"))
-                .httpMethod(HttpTool.HTTPMethod.GET);
-
-        client.execute(requestBuilder);
-
-    }
-
-    /**
      * 忽略验证,不校验签名，只需传接口名、版本号、业务参数
      */
     public void testIgnoreSign() {

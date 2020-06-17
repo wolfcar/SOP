@@ -46,8 +46,8 @@ public class ConfigServiceRoute {
     /** uri后面跟的path, 数据库字段：path */
     private String path;
 
-    /** 路由执行的顺序, 数据库字段：order */
-    private Integer order;
+    /** 路由执行的顺序, 数据库字段：order_index */
+    private Integer orderIndex;
 
     /** 是否忽略验证，业务参数验证除外, 数据库字段：ignore_validate */
     private Byte ignoreValidate;
