@@ -43,7 +43,7 @@ function selectItem(docItem, layui) {
 
 function buildHttpMethodOptions(docItem) {
     var methodList = docItem.httpMethodList;
-    var html = []
+    var html = [];
     for (var i = 0; i < methodList.length; i++) {
         var method = methodList[i];
         html.push('<option value="' + method + '"> ' + method.toUpperCase() + ' </option>');
@@ -118,6 +118,7 @@ function doTest() {
     var data = {
         appId: $('#appId').val()
         , privateKey: $('#privateKey').val()
+        , token: $('#token').val()
         , method: method
         , version: version
         , httpMethod: $('#httpMethodList').val()

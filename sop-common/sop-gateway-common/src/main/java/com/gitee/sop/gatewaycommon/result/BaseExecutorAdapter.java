@@ -180,6 +180,8 @@ public abstract class BaseExecutorAdapter<T, R> implements ResultExecutor<T, R> 
             params = new ApiParam();
             params.setName("error");
         }
+        // 全局请求id，方便追踪定位
+        finalData.put("request_id", params.fetchRequestId());
         ApiConfig apiConfig = ApiConfig.getInstance();
         // 点换成下划线
         DataNameBuilder dataNameBuilder = apiConfig.getDataNameBuilder();

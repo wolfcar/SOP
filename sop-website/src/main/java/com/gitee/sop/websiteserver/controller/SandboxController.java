@@ -59,6 +59,7 @@ public class SandboxController {
     public SandboxResult proxy(
             @RequestParam String appId
             , @RequestParam String privateKey
+            , @RequestParam(required = false) String token
             , @RequestParam String method
             , @RequestParam String version
             , @RequestParam String bizContent
@@ -81,6 +82,10 @@ public class SandboxController {
         params.put("sign_type", "RSA2");
         params.put("timestamp", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         params.put("version", version);
+
+        if (StringUtils.isNotBlank(token)) {
+            params.put("app_auth_token", token);
+        }
 
         // 业务参数
         params.put("biz_content", bizContent);

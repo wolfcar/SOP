@@ -3,6 +3,8 @@
 ## 3.2.0
 
 - 使用alibaba cloud
+- 新增Python，Go版本SDK
+- 返回结果新增全局request_id
 
 Hoxton.SR3（Spring Cloud Version）， 2.2.1.RELEASE（Spring Cloud Alibaba Version）， 2.2.5.RELEASE（Spring Boot Version）
 
