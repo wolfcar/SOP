@@ -85,7 +85,7 @@ def sign(content, private_key, sign_type):
         raise Exception('sign_type错误')
 
 
-def rsa_sign(content, private_key, hash):
+def rsa_sign(content, private_key, _hash):
     """SHAWithRSA
 
     :param content: 签名内容
@@ -94,9 +94,12 @@ def rsa_sign(content, private_key, hash):
     :param private_key: 私钥
     :type private_key: str
 
+    :param _hash: hash算法，如：SHA-1,SHA-256
+    :type _hash: str
+
     :return: 签名内容
     :rtype: str
     """
     pri_key = rsa.PrivateKey.load_pkcs1(private_key.encode('utf-8'))
-    sign_result = rsa.sign(content, pri_key, hash)
+    sign_result = rsa.sign(content, pri_key, _hash)
     return base64.b64encode(sign_result)
