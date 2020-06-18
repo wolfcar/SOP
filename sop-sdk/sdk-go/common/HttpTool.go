@@ -16,16 +16,17 @@ import (
 type UploadFile struct {
 	// 表单名称
 	Name string
+	// 文件全路径
 	Filepath string
 }
 
 // 请求客户端
 var httpClient = &http.Client{}
 
-func Get(reqUrl string, allParams map[string]string, headers map[string]string) string  {
+func Get(reqUrl string, reqParams map[string]string, headers map[string]string) string  {
 	urlParams := url.Values{}
 	Url, _ := url.Parse(reqUrl)
-	for key, val := range allParams {
+	for key, val := range reqParams {
 		urlParams.Set(key, val)
 	}
 
@@ -51,21 +52,21 @@ func Get(reqUrl string, allParams map[string]string, headers map[string]string) 
 	return string(response)
 }
 
-func PostForm(reqUrl string, allParams map[string]string, headers map[string]string) string {
-	return post(reqUrl, allParams, "application/x-www-form-urlencoded", nil, headers)
+func PostForm(reqUrl string, reqParams map[string]string, headers map[string]string) string {
+	return post(reqUrl, reqParams, "application/x-www-form-urlencoded", nil, headers)
 }
 
-func PostJson(reqUrl string, allParams map[string]string, headers map[string]string) string {
-	return post(reqUrl, allParams, "application/json", nil, headers)
+func PostJson(reqUrl string, reqParams map[string]string, headers map[string]string) string {
+	return post(reqUrl, reqParams, "application/json", nil, headers)
 }
 
-func PostFile(reqUrl string, allParams map[string]string, files []UploadFile, headers map[string]string) string {
-	return post(reqUrl, allParams, "multipart/form-data", files, headers)
+func PostFile(reqUrl string, reqParams map[string]string, files []UploadFile, headers map[string]string) string {
+	return post(reqUrl, reqParams, "multipart/form-data", files, headers)
 }
 
 
-func post(reqUrl string, allParams map[string]string, contentType string, files []UploadFile, headers map[string]string) string  {
-	requestBody, realContentType := getReader(allParams, contentType, files)
+func post(reqUrl string, reqParams map[string]string, contentType string, files []UploadFile, headers map[string]string) string  {
+	requestBody, realContentType := getReader(reqParams, contentType, files)
 	httpRequest,_ := http.NewRequest("POST", reqUrl, requestBody)
 	// 添加请求头
 	httpRequest.Header.Add("Content-Type", realContentType)
@@ -84,9 +85,9 @@ func post(reqUrl string, allParams map[string]string, contentType string, files 
 	return string(response)
 }
 
-func getReader(allParams map[string]string, contentType string, files []UploadFile) (io.Reader, string)  {
+func getReader(reqParams map[string]string, contentType string, files []UploadFile) (io.Reader, string)  {
 	if strings.Index(contentType, "json") > -1 {
-		bytesData, _ := json.Marshal(allParams)
+		bytesData, _ := json.Marshal(reqParams)
 		return bytes.NewReader(bytesData), contentType
 	} else if files != nil {
 		body := &bytes.Buffer{}
@@ -105,7 +106,7 @@ func getReader(allParams map[string]string, contentType string, files []UploadFi
 			file.Close()
 		}
 		// 其他参数列表写入 body
-		for k, v := range allParams {
+		for k, v := range reqParams {
 			if err := writer.WriteField(k, v); err != nil {
 				panic(err)
 			}
@@ -117,7 +118,7 @@ func getReader(allParams map[string]string, contentType string, files []UploadFi
 		return body, writer.FormDataContentType()
 	} else {
 		urlValues := url.Values{}
-		for key, val := range allParams {
+		for key, val := range reqParams {
 			urlValues.Set(key, val)
 		}
 		reqBody:= urlValues.Encode()
