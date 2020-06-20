@@ -15,8 +15,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
@@ -36,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -46,7 +49,7 @@ import java.util.stream.Collectors;
  */
 public class RequestUtil {
 
-    private static Logger log = LoggerFactory.getLogger(RequestUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(RequestUtil.class);
 
     private RequestUtil() {
     }
@@ -197,7 +200,7 @@ public class RequestUtil {
 
 
     public static String getText(HttpServletRequest request) throws IOException {
-        return IOUtils.toString(request.getInputStream(), UTF8);
+        return IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8);
     }
 
     /**
@@ -237,6 +240,44 @@ public class RequestUtil {
         return ipAddress;
     }
 
+    /**
+     * 获取客户端真实ip
+     * @param request request
+     * @return 返回ip
+     */
+    public static String getIP(ServerHttpRequest request) {
+        HttpHeaders headers = request.getHeaders();
+        String ipAddress = headers.getFirst("x-forwarded-for");
+        if (ipAddress == null || ipAddress.length() == 0 || IP_UNKNOWN.equalsIgnoreCase(ipAddress)) {
+            ipAddress = headers.getFirst("Proxy-Client-IP");
+        }
+        if (ipAddress == null || ipAddress.length() == 0 || IP_UNKNOWN.equalsIgnoreCase(ipAddress)) {
+            ipAddress = headers.getFirst("WL-Proxy-Client-IP");
+        }
+        if (ipAddress == null || ipAddress.length() == 0 || IP_UNKNOWN.equalsIgnoreCase(ipAddress)) {
+            ipAddress = Optional.ofNullable(request.getRemoteAddress())
+                    .map(address -> address.getAddress().getHostAddress())
+                    .orElse("");
+            if (IP_LOCAL.equals(ipAddress)) {
+                // 根据网卡取本机配置的IP
+                try {
+                    InetAddress inet = InetAddress.getLocalHost();
+                    ipAddress = inet.getHostAddress();
+                } catch (UnknownHostException e) {
+                    // ignore
+                }
+            }
+        }
+
+        // 对于通过多个代理的情况，第一个IP为客户端真实IP,多个IP按照','分割
+        if (ipAddress != null && ipAddress.length() > IP_LEN) {
+            int index = ipAddress.indexOf(",");
+            if (index > 0) {
+                ipAddress = ipAddress.substring(0, index);
+            }
+        }
+        return ipAddress;
+    }
 
     /**
      * 获取上传文件内容
