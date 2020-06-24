@@ -1,5 +1,6 @@
 package com.gitee.sop.gatewaycommon.gateway.filter;
 
+import com.gitee.sop.gatewaycommon.bean.SopConstants;
 import com.gitee.sop.gatewaycommon.gateway.loadbalancer.SopLoadBalancerClient;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
@@ -22,11 +23,14 @@ public class SopLoadBalancerClientFilter extends LoadBalancerClientFilter {
 
     @Override
     protected ServiceInstance choose(ServerWebExchange exchange) {
+        ServiceInstance serviceInstance;
         if (loadBalancer instanceof SopLoadBalancerClient) {
             SopLoadBalancerClient sopLoadBalancerClient = (SopLoadBalancerClient)loadBalancer;
-            return sopLoadBalancerClient.choose(((URI) exchange.getAttribute(GATEWAY_REQUEST_URL_ATTR)).getHost(), exchange);
+            serviceInstance =  sopLoadBalancerClient.choose(((URI) exchange.getAttribute(GATEWAY_REQUEST_URL_ATTR)).getHost(), exchange);
         } else {
-            return super.choose(exchange);
+            serviceInstance = super.choose(exchange);
         }
+        exchange.getAttributes().put(SopConstants.TARGET_SERVICE, serviceInstance);
+        return serviceInstance;
     }
 }

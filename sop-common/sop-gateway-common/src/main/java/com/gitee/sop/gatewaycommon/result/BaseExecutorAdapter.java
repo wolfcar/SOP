@@ -31,7 +31,7 @@ import java.util.Map;
 @Slf4j
 public abstract class BaseExecutorAdapter<T, R> implements ResultExecutor<T, R> {
 
-    private static Map<Integer, ErrorEnum> HTTP_STATUS_ERROR_ENUM_MAP = new HashMap<>(8);
+    private static final Map<Integer, ErrorEnum> HTTP_STATUS_ERROR_ENUM_MAP = new HashMap<>(8);
 
     private static final String GATEWAY_CODE_NAME = "code";
     private static final String GATEWAY_MSG_NAME = "msg";
@@ -107,7 +107,7 @@ public abstract class BaseExecutorAdapter<T, R> implements ResultExecutor<T, R> 
      *
      * @param serviceResult  微服务结果
      * @param responseStatus 微服务状态码
-     * @param requestContext 微服务状态码
+     * @param requestContext 请求上下文
      */
     private void doAfterRoute(String serviceResult, int responseStatus, T requestContext) {
         RouteInterceptorContext routeInterceptorContext = getRouteInterceptorContext(requestContext);
@@ -125,7 +125,12 @@ public abstract class BaseExecutorAdapter<T, R> implements ResultExecutor<T, R> 
                 defaultRouteInterceptorContext.setServiceErrorMsg(responseErrorMessage);
             }
         }
+        this.bindRouteInterceptorContextProperties(routeInterceptorContext, requestContext);
         RouteInterceptorUtil.runAfterRoute(routeInterceptorContext);
+    }
+
+    protected void bindRouteInterceptorContextProperties(RouteInterceptorContext routeInterceptorContext, T requestContext) {
+
     }
 
     /**
