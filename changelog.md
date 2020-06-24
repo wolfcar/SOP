@@ -1,5 +1,9 @@
 # changelog
 
+## 3.2.1
+
+- 强化RouteInterceptorContext，可获取微服务信息
+
 ## 3.2.0
 
 - 使用alibaba cloud

@@ -150,6 +150,11 @@ public abstract class BaseExecutorAdapter<T, R> implements ResultExecutor<T, R> 
         }
         ErrorMeta errorMeta = errorEnum.getErrorMeta();
         JSONObject responseData = JSON.parseObject(serviceResult);
+        ApiParam apiParam = this.getApiParam(request);
+        if (apiParam != null) {
+            // 全局请求id，方便追踪定位
+            responseData.put("request_id", apiParam.fetchRequestId());
+        }
         responseData.put(GATEWAY_CODE_NAME, errorMeta.getCode());
         responseData.put(GATEWAY_MSG_NAME, errorMeta.getError(getLocale(request)).getMsg());
         return responseData;
@@ -185,8 +190,6 @@ public abstract class BaseExecutorAdapter<T, R> implements ResultExecutor<T, R> 
             params = new ApiParam();
             params.setName("error");
         }
-        // 全局请求id，方便追踪定位
-        finalData.put("request_id", params.fetchRequestId());
         ApiConfig apiConfig = ApiConfig.getInstance();
         // 点换成下划线
         DataNameBuilder dataNameBuilder = apiConfig.getDataNameBuilder();
