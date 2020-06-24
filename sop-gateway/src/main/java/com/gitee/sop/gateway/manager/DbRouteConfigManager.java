@@ -1,6 +1,5 @@
 package com.gitee.sop.gateway.manager;
 
-import com.gitee.sop.gateway.mapper.ConfigRouteBaseMapper;
 import com.gitee.sop.gateway.mapper.ConfigRouteLimitMapper;
 import com.gitee.sop.gateway.mapper.ConfigRouteMapper;
 import com.gitee.sop.gatewaycommon.bean.ChannelMsg;
@@ -20,9 +19,6 @@ import java.util.List;
 @Slf4j
 @Service
 public class DbRouteConfigManager extends DefaultRouteConfigManager {
-
-    @Autowired
-    ConfigRouteBaseMapper configRouteBaseMapper;
 
     @Autowired
     ConfigRouteLimitMapper configRouteLimitMapper;
