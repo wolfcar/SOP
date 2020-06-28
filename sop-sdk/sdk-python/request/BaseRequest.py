@@ -44,13 +44,7 @@ class BaseRequest:
         if response_data is None:
             data_name = self.get_method().replace('.', '_') + '_response'
             response_data = response_dict.get(data_name)
-        base_response = BaseResponse(response_data)
-        base_response.request_id = response_dict.get('request_id')
-        base_response.code = response_data.get('code')
-        base_response.msg = response_data.get('msg')
-        base_response.sub_code = response_data.get('sub_code')
-        base_response.sub_msg = response_data.get('sub_msg')
-        return base_response
+        return response_data
 
 
 
