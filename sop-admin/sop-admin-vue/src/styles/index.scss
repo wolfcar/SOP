@@ -63,3 +63,8 @@ div:focus {
 .app-container {
   padding: 20px;
 }
+.el-alert__content .el-link,
+.cell .el-link {
+  margin-bottom: 1px;
+}
+.cell .el-button {padding: 0;}

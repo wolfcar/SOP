@@ -1,7 +1,5 @@
 package com.gitee.sop.servercommon.configuration;
 
-import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
-import com.alibaba.cloud.nacos.discovery.NacosWatch;
 import com.gitee.sop.servercommon.bean.ServiceConfig;
 import com.gitee.sop.servercommon.interceptor.ServiceContextInterceptor;
 import com.gitee.sop.servercommon.manager.EnvironmentContext;
@@ -9,16 +7,13 @@ import com.gitee.sop.servercommon.manager.ServiceRouteController;
 import com.gitee.sop.servercommon.mapping.ApiMappingHandlerMapping;
 import com.gitee.sop.servercommon.message.ServiceErrorFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -26,7 +21,6 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import javax.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
@@ -39,7 +33,7 @@ public class BaseServiceConfiguration implements WebMvcConfigurer, WebMvcRegistr
         ServiceConfig.getInstance().getI18nModules().add("i18n/isp/bizerror");
     }
 
-    private ApiMappingHandlerMapping apiMappingHandlerMapping = new ApiMappingHandlerMapping();
+    private final ApiMappingHandlerMapping apiMappingHandlerMapping = new ApiMappingHandlerMapping();
 
     @Autowired
     private Environment environment;
@@ -90,14 +84,14 @@ public class BaseServiceConfiguration implements WebMvcConfigurer, WebMvcRegistr
         return new ServiceRouteController();
     }
 
-    @Bean
-    @ConditionalOnMissingBean
-    @ConditionalOnProperty("spring.cloud.nacos.discovery.server-addr")
-    public NacosWatch nacosWatch(NacosDiscoveryProperties nacosDiscoveryProperties, ObjectProvider<TaskScheduler> taskScheduler) {
-        // 在元数据中新增启动时间，不能修改这个值，不然网关拉取接口会有问题
-        nacosDiscoveryProperties.getMetadata().put("time.startup", String.valueOf(System.currentTimeMillis()));
-        return new NacosWatch(nacosDiscoveryProperties, taskScheduler);
-    }
+//    @Bean
+//    @ConditionalOnMissingBean
+//    @ConditionalOnProperty("spring.cloud.nacos.discovery.server-addr")
+//    public NacosWatch nacosWatch(NacosDiscoveryProperties nacosDiscoveryProperties, ObjectProvider<TaskScheduler> taskScheduler) {
+//        // 在元数据中新增启动时间，不能修改这个值，不然网关拉取接口会有问题
+//        nacosDiscoveryProperties.getMetadata().put("time.startup", String.valueOf(System.currentTimeMillis()));
+//        return new NacosWatch(nacosDiscoveryProperties, taskScheduler);
+//    }
 
     @PostConstruct
     public final void after() {
