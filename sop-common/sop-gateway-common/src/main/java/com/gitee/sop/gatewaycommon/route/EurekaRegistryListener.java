@@ -5,6 +5,7 @@ import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.shared.Application;
 import com.netflix.discovery.shared.Applications;
 import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.netflix.eureka.CloudEurekaClient;
 import org.springframework.context.ApplicationEvent;
 
@@ -22,6 +23,9 @@ import java.util.stream.Collectors;
 public class EurekaRegistryListener extends BaseRegistryListener {
 
     private Set<ServiceHolder> cacheServices = new HashSet<>();
+
+    @Autowired(required = false)
+    private List<RegistryEvent> registryEventList;
 
     @Override
     public void onEvent(ApplicationEvent applicationEvent) {
@@ -57,10 +61,8 @@ public class EurekaRegistryListener extends BaseRegistryListener {
         }
 
         Set<String> removedServiceIdList = getRemovedServiceId(serviceList);
-        // 如果有服务删除
-        if (removedServiceIdList.size() > 0) {
-            this.doRemove(removedServiceIdList);
-        }
+        // 如果有服务下线
+        this.doRemove(removedServiceIdList);
 
         cacheServices = new HashSet<>(serviceList);
     }
@@ -106,12 +108,23 @@ public class EurekaRegistryListener extends BaseRegistryListener {
                 instanceDefinition.setPort(instanceInfo.getPort());
                 instanceDefinition.setMetadata(instanceInfo.getMetadata());
                 pullRoutes(instanceDefinition);
+                if (registryEventList != null) {
+                    registryEventList.forEach(registryEvent -> registryEvent.onRegistry(instanceDefinition));
+                }
             }
         });
     }
 
     private void doRemove(Set<String> deletedServices) {
-        deletedServices.forEach(this::removeRoutes);
+        if (deletedServices == null) {
+            return;
+        }
+        deletedServices.forEach(serviceId -> {
+            this.removeRoutes(serviceId);
+            if (registryEventList != null) {
+                registryEventList.forEach(registryEvent -> registryEvent.onRemove(serviceId));
+            }
+        });
     }
 
 }

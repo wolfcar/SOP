@@ -2,6 +2,7 @@ package com.gitee.sop.gatewaycommon.interceptor;
 
 import com.gitee.sop.gatewaycommon.bean.SopConstants;
 import com.gitee.sop.gatewaycommon.param.ApiParam;
+import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -59,6 +60,13 @@ public interface RouteInterceptorContext {
      * @return 返回上下文对象
      */
     Object getRequestContext();
+
+    /**
+     * 获取目标微服务实例，即具体选中哪台实例
+     *
+     * @return 返回目标微服务
+     */
+    ServiceInstance getServiceInstance();
 
     /**
      * 获取请求内容大小

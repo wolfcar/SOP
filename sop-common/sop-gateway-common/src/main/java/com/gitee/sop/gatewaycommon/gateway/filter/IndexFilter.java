@@ -32,6 +32,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -44,7 +46,11 @@ import java.util.Objects;
 public class IndexFilter implements WebFilter {
 
     private static final String REST_PATH_PREFIX = "/rest";
-    private static final String SOP_PATH_PREFIX = "/sop";
+
+    /** 路径白名单 */
+    private static List<String> PATH_WHITE_LIST = Arrays.asList(
+            "/sop", "/actuator"
+    );
 
     @Value("${sop.gateway-index-path:/}")
     private String indexPath;
@@ -59,8 +65,8 @@ public class IndexFilter implements WebFilter {
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         String path = request.getURI().getPath();
-        // SOP路径，直接放行
-        if (path.startsWith(SOP_PATH_PREFIX)) {
+        // 路径是否在白名单中，直接放行
+        if (this.isPathInWhiteList(path)) {
             return chain.filter(exchange);
         }
         // 如果是restful请求，直接转发
@@ -123,6 +129,15 @@ public class IndexFilter implements WebFilter {
         } else {
             return ServerWebExchangeUtil.forwardUnknown(exchange, chain);
         }
+    }
+
+    private boolean isPathInWhiteList(String path) {
+        for (String whitePath : PATH_WHITE_LIST) {
+            if (path.startsWith(whitePath)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void doValidate(ServerWebExchange exchange, ApiParam apiParam) {

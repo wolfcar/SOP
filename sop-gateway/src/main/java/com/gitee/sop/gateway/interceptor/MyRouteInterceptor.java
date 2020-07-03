@@ -3,6 +3,7 @@ package com.gitee.sop.gateway.interceptor;
 import com.gitee.sop.gatewaycommon.interceptor.RouteInterceptor;
 import com.gitee.sop.gatewaycommon.interceptor.RouteInterceptorContext;
 import com.gitee.sop.gatewaycommon.param.ApiParam;
+import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.stereotype.Component;
 
 /**
@@ -21,7 +22,9 @@ public class MyRouteInterceptor implements RouteInterceptor {
 
     @Override
     public void afterRoute(RouteInterceptorContext context) {
-        System.out.println("请求成功，微服务返回结果：" + context.getServiceResult());
+        ServiceInstance serviceInstance = context.getServiceInstance();
+        System.out.println("请求成功，serviceId:" + serviceInstance.getServiceId() + "(" + serviceInstance.getHost() + ":" + serviceInstance.getPort() + ")" +
+                "，微服务返回结果：" + context.getServiceResult());
     }
 
     @Override

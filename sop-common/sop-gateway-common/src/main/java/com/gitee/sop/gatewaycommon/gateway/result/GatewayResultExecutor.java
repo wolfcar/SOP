@@ -2,6 +2,7 @@ package com.gitee.sop.gatewaycommon.gateway.result;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.gitee.sop.gatewaycommon.bean.DefaultRouteInterceptorContext;
 import com.gitee.sop.gatewaycommon.interceptor.RouteInterceptorContext;
 import com.gitee.sop.gatewaycommon.bean.SopConstants;
 import com.gitee.sop.gatewaycommon.exception.ApiException;
@@ -12,6 +13,7 @@ import com.gitee.sop.gatewaycommon.param.ApiParam;
 import com.gitee.sop.gatewaycommon.result.BaseExecutorAdapter;
 import com.gitee.sop.gatewaycommon.result.ResultExecutorForGateway;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -69,6 +71,13 @@ public class GatewayResultExecutor extends BaseExecutorAdapter<ServerWebExchange
     @Override
     protected RouteInterceptorContext getRouteInterceptorContext(ServerWebExchange exchange) {
         return (RouteInterceptorContext) exchange.getAttributes().get(SopConstants.CACHE_ROUTE_INTERCEPTOR_CONTEXT);
+    }
+
+    @Override
+    protected void bindRouteInterceptorContextProperties(RouteInterceptorContext routeInterceptorContext, ServerWebExchange requestContext) {
+        ServiceInstance serviceInstance = requestContext.getAttribute(SopConstants.TARGET_SERVICE);
+        DefaultRouteInterceptorContext context = (DefaultRouteInterceptorContext) routeInterceptorContext;
+        context.setServiceInstance(serviceInstance);
     }
 
     @Override

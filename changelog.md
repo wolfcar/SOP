@@ -1,8 +1,15 @@
 # changelog
 
+## 3.2.1
+
+- 强化RouteInterceptorContext，可获取微服务信息
+
 ## 3.2.0
 
 - 使用alibaba cloud
+- 新增Python，Go版本SDK
+- 返回结果新增全局request_id
+- 沙箱环境可填写token
 
 Hoxton.SR3（Spring Cloud Version）， 2.2.1.RELEASE（Spring Cloud Alibaba Version）， 2.2.5.RELEASE（Spring Boot Version）
 

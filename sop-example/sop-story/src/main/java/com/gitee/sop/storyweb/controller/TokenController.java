@@ -6,6 +6,7 @@ import com.gitee.sop.servercommon.bean.ServiceContext;
 import com.gitee.sop.storyweb.controller.param.StoryParam;
 import com.gitee.sop.storyweb.controller.result.StoryResult;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "故事接口")
 public class TokenController {
 
+    @ApiOperation(value="传递token", notes = "传递token")
     @ApiMapping(value = "story.token.get", needToken = true/* 设置true，网关会校验token是否存在 */)
     public StoryResult token(StoryParam story) {
         OpenContext openContext = ServiceContext.getCurrentContext().getOpenContext();

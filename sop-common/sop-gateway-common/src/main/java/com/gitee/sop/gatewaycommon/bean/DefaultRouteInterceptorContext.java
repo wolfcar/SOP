@@ -2,6 +2,7 @@ package com.gitee.sop.gatewaycommon.bean;
 
 import com.gitee.sop.gatewaycommon.interceptor.RouteInterceptorContext;
 import com.gitee.sop.gatewaycommon.param.ApiParam;
+import org.springframework.cloud.client.ServiceInstance;
 
 /**
  * @author tanghc
@@ -26,6 +27,8 @@ public class DefaultRouteInterceptorContext implements RouteInterceptorContext {
     private long requestDataSize;
     /** 返回内容大小 */
     private long responseDataSize;
+    /** 负载均衡选中的微服务 */
+    private ServiceInstance serviceInstance;
 
     @Override
     public ApiParam getApiParam() {
@@ -110,5 +113,14 @@ public class DefaultRouteInterceptorContext implements RouteInterceptorContext {
 
     public void setResponseDataSize(long responseDataSize) {
         this.responseDataSize = responseDataSize;
+    }
+
+    @Override
+    public ServiceInstance getServiceInstance() {
+        return serviceInstance;
+    }
+
+    public void setServiceInstance(ServiceInstance serviceInstance) {
+        this.serviceInstance = serviceInstance;
     }
 }
