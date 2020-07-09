@@ -26,8 +26,8 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import javax.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author tanghc
@@ -39,7 +39,7 @@ public class BaseServiceConfiguration implements WebMvcConfigurer, WebMvcRegistr
         ServiceConfig.getInstance().getI18nModules().add("i18n/isp/bizerror");
     }
 
-    private ApiMappingHandlerMapping apiMappingHandlerMapping = new ApiMappingHandlerMapping();
+    private final ApiMappingHandlerMapping apiMappingHandlerMapping = new ApiMappingHandlerMapping();
 
     @Autowired
     private Environment environment;
@@ -93,9 +93,15 @@ public class BaseServiceConfiguration implements WebMvcConfigurer, WebMvcRegistr
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty("spring.cloud.nacos.discovery.server-addr")
-    public NacosWatch nacosWatch(NacosDiscoveryProperties nacosDiscoveryProperties, ObjectProvider<TaskScheduler> taskScheduler) {
+    public NacosWatch nacosWatch(NacosDiscoveryProperties nacosDiscoveryProperties, ObjectProvider<TaskScheduler> taskScheduler, Environment environment) {
+        Map<String, String> metadata = nacosDiscoveryProperties.getMetadata();
+        String contextPath = environment.getProperty("server.servlet.context-path");
+        // 将context-path信息加入到metadata中
+        if (contextPath != null) {
+            metadata.put("context-path", contextPath);
+        }
         // 在元数据中新增启动时间，不能修改这个值，不然网关拉取接口会有问题
-        nacosDiscoveryProperties.getMetadata().put("time.startup", String.valueOf(System.currentTimeMillis()));
+        metadata.put("time.startup", String.valueOf(System.currentTimeMillis()));
         return new NacosWatch(nacosDiscoveryProperties, taskScheduler);
     }
 
