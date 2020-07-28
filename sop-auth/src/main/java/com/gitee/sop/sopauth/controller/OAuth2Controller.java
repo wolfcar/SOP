@@ -1,6 +1,6 @@
 package com.gitee.sop.sopauth.controller;
 
-import com.gitee.sop.servercommon.annotation.ApiMapping;
+import com.gitee.sop.servercommon.annotation.Open;
 import com.gitee.sop.sopauth.auth.FetchTokenParam;
 import com.gitee.sop.sopauth.auth.FetchTokenResult;
 import com.gitee.sop.sopauth.auth.OAuth2Config;
@@ -73,7 +73,8 @@ public class OAuth2Controller {
      * @param param
      * @return
      */
-    @ApiMapping("open.auth.token.app")
+    @Open("open.auth.token.app")
+    @RequestMapping("fetchToken")
     @ResponseBody
     public FetchTokenResult fetchToken(FetchTokenParam param) {
         FetchTokenResult fetchTokenResult = oAuth2Service.accessToken(param, OAuth2Config.getInstance());

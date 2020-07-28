@@ -20,7 +20,7 @@ public class SopGatewayEnvironmentPostProcessor implements EnvironmentPostProces
 
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-        Resource resource = new ClassPathResource("sop-bridge.properties");
+        Resource resource = new ClassPathResource("META-INF/gateway.properties");
         // 加载成PropertySource对象，并添加到Environment环境中
         environment.getPropertySources().addLast(loadProfiles(resource));
     }

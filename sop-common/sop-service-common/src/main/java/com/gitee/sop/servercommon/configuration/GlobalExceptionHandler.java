@@ -1,8 +1,6 @@
 package com.gitee.sop.servercommon.configuration;
 
-import com.gitee.sop.servercommon.bean.OpenContext;
 import com.gitee.sop.servercommon.bean.ServiceConfig;
-import com.gitee.sop.servercommon.bean.ServiceContext;
 import com.gitee.sop.servercommon.exception.ServiceException;
 import com.gitee.sop.servercommon.result.ServiceResultBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -66,8 +64,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public Object exceptionHandler(HttpServletRequest request, HttpServletResponse response, Exception exception) {
         response.addHeader(X_SERVICE_ERROR_HEADER_NAME, String.valueOf(SYSTEM_ERROR_CODE));
-        OpenContext openContext = ServiceContext.getCurrentContext().getOpenContext();
-        log.error("系统错误, openContext:{}", openContext == null ? "null" : openContext, exception);
+        log.error("系统错误", exception);
         StringBuilder msg = new StringBuilder();
         msg.append(exception.getMessage());
         StackTraceElement[] stackTrace = exception.getStackTrace();

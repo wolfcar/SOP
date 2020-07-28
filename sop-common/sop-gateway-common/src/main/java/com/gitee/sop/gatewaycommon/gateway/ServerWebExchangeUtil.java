@@ -81,13 +81,10 @@ public class ServerWebExchangeUtil {
         return ServerRequest.create(exchange, messageReaders);
     }
 
-    public static ApiParam getApiParamForRestful(ServerWebExchange exchange, String path) {
+    public static String getRestfulPath(String path) {
         int index = path.indexOf(REST_PATH);
         // 取"/rest"的后面部分
-        String newPath = path.substring(index + REST_PATH.length());
-        ApiParam apiParam = ApiParam.createRestfulApiParam(newPath);
-        setApiParam(exchange, apiParam);
-        return apiParam;
+        return path.substring(index + REST_PATH.length());
     }
 
     /**
@@ -97,7 +94,7 @@ public class ServerWebExchangeUtil {
      * @param forwardPath 重定向path
      * @return 返回新的ServerWebExchange，配合chain.filter(newExchange);使用
      */
-    private static ServerWebExchange getForwardExchange(ServerWebExchange exchange, String forwardPath) {
+    public static ServerWebExchange getForwardExchange(ServerWebExchange exchange, String forwardPath) {
         ServerHttpRequest newRequest = exchange.getRequest()
                 .mutate()
                 .path(forwardPath).build();

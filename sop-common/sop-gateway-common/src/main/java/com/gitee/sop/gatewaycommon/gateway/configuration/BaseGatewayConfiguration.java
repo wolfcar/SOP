@@ -15,7 +15,7 @@ import com.gitee.sop.gatewaycommon.gateway.loadbalancer.SopLoadBalancerClient;
 import com.gitee.sop.gatewaycommon.gateway.route.GatewayForwardChooser;
 import com.gitee.sop.gatewaycommon.gateway.route.GatewayRouteCache;
 import com.gitee.sop.gatewaycommon.gateway.route.GatewayRouteRepository;
-import com.gitee.sop.gatewaycommon.manager.AbstractConfiguration;
+import com.gitee.sop.gatewaycommon.config.AbstractConfiguration;
 import com.gitee.sop.gatewaycommon.manager.RouteRepositoryContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;

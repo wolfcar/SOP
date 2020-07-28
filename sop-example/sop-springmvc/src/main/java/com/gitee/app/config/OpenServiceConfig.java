@@ -8,7 +8,7 @@ import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.alibaba.nacos.client.naming.utils.NetUtils;
 import com.alibaba.nacos.spring.context.annotation.discovery.EnableNacosDiscovery;
 import com.gitee.sop.servercommon.bean.ServiceConfig;
-import com.gitee.sop.servercommon.configuration.SpringMvcServiceConfiguration;
+import com.gitee.sop.servercommon.configuration.ServiceConfiguration;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @EnableNacosDiscovery(globalProperties = @NacosProperties(serverAddr = "127.0.0.1:8848"))
-public class OpenServiceConfig extends SpringMvcServiceConfiguration {
+public class OpenServiceConfig extends ServiceConfiguration {
 
 
     public static final String SPRING_APPLICATION_NAME = "spring.application.name";
@@ -31,9 +31,9 @@ public class OpenServiceConfig extends SpringMvcServiceConfiguration {
     }
 
     /** 对应tomcat中的contextPath */
-    private String contextPath = "/sop-springmvc";
-    private String serviceId = "sop-springmvc";
-    private int port = 2223;
+    private final String contextPath = "/sop-springmvc";
+    private final String serviceId = "sop-springmvc";
+    private final int port = 2223;
 
     @NacosInjected
     private NamingService namingService;

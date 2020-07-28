@@ -21,8 +21,8 @@
 
 ```properties
 # nacos cloud配置
-#spring.cloud.nacos.discovery.server-addr=${nacos.url}
-#nacos.config.server-addr=${nacos.url}
+#spring.cloud.nacos.discovery.server-addr=${register.url}
+#nacos.config.server-addr=${register.url}
 ```
 
 添加eureka配置

@@ -1,6 +1,6 @@
 package com.gitee.sop.gatewaycommon.manager;
 
-import com.gitee.sop.gatewaycommon.zuul.loadbalancer.ServiceGrayConfig;
+import com.gitee.sop.gatewaycommon.loadbalancer.ServiceGrayConfig;
 import com.google.common.collect.Maps;
 
 import java.util.Map;
@@ -13,12 +13,12 @@ public class DefaultEnvGrayManager implements EnvGrayManager {
     /**
      * key：serviceId，服务对应的灰度配置
      */
-    private Map<String, ServiceGrayConfig> serviceGrayConfigMap = Maps.newConcurrentMap();
+    private final Map<String, ServiceGrayConfig> serviceGrayConfigMap = Maps.newConcurrentMap();
 
     /**
      * key:instanceId value:serviceId
      */
-    private Map<String, String> instanceIdServiceIdMap = Maps.newConcurrentMap();
+    private final Map<String, String> instanceIdServiceIdMap = Maps.newConcurrentMap();
 
     @Override
     public void saveServiceGrayConfig(ServiceGrayConfig serviceGrayConfig) {

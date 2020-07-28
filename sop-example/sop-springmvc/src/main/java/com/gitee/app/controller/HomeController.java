@@ -1,7 +1,7 @@
 package com.gitee.app.controller;
 
 import com.gitee.app.model.Goods;
-import com.gitee.sop.servercommon.annotation.ApiMapping;
+import com.gitee.sop.servercommon.annotation.Open;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -45,7 +45,8 @@ public class HomeController {
 
 
 	@ApiOperation(value="获取商品", notes = "获取商品说明")
-	@ApiMapping(value = "springmvc.goods.get")
+	@Open("springmvc.goods.get")
+	@RequestMapping("/goods/get")
 	@ResponseBody
 	public Goods getGoods(Goods param) {
 		Goods goods = new Goods();

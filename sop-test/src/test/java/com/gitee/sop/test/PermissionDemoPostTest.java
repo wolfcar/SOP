@@ -25,7 +25,7 @@ public class PermissionDemoPostTest extends TestBase {
         // 公共请求参数
         Map<String, String> params = new HashMap<String, String>();
         params.put("app_id", appId);
-        params.put("method", "permission.story.get");
+        params.put("method", "story.get.permission");
         params.put("format", "json");
         params.put("charset", "utf-8");
         params.put("sign_type", "RSA2");

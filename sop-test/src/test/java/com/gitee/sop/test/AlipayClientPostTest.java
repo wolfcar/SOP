@@ -41,7 +41,7 @@ public class AlipayClientPostTest extends TestBase {
         // 公共请求参数
         Map<String, String> params = new HashMap<String, String>();
         params.put("app_id", appId);
-        params.put("method", "alipay.story.get");
+        params.put("method", "story.get");
         params.put("format", "json");
         params.put("charset", "utf-8");
         params.put("sign_type", "RSA2");

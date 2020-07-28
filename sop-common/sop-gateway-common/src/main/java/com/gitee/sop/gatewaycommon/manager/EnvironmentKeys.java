@@ -1,27 +1,16 @@
 package com.gitee.sop.gatewaycommon.manager;
 
-import com.gitee.sop.gatewaycommon.zuul.loadbalancer.EnvironmentServerChooser;
-
 public enum EnvironmentKeys {
     SPRING_PROFILES_ACTIVE("spring.profiles.active", "default"),
     /**
      * spring.application.name
      */
     SPRING_APPLICATION_NAME("spring.application.name"),
-    /**
-     * 指定负载均衡规则类
-     */
-    ZUUL_CUSTOM_RULE_CLASSNAME("zuul.custom-rule-classname", EnvironmentServerChooser.class.getName()),
 
     /**
      * sign.urlencode=true，签名验证拼接字符串的value部分进行urlencode
      */
     SIGN_URLENCODE("sign.urlencode"),
-
-    /**
-     * sop.restful.enable=true，开启传统web开发模式
-     */
-    SOP_RESTFUL_ENABLE("sop.restful.enable"),
 
     /**
      * sop.restful.path=/xx ，指定请求前缀，默认/rest
@@ -39,9 +28,11 @@ public enum EnvironmentKeys {
     /**
      * 预发布域名
      */
-    PRE_DOMAIN("pre.domain");
+    PRE_DOMAIN("pre.domain"),
 
-    private String key;
+    ;
+
+    private final String key;
     private String defaultValue;
 
     public String getKey() {

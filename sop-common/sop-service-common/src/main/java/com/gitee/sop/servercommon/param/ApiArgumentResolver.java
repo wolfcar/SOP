@@ -1,11 +1,10 @@
 package com.gitee.sop.servercommon.param;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.gitee.sop.servercommon.annotation.ApiAbility;
-import com.gitee.sop.servercommon.annotation.ApiMapping;
-import com.gitee.sop.servercommon.bean.OpenContext;
-import com.gitee.sop.servercommon.bean.OpenContextImpl;
-import com.gitee.sop.servercommon.bean.ServiceContext;
+import com.alibaba.fastjson.JSONValidator;
+import com.gitee.sop.servercommon.annotation.Open;
+import com.gitee.sop.servercommon.bean.ParamNames;
 import com.gitee.sop.servercommon.util.OpenUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
@@ -31,8 +30,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.security.Principal;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -50,7 +47,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
 
-    private Map<MethodParameter, HandlerMethodArgumentResolver> argumentResolverCache = new ConcurrentHashMap<>(256);
+    private final Map<MethodParameter, HandlerMethodArgumentResolver> argumentResolverCache = new ConcurrentHashMap<>(256);
 
     private ParamValidator paramValidator = new ServiceParamValidator();
 
@@ -58,7 +55,7 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
 
     private RequestMappingHandlerAdapter requestMappingHandlerAdapter;
 
-    private static List<MethodParameter> openApiParams = new ArrayList<>(64);
+    private static final List<MethodParameter> openApiParams = new ArrayList<>(64);
 
     static {
         try {
@@ -87,9 +84,6 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
             openApiParams.add(methodParameter);
         }
         Class<?> paramType = methodParameter.getParameterType();
-        if (paramType == OpenContext.class) {
-            return true;
-        }
         // 排除的
         boolean exclude = (
             WebRequest.class.isAssignableFrom(paramType) ||
@@ -113,8 +107,7 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
     }
 
     private boolean hasApiAnnotation(MethodParameter methodParameter) {
-        return methodParameter.hasMethodAnnotation(ApiMapping.class)
-                || OpenUtil.getAnnotationFromMethodOrClass(methodParameter.getMethod(), ApiAbility.class) != null;
+        return methodParameter.hasMethodAnnotation(Open.class);
     }
 
     @Override
@@ -125,14 +118,10 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
             , WebDataBinderFactory webDataBinderFactory
     ) throws Exception {
         if (openApiParams.contains(methodParameter)) {
-            Object ret = this.getParamObject(methodParameter, nativeWebRequest);
-            Object paramObj = ret;
-            if (paramObj instanceof OpenContext) {
-                paramObj = ((OpenContext) paramObj).getBizObject();
-            }
+            Object paramObj = this.getParamObject(methodParameter, nativeWebRequest);
             // JSR-303验证
             paramValidator.validateBizParam(paramObj);
-            return ret;
+            return paramObj;
         }
         HandlerMethodArgumentResolver resolver = getOtherArgumentResolver(methodParameter);
         if (resolver != null) {
@@ -157,57 +146,45 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
     protected Object getParamObject(MethodParameter methodParameter, NativeWebRequest nativeWebRequest) {
         HttpServletRequest request = (HttpServletRequest) nativeWebRequest.getNativeRequest();
         JSONObject requestParams = OpenUtil.getRequestParams(request);
+        String bizContent = requestParams.getString(ParamNames.BIZ_CONTENT_NAME);
         // 方法参数类型
         Class<?> parameterType = methodParameter.getParameterType();
-        boolean isOpenContextParam = parameterType == OpenContext.class;
-        Class<?> bizObjClass = parameterType;
-        // 参数是OpenRequest，则取OpenRequest的泛型参数类型
-        if (isOpenContextParam) {
-            bizObjClass = this.getOpenRequestGenericParameterClass(methodParameter);
+        Object param;
+        if (bizContent != null) {
+            // 如果是json字符串
+            if (JSONValidator.from(bizContent).validate()) {
+                param = JSON.parseObject(bizContent, parameterType);
+            } else {
+                // 否则认为是 aa=1&bb=33 形式
+                Map<String, Object> query = OpenUtil.parseQueryToMap(bizContent);
+                param = new JSONObject(query).toJavaObject(parameterType);
+            }
+        } else {
+            param = requestParams.toJavaObject(parameterType);
         }
-        OpenContext openContext = new OpenContextImpl(requestParams, bizObjClass);
-        ServiceContext.getCurrentContext().setOpenContext(openContext);
-        Object bizObj = openContext.getBizObject();
-        this.bindUploadFile(bizObj, request);
-        return isOpenContextParam ? openContext : bizObj;
+        this.bindUploadFile(param, request);
+        return param;
     }
 
-    /**
-     * 获取泛型参数类型
-     *
-     * @param methodParameter 参数
-     * @return 返回泛型参数class
-     */
-    protected Class<?> getOpenRequestGenericParameterClass(MethodParameter methodParameter) {
-        Type genericParameterType = methodParameter.getGenericParameterType();
-        Class<?> bizObjClass = null;
-        if (genericParameterType instanceof ParameterizedType) {
-            Type[] params = ((ParameterizedType) genericParameterType).getActualTypeArguments();
-            if (params != null && params.length >= 1) {
-                bizObjClass = (Class<?>) params[0];
-            }
-        }
-        return bizObjClass;
-    }
 
     /**
      * 将上传文件对象绑定到属性中
      *
-     * @param bizObj             业务参数
+     * @param param             业务参数
      * @param httpServletRequest
      */
-    protected void bindUploadFile(Object bizObj, HttpServletRequest httpServletRequest) {
-        if (bizObj == null) {
+    protected void bindUploadFile(Object param, HttpServletRequest httpServletRequest) {
+        if (param == null) {
             return;
         }
         if (this.isMultipartRequest(httpServletRequest)) {
             MultipartHttpServletRequest request = (MultipartHttpServletRequest) httpServletRequest;
-            Class<?> bizClass = bizObj.getClass();
+            Class<?> bizClass = param.getClass();
             ReflectionUtils.doWithFields(bizClass, field -> {
                 ReflectionUtils.makeAccessible(field);
                 String name = field.getName();
                 MultipartFile multipartFile = request.getFile(name);
-                ReflectionUtils.setField(field, bizObj, multipartFile);
+                ReflectionUtils.setField(field, param, multipartFile);
             }, field -> field.getType() == MultipartFile.class);
         }
     }

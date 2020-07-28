@@ -4,10 +4,11 @@ import com.gitee.sop.servercommon.bean.ServiceConfig;
 import com.gitee.sop.servercommon.configuration.AlipayServiceConfiguration;
 import com.gitee.sop.servercommon.swagger.SwaggerSupport;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
- * 使用支付宝开放平台功能
+ * 开放平台功能
  * @author tanghc
  */
 @Configuration
@@ -38,11 +39,3 @@ public class OpenServiceConfig extends AlipayServiceConfiguration {
 
 }
 
-/**
- * 使用淘宝开放平台功能
- * @author tanghc
- */
-//@Configuration
-//public class OpenServiceConfig extends TaobaoServiceConfiguration {
-//
-//}

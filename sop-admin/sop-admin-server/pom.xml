@@ -22,8 +22,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.alibaba.cloud</groupId>
-			<artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+			<groupId>com.gitee.sop</groupId>
+			<artifactId>sop-bridge-nacos</artifactId>
+			<version>3.2.0-SNAPSHOT</version>
 		</dependency>
 
 		<!-- easyopen starter -->

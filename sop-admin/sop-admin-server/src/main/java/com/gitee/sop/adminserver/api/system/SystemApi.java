@@ -36,7 +36,7 @@ public class SystemApi {
     String adminLogin(LoginForm param) {
         String username = param.getUsername();
         String password = param.getPassword();
-        password = DigestUtils.md5Hex(password);
+        password = DigestUtils.md5Hex(username + password + username);
 
         Query query = new Query()
                 .eq("username", username)

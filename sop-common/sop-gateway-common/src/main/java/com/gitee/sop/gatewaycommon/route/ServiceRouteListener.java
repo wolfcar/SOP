@@ -3,9 +3,7 @@ package com.gitee.sop.gatewaycommon.route;
 import com.alibaba.fastjson.JSON;
 import com.gitee.sop.gatewaycommon.bean.InstanceDefinition;
 import com.gitee.sop.gatewaycommon.bean.ServiceRouteInfo;
-import com.gitee.sop.gatewaycommon.bean.SopConstants;
 import com.gitee.sop.gatewaycommon.manager.BaseRouteCache;
-import com.gitee.sop.gatewaycommon.manager.EnvironmentKeys;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +44,7 @@ public class ServiceRouteListener extends BaseServiceListener {
         String serviceName = instance.getServiceId();
         String url = getRouteRequestUrl(instance);
         log.info("拉取路由配置，serviceId: {}, url: {}", serviceName, url);
-        ResponseEntity<String> responseEntity = getRestTemplate().postForEntity(url, getHttpEntity(), String.class);
+        ResponseEntity<String> responseEntity = getRestTemplate().getForEntity(url, String.class);
         if (responseEntity.getStatusCode() == HttpStatus.OK) {
             String body = responseEntity.getBody();
             ServiceRouteInfo serviceRouteInfo = JSON.parseObject(body, ServiceRouteInfo.class);
@@ -58,9 +56,6 @@ public class ServiceRouteListener extends BaseServiceListener {
 
     protected HttpEntity<String> getHttpEntity() {
         HttpHeaders headers = new HttpHeaders();
-        String restful = EnvironmentKeys.SOP_RESTFUL_ENABLE.getValue();
-        boolean enableRestful = "true".equals(restful);
-        headers.add(HEADER_RESTFUL, String.valueOf(enableRestful));
         return new HttpEntity<>(headers);
     }
 

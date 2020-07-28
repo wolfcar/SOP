@@ -20,10 +20,10 @@
 	</properties>
 
 	<modules>
+		<module>sop-bridge-nacos</module>
+		<module>sop-bridge-eureka</module>
 		<module>sop-gateway-common</module>
 		<module>sop-service-common</module>
-        <module>sop-bridge-zuul</module>
-		<module>sop-bridge-gateway</module>
 	</modules>
 
 

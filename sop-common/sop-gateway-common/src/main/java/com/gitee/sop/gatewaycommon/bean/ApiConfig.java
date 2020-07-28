@@ -25,7 +25,6 @@ import com.gitee.sop.gatewaycommon.result.DataNameBuilder;
 import com.gitee.sop.gatewaycommon.result.DefaultDataNameBuilder;
 import com.gitee.sop.gatewaycommon.result.ResultAppender;
 import com.gitee.sop.gatewaycommon.result.ResultExecutorForGateway;
-import com.gitee.sop.gatewaycommon.result.ResultExecutorForZuul;
 import com.gitee.sop.gatewaycommon.secret.CacheIsvManager;
 import com.gitee.sop.gatewaycommon.secret.IsvManager;
 import com.gitee.sop.gatewaycommon.session.ApiSessionManager;
@@ -37,9 +36,6 @@ import com.gitee.sop.gatewaycommon.validate.Encrypter;
 import com.gitee.sop.gatewaycommon.validate.Signer;
 import com.gitee.sop.gatewaycommon.validate.TokenValidator;
 import com.gitee.sop.gatewaycommon.validate.Validator;
-import com.gitee.sop.gatewaycommon.zuul.controller.ZuulErrorController;
-import com.gitee.sop.gatewaycommon.zuul.param.ZuulParamBuilder;
-import com.gitee.sop.gatewaycommon.zuul.result.ZuulResultExecutor;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
@@ -68,11 +64,6 @@ public class ApiConfig {
     private ResultExecutorForGateway gatewayResultExecutor = new GatewayResultExecutor();
 
     /**
-     * zuul合并结果处理
-     */
-    private ResultExecutorForZuul zuulResultExecutor = new ZuulResultExecutor();
-
-    /**
      * isv管理
      */
     private IsvManager isvManager = new CacheIsvManager();
@@ -86,11 +77,6 @@ public class ApiConfig {
      * 签名工具
      */
     private Signer signer = new ApiSigner();
-
-    /**
-     * 参数解析，zuul
-     */
-    private ZuulParamBuilder zuulParamBuilder = new ZuulParamBuilder();
 
     /**
      * 验证
@@ -146,11 +132,6 @@ public class ApiConfig {
      * 处理错误信息
      */
     private ServiceErrorManager serviceErrorManager = new DefaultServiceErrorManager();
-
-    /**
-     * zuul网关全局异常处理
-     */
-    private ZuulErrorController zuulErrorController = new ZuulErrorController();
 
     private ParameterFormatter parameterFormatter;
 

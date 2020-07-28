@@ -48,7 +48,7 @@ public class IndexFilter implements WebFilter {
     private static final String REST_PATH_PREFIX = "/rest";
 
     /** 路径白名单 */
-    private static List<String> PATH_WHITE_LIST = Arrays.asList(
+    private static final List<String> PATH_WHITE_LIST = Arrays.asList(
             "/sop", "/actuator"
     );
 
@@ -71,15 +71,9 @@ public class IndexFilter implements WebFilter {
         }
         // 如果是restful请求，直接转发
         if (path.startsWith(REST_PATH_PREFIX)) {
-            String sopRestfulEnableValue = EnvironmentKeys.SOP_RESTFUL_ENABLE.getValue();
-            if (!Objects.equals("true", sopRestfulEnableValue)) {
-                log.error("尝试调用restful请求，但sop.restful.enable未开启");
-                return ServerWebExchangeUtil.forwardUnknown(exchange, chain);
-            }
-            ApiParam apiParam = ServerWebExchangeUtil.getApiParamForRestful(exchange, path);
-            this.doValidate(exchange, apiParam);
-            ForwardInfo forwardInfo = gatewayForwardChooser.getForwardInfo(exchange);
-            ServerWebExchange newExchange = ServerWebExchangeUtil.getForwardExchange(exchange, forwardInfo);
+            exchange.getAttributes().put(SopConstants.RESTFUL_REQUEST, true);
+            String restfulPath = ServerWebExchangeUtil.getRestfulPath(path);
+            ServerWebExchange newExchange = ServerWebExchangeUtil.getForwardExchange(exchange, restfulPath);
             return chain.filter(newExchange);
         }
         if (Objects.equals(path, indexPath)) {
