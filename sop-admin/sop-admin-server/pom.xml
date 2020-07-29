@@ -23,7 +23,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.gitee.sop</groupId>
-			<artifactId>sop-bridge-nacos</artifactId>
+			<artifactId>sop-bridge-eureka</artifactId>
 			<version>4.0.0-SNAPSHOT</version>
 		</dependency>
 
