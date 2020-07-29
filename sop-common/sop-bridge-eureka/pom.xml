@@ -10,7 +10,7 @@
     </parent>
     
     <modelVersion>4.0.0</modelVersion>
-    <version>3.2.0-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
 
     <artifactId>sop-bridge-eureka</artifactId>
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.gitee.sop</groupId>
             <artifactId>sop-gateway-common</artifactId>
-            <version>3.2.0-SNAPSHOT</version>
+            <version>4.0.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>

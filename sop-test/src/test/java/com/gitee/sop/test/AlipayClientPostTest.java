@@ -36,8 +36,6 @@ public class AlipayClientPostTest extends TestBase {
     @Test
     public void testGet() throws Exception {
 
-        // 接口实现见：com.gitee.sop.storyweb.controller.AlipayController.getStory
-
         // 公共请求参数
         Map<String, String> params = new HashMap<String, String>();
         params.put("app_id", appId);
