@@ -10,6 +10,7 @@ import com.alibaba.nacos.spring.context.annotation.discovery.EnableNacosDiscover
 import com.gitee.sop.servercommon.bean.ServiceConfig;
 import com.gitee.sop.servercommon.configuration.ServiceConfiguration;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * 使用支付宝开放平台功能
@@ -17,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author tanghc
  */
 @Slf4j
-@EnableNacosDiscovery(globalProperties = @NacosProperties(serverAddr = "127.0.0.1:8848"))
+@EnableNacosDiscovery
 public class OpenServiceConfig extends ServiceConfiguration {
 
 
@@ -30,10 +31,12 @@ public class OpenServiceConfig extends ServiceConfiguration {
         ServiceConfig.getInstance().setDefaultVersion("1.0");
     }
 
-    /** 对应tomcat中的contextPath */
-    private final String contextPath = "/sop-springmvc";
-    private final String serviceId = "sop-springmvc";
-    private final int port = 2223;
+    @Value("${spring.application.name}")
+    private String serviceId;
+    @Value("${server.port}")
+    private int port;
+    @Value("${server.servlet.context-path}")
+    private String contextPath;
 
     @NacosInjected
     private NamingService namingService;
