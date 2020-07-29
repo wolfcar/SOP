@@ -247,7 +247,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 LOCK TABLES `admin_user_info` WRITE;
 ALTER TABLE `admin_user_info` DISABLE KEYS;
 INSERT INTO `admin_user_info` (`id`, `username`, `password`, `status`, `gmt_create`, `gmt_modified`) VALUES
-	(1,'admin','14e1b600b1fd579f47433b88e8d85291',1,'2019-04-02 19:55:26','2019-04-02 19:55:26');
+	(1,'admin','a62cd510fb9a8a557a27ef279569091f',1,'2019-04-02 19:55:26','2019-04-02 19:55:26');
 ALTER TABLE `admin_user_info` ENABLE KEYS;
 UNLOCK TABLES;
 
