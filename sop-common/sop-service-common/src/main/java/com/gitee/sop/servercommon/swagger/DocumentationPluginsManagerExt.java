@@ -1,9 +1,7 @@
 package com.gitee.sop.servercommon.swagger;
 
-import com.gitee.sop.servercommon.annotation.ApiAbility;
-import com.gitee.sop.servercommon.annotation.ApiMapping;
+import com.gitee.sop.servercommon.annotation.Open;
 import com.gitee.sop.servercommon.bean.ServiceConfig;
-import com.gitee.sop.servercommon.mapping.RouteUtil;
 import com.google.common.base.Optional;
 import io.swagger.annotations.Api;
 import org.springframework.core.annotation.Order;
@@ -33,23 +31,13 @@ public class DocumentationPluginsManagerExt extends DocumentationPluginsManager 
 
     private void setVendorExtension(Operation operation, OperationContext operationContext) {
         List<VendorExtension> vendorExtensions = operation.getVendorExtensions();
-        Optional<ApiMapping> mappingOptional = operationContext.findAnnotation(ApiMapping.class);
+        Optional<Open> mappingOptional = operationContext.findAnnotation(Open.class);
         if (mappingOptional.isPresent()) {
-            ApiMapping apiMapping = mappingOptional.get();
-            String name = apiMapping.value()[0];
-            String version = buildVersion(apiMapping.version());
+            Open open = mappingOptional.get();
+            String name = open.value();
+            String version = buildVersion(open.version());
             vendorExtensions.add(new StringVendorExtension(SOP_NAME, name));
             vendorExtensions.add(new StringVendorExtension(SOP_VERSION, version));
-        } else {
-            Optional<ApiAbility> abilityOptional = operationContext.findAnnotation(ApiAbility.class);
-            if (abilityOptional.isPresent()) {
-                ApiAbility apiAbility = abilityOptional.get();
-                String mappingPattern = operationContext.requestMappingPattern();
-                String name = RouteUtil.buildApiName(mappingPattern);
-                String version = buildVersion(apiAbility.version());
-                vendorExtensions.add(new StringVendorExtension(SOP_NAME, name));
-                vendorExtensions.add(new StringVendorExtension(SOP_VERSION, version));
-            }
         }
         Optional<Api> apiOptional = operationContext.findControllerAnnotation(Api.class);
         int order = 0;

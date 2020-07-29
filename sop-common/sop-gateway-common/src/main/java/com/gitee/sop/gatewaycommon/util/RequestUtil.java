@@ -4,8 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.gitee.sop.gatewaycommon.bean.SopConstants;
 import com.gitee.sop.gatewaycommon.param.ApiUploadContext;
 import com.gitee.sop.gatewaycommon.param.UploadContext;
-import com.gitee.sop.gatewaycommon.zuul.param.ZuulParameterUtil;
-import com.netflix.zuul.http.HttpServletRequestWrapper;
 import lombok.Data;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.fileupload.FileItem;
@@ -16,8 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
@@ -121,9 +117,6 @@ public class RequestUtil {
      * @return 返回参数键值对
      */
     public static Map<String, String> convertRequestParamsToMap(HttpServletRequest request) {
-        if (request instanceof HttpServletRequestWrapper) {
-            request = ((HttpServletRequestWrapper) request).getRequest();
-        }
         Map<String, String[]> paramMap = request.getParameterMap();
         if (paramMap == null || paramMap.isEmpty()) {
             return Collections.emptyMap();
@@ -340,26 +333,6 @@ public class RequestUtil {
         if (!sign.equals(clientSign)) {
             throw new Exception("签名错误");
         }
-    }
-
-    public static HttpServletRequest wrapRequest(HttpServletRequest request) {
-        if (request.getMethod().equalsIgnoreCase(HttpMethod.GET.name()) ||
-                request instanceof StandardMultipartHttpServletRequest) {
-            return request;
-        }
-        HttpServletRequest wrapper = request;
-        String contentType = request.getContentType();
-        MediaType mediaType = MediaType.valueOf(contentType);
-        if (MediaType.APPLICATION_JSON.includes(mediaType)) {
-            try {
-                String json = RequestUtil.getText(request);
-                byte[] data = json.getBytes(StandardCharsets.UTF_8);
-                wrapper = new ZuulParameterUtil.BodyDataHttpServletRequestWrapper(request, data);
-            } catch (IOException e) {
-                log.error("wrapRequest异常", e);
-            }
-        }
-        return wrapper;
     }
 
     @Data

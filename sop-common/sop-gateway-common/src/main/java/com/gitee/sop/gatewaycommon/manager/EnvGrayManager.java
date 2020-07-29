@@ -1,7 +1,7 @@
 package com.gitee.sop.gatewaycommon.manager;
 
 import com.gitee.sop.gatewaycommon.bean.BeanInitializer;
-import com.gitee.sop.gatewaycommon.zuul.loadbalancer.ServiceGrayConfig;
+import com.gitee.sop.gatewaycommon.loadbalancer.ServiceGrayConfig;
 
 /**
  * @author tanghc

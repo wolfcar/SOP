@@ -12,15 +12,12 @@ import java.io.PrintWriter;
  */
 public class SwaggerValidator {
 
-    private String secret = "b749a2ec000f4f29";
+    private final String secret = "b749a2ec000f4f29";
 
     private boolean swaggerAccessProtected = true;
 
     public SwaggerValidator(boolean swaggerAccessProtected) {
         this.swaggerAccessProtected = swaggerAccessProtected;
-    }
-
-    public SwaggerValidator() {
     }
 
     /**

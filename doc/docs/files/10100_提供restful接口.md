@@ -1,27 +1,10 @@
-# 传统web开发
+# 提供rest接口
 
-默认情况下SOP只提供开放接口，也可以同时提供restful接口，即程序提供一部分的开放接口，同时提供一部分restful接口。
-
-默认情况下提供restful功能是关闭的，开启方式如下：
-
-- 打开sop-gateway配置文件，新增一行配置：
-
-```properties
-# 提供restful接口
-sop.restful.enable=true
-```
-
-- 前端app请求网关(`2.4.1之后有变动`)
+有些接口没有被开放，但是也想要通过网关来访问，SOP提供一个固定的请求格式来访问。
 
 请求格式：
 
-**2.4.1版本之前：** `http://ip:port/rest/your_path`，其中`http://ip:port/rest/`为固定部分，后面跟微服务请求路径。
-
-**2.4.1之后：** `http://ip:port/rest/服务id/your_path`，其中`http://ip:port/rest/`为固定部分，后面跟微服务请求路径。
-
-**注意，`2.4.1`开始多了一个服务id作为区分，这样做是为了避免各微服务之间url冲突，假如两个微服务都有一个叫`/getItems`这样的接口
-那么调用`http://ip:port/rest/getItems`接口网关无法做出正确的路由，虽然可以在代码上进行规范，为了防止万一，还是强行加上了，避免采坑
-。可以指定`sop.restful.old-model=true`强制使用老的调用方式**
+`http://ip:port/rest/服务id/your_path`，其中`http://ip:port/rest/`为固定部分，后面跟微服务请求路径。
 
 > 可在微服务端指定一个配置：`sop.restful.prefix=xxx`。请求路径将变成：`http://ip:port/rest/xxx/your_path`
 
@@ -48,7 +31,6 @@ public class TraditionalWebappController {
 
 2. 本地访问：`http://10.0.1.22:2222/food/getFoodById/?id=2`
 
-更多例子，可查看源码类：`TraditionalWebappController.java`
 
 由此可见，对于前端调用者来说，它把网关看做一个大服务，只访问网关提供的请求，不需要关心网关后面的路由转发。网关后面各个微服务独自管理，
 微服务之间的调用可以使用dubbo或feign，有了版本号的管理，可以做到服务的平滑升级，对用户来说都是无感知的。结合SOP-Admin提供的上下线功能，

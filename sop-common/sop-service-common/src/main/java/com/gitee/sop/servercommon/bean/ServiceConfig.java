@@ -63,9 +63,5 @@ public class ServiceConfig {
      */
     private boolean permission;
 
-    /**
-     * 是否传统web开发模式
-     */
-    private boolean webappMode;
 
 }

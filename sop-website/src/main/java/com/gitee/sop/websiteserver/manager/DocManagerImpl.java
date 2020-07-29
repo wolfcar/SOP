@@ -23,16 +23,14 @@ import java.util.function.Consumer;
 public class DocManagerImpl implements DocManager {
 
     // key:title
-    private Map<String, DocInfo> docDefinitionMap = new HashMap<>();
+    private static final Map<String, DocInfo> docDefinitionMap = new HashMap<>();
 
     /**
      * KEY:serviceId, value: md5
      */
-    private Map<String, String> serviceIdMd5Map = new HashMap<>();
+    private static final Map<String, String> serviceIdMd5Map = new HashMap<>();
 
-    private DocParser swaggerDocParser = new SwaggerDocParser();
-
-    private DocParser easyopenDocParser = new EasyopenDocParser();
+    private static final DocParser swaggerDocParser = new SwaggerDocParser();
 
     @Override
     public void addDocInfo(String serviceId, String docInfoJson, Consumer<DocInfo> callback) {
@@ -43,20 +41,10 @@ public class DocManagerImpl implements DocManager {
         }
         serviceIdMd5Map.put(serviceId, newMd5);
         JSONObject docRoot = JSON.parseObject(docInfoJson, Feature.OrderedField, Feature.DisableCircularReferenceDetect);
-        DocParser docParser = this.buildDocParser(docRoot);
-        DocInfo docInfo = docParser.parseJson(docRoot);
+        DocInfo docInfo = swaggerDocParser.parseJson(docRoot);
         docInfo.setServiceId(serviceId);
         docDefinitionMap.put(docInfo.getTitle(), docInfo);
         callback.accept(docInfo);
-    }
-
-    protected DocParser buildDocParser(JSONObject rootDoc) {
-        Object easyopen = rootDoc.get("easyopen");
-        if (easyopen != null) {
-            return easyopenDocParser;
-        } else {
-            return swaggerDocParser;
-        }
     }
 
     @Override

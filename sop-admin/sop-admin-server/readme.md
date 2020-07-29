@@ -10,4 +10,13 @@
 
 后台用户表：admin_user_info
 
-密码保存规则：两次MD5，即`md5(md5("123456"))`
+- 密码保存规则：`md5(username + md5(password) + username)`
+
+```text
+username: admin
+password: 123456
+即
+md5("admin" + md5(123456) + "admin")
+```
+
+详见：com.gitee.sop.adminserver.AccountTest

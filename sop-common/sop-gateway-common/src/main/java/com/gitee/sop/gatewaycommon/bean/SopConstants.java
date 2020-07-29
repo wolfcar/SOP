@@ -52,5 +52,6 @@ public class SopConstants {
 
     public static final String CACHE_ROUTE_INTERCEPTOR_CONTEXT = "cacheRouteInterceptorContext";
     public static final String TARGET_SERVICE = "sop-target-service";
+    public static final String RESTFUL_REQUEST = "sop-restful-request";
 
 }

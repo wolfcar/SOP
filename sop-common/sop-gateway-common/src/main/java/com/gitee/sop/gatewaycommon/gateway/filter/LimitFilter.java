@@ -2,6 +2,7 @@ package com.gitee.sop.gatewaycommon.gateway.filter;
 
 import com.gitee.sop.gatewaycommon.bean.ApiConfig;
 import com.gitee.sop.gatewaycommon.bean.ConfigLimitDto;
+import com.gitee.sop.gatewaycommon.bean.SopConstants;
 import com.gitee.sop.gatewaycommon.exception.ApiException;
 import com.gitee.sop.gatewaycommon.gateway.ServerWebExchangeUtil;
 import com.gitee.sop.gatewaycommon.limit.LimitManager;
@@ -32,12 +33,18 @@ public class LimitFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        if (exchange.getAttribute(SopConstants.RESTFUL_REQUEST) != null) {
+            return chain.filter(exchange);
+        }
         ApiConfig apiConfig = ApiConfig.getInstance();
         // 限流功能未开启，直接返回
         if (!apiConfig.isOpenLimit()) {
             return chain.filter(exchange);
         }
         ApiParam apiParam = ServerWebExchangeUtil.getApiParam(exchange);
+        if (apiParam == null) {
+            return chain.filter(exchange);
+        }
         ConfigLimitDto configLimitDto = this.findConfigLimitDto(apiConfig, apiParam, exchange);
         if (configLimitDto == null) {
             return chain.filter(exchange);

@@ -5,13 +5,12 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.MediaType;
 import org.springframework.util.DigestUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,6 +22,33 @@ import java.util.Set;
  */
 @Slf4j
 public class OpenUtil {
+
+    /**
+     * 将get类型的参数转换成map，
+     *
+     * @param query charset=utf-8&biz_content=xxx
+     * @return 返回map参数
+     */
+    public static Map<String, Object> parseQueryToMap(String query) {
+        if (query == null) {
+            return Collections.emptyMap();
+        }
+        String[] queryList = StringUtils.split(query, '&');
+        Map<String, Object> params = new HashMap<>(16);
+        for (String param : queryList) {
+            String[] paramArr = param.split("\\=");
+            if (paramArr.length == 2) {
+                try {
+                    params.put(paramArr[0], URLDecoder.decode(paramArr[1], "UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
+            } else if (paramArr.length == 1) {
+                params.put(paramArr[0], "");
+            }
+        }
+        return params;
+    }
 
     /**
      * 获取request中的参数
@@ -94,21 +120,4 @@ public class OpenUtil {
         return serverSign.equals(sign);
     }
 
-    /**
-     * 在方法或方法对应的类上找指定的注解
-     * @param method 方法
-     * @param annotationClass 指定的注解
-     * @param <T>
-     * @return 返回指定注解，没有返回null
-     */
-    public static <T extends Annotation> T getAnnotationFromMethodOrClass(Method method, Class<T> annotationClass) {
-        if (method == null) {
-            return null;
-        }
-        T annotation = AnnotationUtils.findAnnotation(method, annotationClass);
-        if (annotation == null) {
-            annotation = AnnotationUtils.findAnnotation(method.getDeclaringClass(), annotationClass);
-        }
-        return annotation;
-    }
 }

@@ -1,5 +1,19 @@
 # changelog
 
+## 4.0.0(不兼容3.x)
+
+- 新增@Open注解，代替ApiMapping和ApiAbility
+- service接入减少代码入侵
+- 修改admin密码存储规则
+- 完善example
+
+### 不兼容部分
+
+- 移除ApiMapping和ApiAbility，改为Open注解
+- 移除OpenContext
+- 移除zuul
+- 移除对easyopen支持
+
 ## 3.2.1
 
 - 强化RouteInterceptorContext，可获取微服务信息

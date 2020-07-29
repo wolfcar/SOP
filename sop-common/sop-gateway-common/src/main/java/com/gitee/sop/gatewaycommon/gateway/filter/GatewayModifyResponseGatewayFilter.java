@@ -1,6 +1,7 @@
 package com.gitee.sop.gatewaycommon.gateway.filter;
 
 import com.gitee.sop.gatewaycommon.bean.ApiContext;
+import com.gitee.sop.gatewaycommon.bean.SopConstants;
 import com.gitee.sop.gatewaycommon.result.ResultExecutor;
 import org.apache.commons.lang3.StringUtils;
 import org.reactivestreams.Publisher;
@@ -46,6 +47,10 @@ public class GatewayModifyResponseGatewayFilter implements GlobalFilter, Ordered
                 String originalResponseContentType = exchange.getAttribute(ORIGINAL_RESPONSE_CONTENT_TYPE_ATTR);
                 // 如果是下载文件，直接放行，不合并结果
                 if (StringUtils.containsIgnoreCase(originalResponseContentType, MediaType.APPLICATION_OCTET_STREAM_VALUE)) {
+                    return chain.filter(exchange);
+                }
+                // rest请求，直接放行
+                if (exchange.getAttribute(SopConstants.RESTFUL_REQUEST) != null) {
                     return chain.filter(exchange);
                 }
                 Class inClass = String.class;

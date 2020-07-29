@@ -21,10 +21,10 @@
 	</properties>
 
 	<dependencies>
-
 		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+			<groupId>com.gitee.sop</groupId>
+			<artifactId>sop-bridge-nacos</artifactId>
+			<version>4.0.0-SNAPSHOT</version>
 		</dependency>
 
 		<!-- easyopen starter -->

@@ -10,7 +10,7 @@ import com.gitee.sop.gatewaycommon.bean.InstanceDefinition;
 import com.gitee.sop.gatewaycommon.bean.ServiceGrayDefinition;
 import com.gitee.sop.gatewaycommon.manager.DefaultEnvGrayManager;
 import com.gitee.sop.gatewaycommon.route.RegistryEvent;
-import com.gitee.sop.gatewaycommon.zuul.loadbalancer.ServiceGrayConfig;
+import com.gitee.sop.gatewaycommon.loadbalancer.ServiceGrayConfig;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
