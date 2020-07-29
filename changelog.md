@@ -4,7 +4,8 @@
 
 - 新增@Open注解，代替ApiMapping和ApiAbility
 - service接入减少代码入侵
-- 修复admin密码存储规则
+- 修改admin密码存储规则
+- 完善example
 
 ### 不兼容部分
 
