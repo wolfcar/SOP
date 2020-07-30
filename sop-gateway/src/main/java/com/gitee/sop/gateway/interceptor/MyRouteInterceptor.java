@@ -17,7 +17,7 @@ public class MyRouteInterceptor implements RouteInterceptor {
     @Override
     public void preRoute(RouteInterceptorContext context) {
         ApiParam apiParam = context.getApiParam();
-        System.out.println("请求接口：" + apiParam.fetchNameVersion());
+        System.out.println(String.format("请求接口：%s, ip:%s", apiParam.fetchNameVersion(), apiParam.fetchIp()));
     }
 
     @Override
