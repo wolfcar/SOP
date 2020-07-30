@@ -3,6 +3,7 @@ package com.gitee.sop.gatewaycommon.gateway;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.gitee.sop.gatewaycommon.bean.SopConstants;
+import com.gitee.sop.gatewaycommon.gateway.codec.MessageReaderFactory;
 import com.gitee.sop.gatewaycommon.gateway.common.FileUploadHttpServletRequest;
 import com.gitee.sop.gatewaycommon.gateway.common.RequestContentDataExtractor;
 import com.gitee.sop.gatewaycommon.gateway.common.SopServerHttpRequestDecorator;
@@ -48,11 +49,7 @@ public class ServerWebExchangeUtil {
 
     private static final FormHttpMessageConverter formHttpMessageConverter = new FormHttpMessageConverter();
 
-    private static final List<HttpMessageReader<?>> messageReaders;
-
-    static {
-        messageReaders = HandlerStrategies.withDefaults().messageReaders();
-    }
+    private static final List<HttpMessageReader<?>> messageReaders = MessageReaderFactory.build();
 
     /**
      * 重定向
