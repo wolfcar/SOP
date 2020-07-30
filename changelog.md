@@ -1,5 +1,9 @@
 # changelog
 
+## 4.0.1
+
+- 修复超大文本无法请求BUG（设置`spring.codec.max-in-memory-size`无效）
+
 ## 4.0.0(不兼容3.x)
 
 - 新增@Open注解，代替ApiMapping和ApiAbility
