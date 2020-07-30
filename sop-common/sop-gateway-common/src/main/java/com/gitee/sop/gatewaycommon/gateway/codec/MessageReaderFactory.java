@@ -16,11 +16,15 @@ public class MessageReaderFactory {
 
     public static final String METHOD_SET_MAX_IN_MEMORY_SIZE = "setMaxInMemorySize";
     public static final String METHOD_GET_DECODER = "getDecoder";
+    public static final int DEFAULT_SIZE = 256 * 1024;
 
     public static List<HttpMessageReader<?>> build() {
         String maxInMemorySizeValueStr = EnvironmentKeys.MAX_IN_MEMORY_SIZE.getValue();
         int maxInMemorySizeValue = Integer.parseInt(maxInMemorySizeValueStr);
         List<HttpMessageReader<?>> messageReaders = HandlerStrategies.withDefaults().messageReaders();
+        if (DEFAULT_SIZE == maxInMemorySizeValue) {
+            return messageReaders;
+        }
         // 设置POST缓存大小
         for (HttpMessageReader<?> httpMessageReader : messageReaders) {
             Method[] methods = ReflectionUtils.getDeclaredMethods(httpMessageReader.getClass());
