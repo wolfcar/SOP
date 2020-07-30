@@ -501,7 +501,7 @@ public class HttpTool {
                 if (file.isDirectory()) {
                     throw new IOException("File '" + file + "' exists but is a directory");
                 }
-                if (file.canRead() == false) {
+                if (!file.canRead()) {
                     throw new IOException("File '" + file + "' cannot be read");
                 }
             } else {
