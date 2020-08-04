@@ -22,7 +22,6 @@ import com.gitee.sop.gatewaycommon.route.RegistryListener;
 import com.gitee.sop.gatewaycommon.route.ServiceListener;
 import com.gitee.sop.gatewaycommon.route.ServiceRouteListener;
 import com.gitee.sop.gatewaycommon.secret.IsvManager;
-import com.gitee.sop.gatewaycommon.session.SessionManager;
 import com.gitee.sop.gatewaycommon.util.RouteInterceptorUtil;
 import com.gitee.sop.gatewaycommon.validate.SignConfig;
 import com.gitee.sop.gatewaycommon.validate.Validator;
@@ -58,8 +57,8 @@ import java.util.concurrent.locks.ReentrantLock;
 @Slf4j
 public class AbstractConfiguration implements ApplicationContextAware, ApplicationRunner {
 
-    private Lock lock = new ReentrantLock();
-    private Condition condition = lock.newCondition();
+    private final Lock lock = new ReentrantLock();
+    private final Condition condition = lock.newCondition();
 
     private volatile boolean isStartupCompleted;
 
@@ -149,12 +148,6 @@ public class AbstractConfiguration implements ApplicationContextAware, Applicati
     @ConditionalOnMissingBean
     EnvGrayManager envGrayManager() {
         return ApiConfig.getInstance().getUserKeyManager();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    SessionManager sessionManager() {
-        return ApiConfig.getInstance().getSessionManager();
     }
 
     @Bean
