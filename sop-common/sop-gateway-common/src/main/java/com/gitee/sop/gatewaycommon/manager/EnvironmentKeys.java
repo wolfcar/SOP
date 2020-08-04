@@ -30,6 +30,12 @@ public enum EnvironmentKeys {
      */
     PRE_DOMAIN("pre.domain"),
 
+    /**
+     * post请求body缓存大小
+     */
+    MAX_IN_MEMORY_SIZE("spring.codec.max-in-memory-size", "262144")
+
+
     ;
 
     private final String key;

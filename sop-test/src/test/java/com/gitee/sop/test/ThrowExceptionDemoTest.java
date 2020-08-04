@@ -39,16 +39,16 @@ public class ThrowExceptionDemoTest extends TestBase {
         bizContent.put("goods_comment", "1111");
 
         params.put("biz_content", JSON.toJSONString(bizContent));
+        String content = AlipaySignature.getSignContent(params);
+        String sign = AlipaySignature.rsa256Sign(content, privateKey, "utf-8");
+        params.put("sign", sign);
 
         System.out.println("----------- 请求信息 -----------");
         System.out.println("请求参数：" + buildParamQuery(params));
         System.out.println("商户秘钥：" + privateKey);
-        String content = AlipaySignature.getSignContent(params);
         System.out.println("待签名内容：" + content);
-        String sign = AlipaySignature.rsa256Sign(content, privateKey, "utf-8");
         System.out.println("签名(sign)：" + sign);
-
-        params.put("sign", sign);
+        System.out.println("URL参数：" + buildUrlQuery(params));
 
         System.out.println("----------- 返回结果 -----------");
         String responseData = post(url, params);// 发送请求

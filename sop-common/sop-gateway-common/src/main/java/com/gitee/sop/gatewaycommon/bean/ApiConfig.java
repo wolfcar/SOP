@@ -27,8 +27,6 @@ import com.gitee.sop.gatewaycommon.result.ResultAppender;
 import com.gitee.sop.gatewaycommon.result.ResultExecutorForGateway;
 import com.gitee.sop.gatewaycommon.secret.CacheIsvManager;
 import com.gitee.sop.gatewaycommon.secret.IsvManager;
-import com.gitee.sop.gatewaycommon.session.ApiSessionManager;
-import com.gitee.sop.gatewaycommon.session.SessionManager;
 import com.gitee.sop.gatewaycommon.validate.ApiEncrypter;
 import com.gitee.sop.gatewaycommon.validate.ApiSigner;
 import com.gitee.sop.gatewaycommon.validate.ApiValidator;
@@ -82,11 +80,6 @@ public class ApiConfig {
      * 验证
      */
     private Validator validator = new ApiValidator();
-
-    /**
-     * session管理
-     */
-    private SessionManager sessionManager = new ApiSessionManager();
 
     /**
      * isv路由权限

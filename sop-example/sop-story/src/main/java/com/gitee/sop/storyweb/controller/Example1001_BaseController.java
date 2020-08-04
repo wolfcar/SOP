@@ -2,6 +2,7 @@ package com.gitee.sop.storyweb.controller;
 
 import com.gitee.sop.servercommon.annotation.Open;
 import com.gitee.sop.storyweb.controller.param.CategoryParam;
+import com.gitee.sop.storyweb.controller.param.LargeTextParam;
 import com.gitee.sop.storyweb.controller.param.StoryParam;
 import com.gitee.sop.storyweb.controller.result.CategoryResult;
 import com.gitee.sop.storyweb.controller.result.StoryResult;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -66,6 +68,15 @@ public class Example1001_BaseController {
     public StoryResult getStory21(StoryParam story) {
         StoryResult result = new StoryResult();
         result.setName(story.getName() + ", ignoreValidate = true");
+        return result;
+    }
+
+    @Open(value = "story.get.large")
+    @RequestMapping("/get/large/v1")
+    public StoryResult getStoryLarge(LargeTextParam param) {
+        StoryResult result = new StoryResult();
+        int length = param.getContent().getBytes(StandardCharsets.UTF_8).length;
+        result.setName("length:" + length);
         return result;
     }
 

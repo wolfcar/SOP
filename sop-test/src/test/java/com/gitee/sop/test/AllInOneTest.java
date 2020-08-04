@@ -2,8 +2,10 @@ package com.gitee.sop.test;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -200,6 +202,24 @@ public class AllInOneTest extends TestBase {
                     Assert.assertEquals(data.getString("code"), "10000");
                 })
                 ;
+
+        client.execute(requestBuilder);
+    }
+
+    /**
+     * 测试post提交大文本内容
+     * @throws IOException
+     */
+    public void testLargeBody() throws IOException {
+        String root = System.getProperty("user.dir");
+        // 这个文件有600KB的数据
+        File file = new File(root + "/src/main/resources/large_data.txt");
+        String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+        Client.RequestBuilder requestBuilder = new Client.RequestBuilder()
+                .method("story.get.large")
+                .version("1.0")
+                .bizContent(new BizContent().add("content", fileContent))
+                .httpMethod(HttpTool.HTTPMethod.POST);
 
         client.execute(requestBuilder);
     }
