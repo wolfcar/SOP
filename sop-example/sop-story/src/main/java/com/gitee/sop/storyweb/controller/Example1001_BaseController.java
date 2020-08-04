@@ -41,7 +41,7 @@ public class Example1001_BaseController {
     }
 
     // 基础用法
-    @ApiOperation(value = "获取故事信息", notes = "获取故事信息的详细信息")
+    @ApiOperation(value = "获取故事信息（首位）", notes = "获取故事信息的详细信息", position = -100/* position默认0，值越小越靠前 */)
     @Open("story.get")
     @RequestMapping("/get/v1")
     public StoryResult get_v1(StoryParam param) {
@@ -81,7 +81,7 @@ public class Example1001_BaseController {
     }
 
     // 返回数组结果
-    @ApiOperation(value = "返回数组结果", notes = "返回数组结果")
+    @ApiOperation(value = "返回数组结果（第二）", notes = "返回数组结果", position = -99)
     @Open("story.list")
     @RequestMapping("/list/v1")
     public List<StoryResult> getStory3(StoryParam story) {

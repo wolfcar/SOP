@@ -61,7 +61,7 @@ public class SwaggerDocParser implements DocParser {
             }
         }
 
-        docItems.sort(Comparator.comparing(DocItem::getNameVersion));
+        docItems.sort(Comparator.comparing(DocItem::getApiOrder).thenComparing(DocItem::getNameVersion));
 
         List<DocModule> docModuleList = docItems.stream()
                 .collect(Collectors.groupingBy(DocItem::getModule))
@@ -122,6 +122,7 @@ public class SwaggerDocParser implements DocParser {
         docItem.setMultiple(docInfo.getString("multiple") != null);
         docItem.setProduces(docInfo.getJSONArray("produces").toJavaList(String.class));
         docItem.setModuleOrder(NumberUtils.toInt(docInfo.getString("module_order"), 0));
+        docItem.setApiOrder(NumberUtils.toInt(docInfo.getString("api_order"), 0));
         String moduleName = this.buildModuleName(docInfo, docRoot);
         docItem.setModule(moduleName);
         List<DocParameter> docParameterList = this.buildRequestParameterList(docInfo, docRoot);

@@ -8,6 +8,8 @@ import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spi.schema.EnumTypeDeterminer;
+import springfox.documentation.spring.web.DescriptionResolver;
 import springfox.documentation.spring.web.plugins.Docket;
 
 /**
@@ -25,6 +27,20 @@ public abstract class SwaggerSupport {
     @Primary
     public DocumentationPluginsManagerExt documentationPluginsManagerExt() {
         return new DocumentationPluginsManagerExt();
+    }
+
+    @Bean
+    @Primary
+    public CustomModelToSwaggerMapper customModelToSwaggerMapper() {
+        return new CustomModelToSwaggerMapper();
+    }
+
+    @Bean
+    @Primary
+    public CustomSwaggerParameterBuilder customSwaggerParameterBuilder(
+            DescriptionResolver descriptions,
+            EnumTypeDeterminer enumTypeDeterminer) {
+        return new CustomSwaggerParameterBuilder(descriptions, enumTypeDeterminer);
     }
 
     @Bean

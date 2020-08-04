@@ -13,6 +13,9 @@ public class StoryParam {
 
     @NotBlank(message = "name不能为空")
     @Length(max = 20, message = "name长度不能超过20")
-    @ApiModelProperty(value = "故事名称", required = true, example = "白雪公主")
+    @ApiModelProperty(value = "故事名称", required = true, example = "白雪公主", position = 3)
     private String name;
+
+    @ApiModelProperty(value = "备注 (第二)", example = "xx", position = 2)
+    private String remark;
 }
