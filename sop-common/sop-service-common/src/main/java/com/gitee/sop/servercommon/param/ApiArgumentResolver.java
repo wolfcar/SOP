@@ -86,21 +86,21 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
         Class<?> paramType = methodParameter.getParameterType();
         // 排除的
         boolean exclude = (
-            WebRequest.class.isAssignableFrom(paramType) ||
-            ServletRequest.class.isAssignableFrom(paramType) ||
-            MultipartRequest.class.isAssignableFrom(paramType) ||
-            HttpSession.class.isAssignableFrom(paramType) ||
-            (pushBuilder != null && pushBuilder.isAssignableFrom(paramType)) ||
-            Principal.class.isAssignableFrom(paramType) ||
-            InputStream.class.isAssignableFrom(paramType) ||
-            Reader.class.isAssignableFrom(paramType) ||
-            HttpMethod.class == paramType ||
-            Locale.class == paramType ||
-            TimeZone.class == paramType ||
-            ZoneId.class == paramType ||
-            ServletResponse.class.isAssignableFrom(paramType) ||
-            OutputStream.class.isAssignableFrom(paramType) ||
-            Writer.class.isAssignableFrom(paramType)
+                WebRequest.class.isAssignableFrom(paramType) ||
+                        ServletRequest.class.isAssignableFrom(paramType) ||
+                        MultipartRequest.class.isAssignableFrom(paramType) ||
+                        HttpSession.class.isAssignableFrom(paramType) ||
+                        (pushBuilder != null && pushBuilder.isAssignableFrom(paramType)) ||
+                        Principal.class.isAssignableFrom(paramType) ||
+                        InputStream.class.isAssignableFrom(paramType) ||
+                        Reader.class.isAssignableFrom(paramType) ||
+                        HttpMethod.class == paramType ||
+                        Locale.class == paramType ||
+                        TimeZone.class == paramType ||
+                        ZoneId.class == paramType ||
+                        ServletResponse.class.isAssignableFrom(paramType) ||
+                        OutputStream.class.isAssignableFrom(paramType) ||
+                        Writer.class.isAssignableFrom(paramType)
         );
         // 除此之外都匹配
         return !exclude;
@@ -119,9 +119,11 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
     ) throws Exception {
         if (openApiParams.contains(methodParameter)) {
             Object paramObj = this.getParamObject(methodParameter, nativeWebRequest);
-            // JSR-303验证
-            paramValidator.validateBizParam(paramObj);
-            return paramObj;
+            if (paramObj != null) {
+                // JSR-303验证
+                paramValidator.validateBizParam(paramObj);
+                return paramObj;
+            }
         }
         HandlerMethodArgumentResolver resolver = getOtherArgumentResolver(methodParameter);
         if (resolver != null) {
@@ -147,20 +149,19 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
         HttpServletRequest request = (HttpServletRequest) nativeWebRequest.getNativeRequest();
         JSONObject requestParams = OpenUtil.getRequestParams(request);
         String bizContent = requestParams.getString(ParamNames.BIZ_CONTENT_NAME);
+        if (bizContent == null) {
+            return null;
+        }
         // 方法参数类型
         Class<?> parameterType = methodParameter.getParameterType();
         Object param;
-        if (bizContent != null) {
-            // 如果是json字符串
-            if (JSONValidator.from(bizContent).validate()) {
-                param = JSON.parseObject(bizContent, parameterType);
-            } else {
-                // 否则认为是 aa=1&bb=33 形式
-                Map<String, Object> query = OpenUtil.parseQueryToMap(bizContent);
-                param = new JSONObject(query).toJavaObject(parameterType);
-            }
+        // 如果是json字符串
+        if (JSONValidator.from(bizContent).validate()) {
+            param = JSON.parseObject(bizContent, parameterType);
         } else {
-            param = requestParams.toJavaObject(parameterType);
+            // 否则认为是 aa=1&bb=33 形式
+            Map<String, Object> query = OpenUtil.parseQueryToMap(bizContent);
+            param = new JSONObject(query).toJavaObject(parameterType);
         }
         this.bindUploadFile(param, request);
         return param;
@@ -170,7 +171,7 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
     /**
      * 将上传文件对象绑定到属性中
      *
-     * @param param             业务参数
+     * @param param              业务参数
      * @param httpServletRequest
      */
     protected void bindUploadFile(Object param, HttpServletRequest httpServletRequest) {
