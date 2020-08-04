@@ -22,7 +22,11 @@ public class DocItem {
 
     private Collection<String> produces;
 
+    /** 模块顺序 */
     private int moduleOrder;
+
+    /** 文档顺序 */
+    private int apiOrder;
 
     List<DocParameter> requestParameters;
     List<DocParameter> responseParameters;

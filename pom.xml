@@ -65,6 +65,7 @@
 		<guava.version>27.1-jre</guava.version>
 		<swagger.version>1.5.21</swagger.version>
 		<springfox-spring-web.version>2.9.2</springfox-spring-web.version>
+		<springfox-swagger2.version>2.9.2</springfox-swagger2.version>
 		<easyopen.version>1.16.9</easyopen.version>
 	</properties>
 
@@ -120,6 +121,11 @@
 				<groupId>io.swagger</groupId>
 				<artifactId>swagger-annotations</artifactId>
 				<version>${swagger.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.springfox</groupId>
+				<artifactId>springfox-swagger2</artifactId>
+				<version>${springfox-swagger2.version}</version>
 			</dependency>
 
 			<dependency>

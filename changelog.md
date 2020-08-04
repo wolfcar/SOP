@@ -1,5 +1,9 @@
 # changelog
 
+## 4.0.2
+
+- 支持swagger排序（position属性）
+
 ## 4.0.1
 
 - 修复超大文本无法请求BUG（设置`spring.codec.max-in-memory-size`无效）
