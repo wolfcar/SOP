@@ -8,6 +8,6 @@ import com.gitee.sop.sdk.response.DemoFileUploadResponse;
 public class DemoFileUploadRequest extends BaseRequest<DemoFileUploadResponse> {
     @Override
     protected String method() {
-        return "demo.file.upload";
+        return "file.upload";
     }
 }

@@ -48,19 +48,19 @@ public class SdkTest extends TestCase {
 
         if (response.isSuccess()) {
             // 返回结果
-            System.out.println(String.format("成功！response:%s\n响应原始内容:%s",
-                    JSON.toJSONString(response), response.getBody()));
+            System.out.println(String.format("response:%s",
+                    JSON.toJSONString(response)));
         } else {
             System.out.println("错误，subCode:" + response.getSubCode() + ", subMsg:" + response.getSubMsg());
         }
     }
 
 
-    // 懒人版，如果不想添加Request,Response,Model。可以用这种方式，返回全部是String，后续自己处理json
+    // 懒人版，如果不想添加Request,Response,可以用这种方式，返回全部是String，后续自己处理json
     @Test
     public void testLazy() {
         // 创建请求对象
-        CommonRequest request = new CommonRequest("alipay.story.find");
+        CommonRequest request = new CommonRequest("story.get");
         // 请求参数
         Map<String, Object> bizModel = new HashMap<>();
         bizModel.put("name", "白雪公主");
