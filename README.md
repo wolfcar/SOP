@@ -31,7 +31,7 @@ SOP封装了开放平台大部分功能包括：签名验证、统一异常处�
 public StoryResult get() {
     StoryResult result = new StoryResult();
     result.setId(1L);
-    result.setName("海底小纵队(原生)");
+    result.setName("海底小纵队");
     return result;
 }
 ```

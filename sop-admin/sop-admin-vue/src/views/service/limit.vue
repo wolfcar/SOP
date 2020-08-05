@@ -45,8 +45,8 @@
           <el-form-item label="路由ID">
             <el-input v-model="searchFormData.routeId" placeholder="接口名，支持模糊查询" clearable />
           </el-form-item>
-          <el-form-item label="AppKey">
-            <el-input v-model="searchFormData.appKey" placeholder="AppKey，支持模糊查询" clearable />
+          <el-form-item label="AppId">
+            <el-input v-model="searchFormData.appKey" placeholder="AppId，支持模糊查询" clearable />
           </el-form-item>
           <el-form-item label="IP">
             <el-input v-model="searchFormData.limitIp" placeholder="ip，支持模糊查询" clearable />
@@ -160,7 +160,7 @@
             <el-form-item label="限流维度" prop="typeKey">
               <el-checkbox-group v-model="limitDialogFormData.typeKey">
                 <el-checkbox v-model="limitDialogFormData.typeKey[0]" :label="1" name="typeKey">路由ID</el-checkbox>
-                <el-checkbox v-model="limitDialogFormData.typeKey[1]" :label="2" name="typeKey">AppKey</el-checkbox>
+                <el-checkbox v-model="limitDialogFormData.typeKey[1]" :label="2" name="typeKey">AppId</el-checkbox>
                 <el-checkbox v-model="limitDialogFormData.typeKey[2]" :label="3" name="typeKey">IP</el-checkbox>
               </el-checkbox-group>
             </el-form-item>
@@ -403,6 +403,7 @@ export default {
       this.limitDialogVisible = true
     },
     onSearchTable: function() {
+      this.searchFormData.pageIndex = 1
       this.loadTable()
     },
     onTableUpdate: function(row) {

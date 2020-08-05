@@ -62,7 +62,17 @@ public class Example1001_BaseController {
         return story;
     }
 
+    // 参数绑定
+    @Open(value = "story.param.bind", mergeResult = false)
+    @RequestMapping("/get/param/v1")
+    public StoryResult param(int id, String name) {
+        StoryResult result = new StoryResult();
+        result.setName("参数绑定：id:" + id + ", name:" + name);
+        return result;
+    }
+
     // 忽略验证
+    @ApiOperation(value = "忽略签名验证", notes = "忽略签名验证")
     @Open(value = "story.get.ignore", ignoreValidate = true)
     @RequestMapping("/get/ignore/v1")
     public StoryResult getStory21(StoryParam story) {

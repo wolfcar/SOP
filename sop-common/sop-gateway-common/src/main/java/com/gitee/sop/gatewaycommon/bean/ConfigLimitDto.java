@@ -5,18 +5,19 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.util.concurrent.RateLimiter;
 import lombok.AccessLevel;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author tanghc
  */
-@Data
+@Setter
+@Getter
 public class ConfigLimitDto {
 
     public static final byte LIMIT_STATUS_OPEN = 1;
@@ -130,5 +131,39 @@ public class ConfigLimitDto {
             }
         }
         return rateLimiter;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ConfigLimitDto that = (ConfigLimitDto) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "ConfigLimitDto{" +
+                "id=" + id +
+                ", routeId='" + routeId + '\'' +
+                ", appKey='" + appKey + '\'' +
+                ", limitIp='" + limitIp + '\'' +
+                ", serviceId='" + serviceId + '\'' +
+                ", limitType=" + limitType +
+                ", execCountPerSecond=" + execCountPerSecond +
+                ", durationSeconds=" + durationSeconds +
+                ", limitCode='" + limitCode + '\'' +
+                ", limitMsg='" + limitMsg + '\'' +
+                ", tokenBucketCount=" + tokenBucketCount +
+                ", limitStatus=" + limitStatus +
+                ", orderIndex=" + orderIndex +
+                ", gmtCreate=" + gmtCreate +
+                ", gmtModified=" + gmtModified +
+                '}';
     }
 }
