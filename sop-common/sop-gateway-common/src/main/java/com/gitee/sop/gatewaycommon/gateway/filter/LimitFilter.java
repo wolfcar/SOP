@@ -55,7 +55,7 @@ public class LimitFilter implements GlobalFilter, Ordered {
         }
         Byte limitType = configLimitDto.getLimitType();
         LimitManager limitManager = ApiConfig.getInstance().getLimitManager();
-        // 如果是漏桶策略
+        // 如果是窗口策略
         if (limitType == LimitType.LEAKY_BUCKET.getType()) {
             boolean acquire = limitManager.acquire(configLimitDto);
             // 被限流，返回错误信息

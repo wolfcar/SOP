@@ -30,21 +30,16 @@ public class DefaultLimitManager implements LimitManager {
         if (routeConfig.getLimitStatus() == ConfigLimitDto.LIMIT_STATUS_CLOSE) {
             return true;
         }
-        if (LimitType.TOKEN_BUCKET.getType() == routeConfig.getLimitType().byteValue()) {
+        if (LimitType.TOKEN_BUCKET.getType() == routeConfig.getLimitType()) {
             return true;
         }
         int execCountPerSecond = routeConfig.getExecCountPerSecond();
-        long currentSeconds = System.currentTimeMillis() / 1000;
         try {
             LoadingCache<Long, AtomicLong> counter = routeConfig.getCounter();
             // 被限流了
-            if (counter.get(currentSeconds).incrementAndGet() > execCountPerSecond) {
-                return false;
-            } else {
-                return true;
-            }
+            return counter.get(routeConfig.getId()).incrementAndGet() <= execCountPerSecond;
         } catch (ExecutionException e) {
-            log.error("漏桶限流出错，routeConfig", routeConfig, e);
+            log.error("漏桶限流出错，routeConfig:{}", routeConfig, e);
             return false;
         }
     }
