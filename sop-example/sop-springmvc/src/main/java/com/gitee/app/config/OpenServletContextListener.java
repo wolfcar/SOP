@@ -27,7 +27,7 @@ public class OpenServletContextListener implements ServletContextListener {
 
         NamingService namingService = webApplicationContext.getBean(NamingService.class);
         try {
-            namingService.deregisterInstance(serviceId, ip, Integer.valueOf(port));
+            namingService.deregisterInstance(serviceId, ip, Integer.parseInt(port));
         } catch (NacosException e) {
             log.error("注销nacos服务失败，serviceId:{}, ip:{}, port:{}", serviceId, ip, port);
         }
