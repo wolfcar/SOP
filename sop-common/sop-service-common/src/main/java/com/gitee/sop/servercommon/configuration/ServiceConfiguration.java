@@ -61,6 +61,21 @@ public class ServiceConfiguration implements WebMvcConfigurer {
 
     @Bean
     @ConditionalOnMissingBean
+    @ConditionalOnProperty("spring.cloud.nacos.discovery.server-addr")
+    public NacosWatch nacosWatch(NacosDiscoveryProperties nacosDiscoveryProperties, ObjectProvider<TaskScheduler> taskScheduler, Environment environment) {
+        Map<String, String> metadata = nacosDiscoveryProperties.getMetadata();
+        String contextPath = environment.getProperty("server.servlet.context-path");
+        // 将context-path信息加入到metadata中
+        if (contextPath != null) {
+            metadata.put("context-path", contextPath);
+        }
+        // 在元数据中新增启动时间，不能修改这个值，不然网关拉取接口会有问题
+        metadata.put("time.startup", String.valueOf(System.currentTimeMillis()));
+        return new NacosWatch(nacosDiscoveryProperties, taskScheduler);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     GlobalExceptionHandler globalExceptionHandler() {
         return new GlobalExceptionHandler();
     }

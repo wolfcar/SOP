@@ -1,5 +1,6 @@
 package com.gitee.sop.storyweb.controller;
 
+import com.gitee.sop.servercommon.annotation.BizCode;
 import com.gitee.sop.servercommon.annotation.Open;
 import com.gitee.sop.storyweb.controller.param.CategoryParam;
 import com.gitee.sop.storyweb.controller.param.LargeTextParam;
@@ -42,7 +43,11 @@ public class Example1001_BaseController {
 
     // 基础用法
     @ApiOperation(value = "获取故事信息（首位）", notes = "获取故事信息的详细信息", position = -100/* position默认0，值越小越靠前 */)
-    @Open("story.get")
+    @Open(value = "story.get", bizCode = {
+            // 定义业务错误码，用于文档显示
+            @BizCode(code = "100001", msg = "姓名错误", solution = "填写正确的姓名"),
+            @BizCode(code = "100002", msg = "备注错误", solution = "填写正确备注"),
+    })
     @RequestMapping("/get/v1")
     public StoryResult get_v1(StoryParam param) {
         StoryResult story = new StoryResult();
@@ -53,7 +58,11 @@ public class Example1001_BaseController {
 
     // 指定版本号
     @ApiOperation(value = "获取故事信息", notes = "获取故事信息的详细信息")
-    @Open(value = "story.get", version = "2.0")
+    @Open(value = "story.get", version = "2.0", bizCode = {
+            // 定义业务错误码，用于文档显示
+            @BizCode(code = "100001", msg = "姓名错误", solution = "填写正确的姓名"),
+            @BizCode(code = "100002", msg = "备注错误", solution = "填写正确备注"),
+    })
     @RequestMapping("/get/v2")
     public StoryResult get_v2(StoryParam param) {
         StoryResult story = new StoryResult();

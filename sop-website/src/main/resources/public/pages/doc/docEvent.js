@@ -16,6 +16,7 @@ function selectItem(docItem, layui) {
     createRequestParameter(docItem);
     createResponseParameter(docItem);
     createResponseCode(docItem);
+    buildBizCode(docItem);
 
     var $li = $('#docItemTree').find('li[nameversion="'+nameVersion+'"]');
     $li.addClass('layui-this').siblings().removeClass('layui-this');
@@ -122,5 +123,23 @@ function buildExample(parameter) {
         return content;
     } else {
         return '\"' + parameter.example + '\"';
+    }
+}
+
+function buildBizCode(docItem) {
+    var html = []
+    var bizCodeList = docItem.bizCodeList;
+    if (bizCodeList && bizCodeList.length > 0) {
+        for (var i = 0; i < bizCodeList.length; i++) {
+            var bizCode = bizCodeList[i];
+            html.push('<tr>')
+            html.push('<td>'+bizCode.code+'</td>')
+            html.push('<td>'+bizCode.msg+'</td>')
+            html.push('<td>'+bizCode.solution+'</td>')
+            html.push('</tr>')
+        }
+        $('#bizCode').find('tbody').html(html.join(''));
+    } else {
+        $('#bizCode').find('tbody').html('<tr><td colspan="3" style="text-align: center">暂无数据</td></tr>');
     }
 }

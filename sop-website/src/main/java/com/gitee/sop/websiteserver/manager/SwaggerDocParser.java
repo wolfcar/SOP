@@ -1,7 +1,9 @@
 package com.gitee.sop.websiteserver.manager;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.gitee.sop.websiteserver.bean.BizCode;
 import com.gitee.sop.websiteserver.bean.DocInfo;
 import com.gitee.sop.websiteserver.bean.DocItem;
 import com.gitee.sop.websiteserver.bean.DocModule;
@@ -121,6 +123,10 @@ public class SwaggerDocParser implements DocParser {
         docItem.setDescription(docInfo.getString("description"));
         docItem.setMultiple(docInfo.getString("multiple") != null);
         docItem.setProduces(docInfo.getJSONArray("produces").toJavaList(String.class));
+        String bizCodeStr = docInfo.getString("biz_code");
+        if (bizCodeStr != null) {
+            docItem.setBizCodeList(JSON.parseArray(bizCodeStr, BizCode.class));
+        }
         docItem.setModuleOrder(NumberUtils.toInt(docInfo.getString("module_order"), 0));
         docItem.setApiOrder(NumberUtils.toInt(docInfo.getString("api_order"), 0));
         String moduleName = this.buildModuleName(docInfo, docRoot);
@@ -208,6 +214,8 @@ public class SwaggerDocParser implements DocParser {
 
     protected List<DocParameter> buildDocParameters(String ref, JSONObject docRoot, boolean doSubRef) {
         JSONObject responseObject = docRoot.getJSONObject("definitions").getJSONObject(ref);
+        String className = responseObject.getString("title");
+        JSONObject extProperties = docRoot.getJSONObject(className);
         JSONObject properties = responseObject.getJSONObject("properties");
         List<DocParameter> docParameterList = new ArrayList<>();
         if (properties == null) {
@@ -224,10 +232,20 @@ public class SwaggerDocParser implements DocParser {
             JSONObject fieldInfo = properties.getJSONObject(fieldName);
             DocParameter docParameter = fieldInfo.toJavaObject(DocParameter.class);
             docParameter.setName(fieldName);
+            if (extProperties != null) {
+                JSONObject prop = extProperties.getJSONObject(fieldName);
+                if (prop != null) {
+                    String maxLength = prop.getString("maxLength");
+                    docParameter.setMaxLength(maxLength == null ? "-" : maxLength);
+                    String required = prop.getString("required");
+                    if (required != null) {
+                        docParameter.setRequired(Boolean.parseBoolean(required));
+                    }
+                }
+            }
             docParameterList.add(docParameter);
             RefInfo refInfo = this.getRefInfo(fieldInfo);
             if (refInfo != null && doSubRef) {
-                // 如果是树状菜单的话，这里可能触发死循环
                 String subRef = refInfo.ref;
                 boolean nextDoRef = !Objects.equals(ref, subRef);
                 List<DocParameter> refs = buildDocParameters(subRef, docRoot, nextDoRef);

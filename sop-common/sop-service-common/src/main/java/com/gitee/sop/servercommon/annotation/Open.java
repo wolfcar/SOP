@@ -44,4 +44,9 @@ public @interface Open {
      * 是否需要appAuthToken，设置为true，网关端会校验token是否存在
      */
     boolean needToken() default false;
+
+    /**
+     * 定义业务错误码，用于文档显示
+     */
+    BizCode[] bizCode() default {};
 }
