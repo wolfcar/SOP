@@ -30,7 +30,7 @@ public class ServiceConfiguration extends SpringmvcConfiguration {
         }
         // 在元数据中新增启动时间，不能修改这个值，不然网关拉取接口会有问题
         // 如果没有这个值，网关会忽略这个服务
-        metadata.put("time.startup", String.valueOf(System.currentTimeMillis()));
+        metadata.put("server.startup-time", String.valueOf(System.currentTimeMillis()));
         return new NacosWatch(nacosDiscoveryProperties, taskScheduler);
     }
 

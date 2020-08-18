@@ -25,7 +25,7 @@ public class OpenServiceConfig extends SpringmvcConfiguration {
     public static final String SERVER_CONTEXT_PATH = "server.servlet.context-path";
     public static final String SERVER_IP = "server.ip";
     public static final String SERVER_PORT = "server.port";
-    public static final String METADATA_TIME_STARTUP = "time.startup";
+    public static final String METADATA_TIME_STARTUP = "server.startup-time";
 
     static {
         ServiceConfig.getInstance().setDefaultVersion("1.0");

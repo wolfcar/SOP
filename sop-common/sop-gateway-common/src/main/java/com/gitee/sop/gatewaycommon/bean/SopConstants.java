@@ -54,6 +54,6 @@ public class SopConstants {
     public static final String TARGET_SERVICE = "sop-target-service";
     public static final String RESTFUL_REQUEST = "sop-restful-request";
 
-    public static final String METADATA_KEY_TIME_STARTUP = "time.startup";
+    public static final String METADATA_KEY_TIME_STARTUP = "server.startup-time";
 
 }
