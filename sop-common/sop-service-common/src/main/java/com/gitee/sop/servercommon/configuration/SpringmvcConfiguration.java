@@ -26,6 +26,7 @@ public class SpringmvcConfiguration implements WebMvcConfigurer {
     public static final String METADATA_SERVER_CONTEXT_PATH = "server.servlet.context-path";
 
     public SpringmvcConfiguration() {
+        System.setProperty("eureka.instance.metadata-map.server.startup-time", String.valueOf(System.currentTimeMillis()));
         ServiceConfig.getInstance().getI18nModules().add("i18n/isp/bizerror");
     }
 
