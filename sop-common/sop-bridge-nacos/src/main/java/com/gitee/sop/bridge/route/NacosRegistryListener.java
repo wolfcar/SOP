@@ -6,9 +6,12 @@ import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.alibaba.nacos.api.naming.pojo.ListView;
 import com.gitee.sop.gatewaycommon.bean.InstanceDefinition;
+import com.gitee.sop.gatewaycommon.bean.SopConstants;
 import com.gitee.sop.gatewaycommon.route.BaseRegistryListener;
 import com.gitee.sop.gatewaycommon.route.RegistryEvent;
+import com.gitee.sop.gatewaycommon.route.ServiceHolder;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.util.CollectionUtils;
@@ -28,8 +31,6 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class NacosRegistryListener extends BaseRegistryListener {
-
-    private static final String METADATA_KEY_TIME_STARTUP = "time.startup";
 
     private volatile Set<NacosServiceHolder> cacheServices = new HashSet<>();
 
@@ -73,6 +74,7 @@ public class NacosRegistryListener extends BaseRegistryListener {
 
     /**
      * 获取建康的服务实例
+     *
      * @return 没有返回空的list
      */
     private List<NacosServiceHolder> getServiceList() {
@@ -89,36 +91,36 @@ public class NacosRegistryListener extends BaseRegistryListener {
         return servicesOfServer
                 .getData()
                 .stream()
-                .filter(this::canOperator)
                 .map(serviceName -> {
+                    List<Instance> allInstances;
                     try {
                         // 获取服务实例
-                        List<Instance> allInstances = namingService.getAllInstances(serviceName);
-                        if (CollectionUtils.isEmpty(allInstances)) {
-                            return null;
-                        }
-                        Instance instance = allInstances.stream()
-                                // 只获取建康实例
-                                .filter(Instance::isHealthy)
-                                // 根据启动时间倒叙，找到最新的服务器
-                                .max(Comparator.comparing(ins -> {
-                                    String startupTime = ins.getMetadata().getOrDefault(METADATA_KEY_TIME_STARTUP, "0");
-                                    return Long.valueOf(startupTime);
-                                }))
-                                .orElse(null);
-                        if (instance == null) {
-                            return null;
-                        } else {
-                            String startupTime = instance.getMetadata().getOrDefault("time.startup", "0");
-                            long time = Long.parseLong(startupTime);
-                            return new NacosServiceHolder(serviceName, time, instance);
-                        }
+                       allInstances = namingService.getAllInstances(serviceName);
                     } catch (NacosException e) {
                         log.error("namingService.getAllInstances(serviceName)错误，serviceName：{}", serviceName, e);
                         return null;
                     }
+                    if (CollectionUtils.isEmpty(allInstances)) {
+                        return null;
+                    }
+                    return allInstances.stream()
+                            // 只获取建康实例
+                            .filter(Instance::isHealthy)
+                            .map(instance -> {
+                                String startupTime = instance.getMetadata().get(SopConstants.METADATA_KEY_TIME_STARTUP);
+                                if (startupTime == null) {
+                                    return null;
+                                }
+                                long time = NumberUtils.toLong(startupTime, 0);
+                                return new NacosServiceHolder(serviceName, time, instance);
+                            })
+                            .filter(Objects::nonNull)
+                            .max(Comparator.comparing(ServiceHolder::getLastUpdatedTimestamp))
+                            .orElse(null);
+
                 })
                 .filter(Objects::nonNull)
+                .filter(this::canOperator)
                 .collect(Collectors.toList());
     }
 

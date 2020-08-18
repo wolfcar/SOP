@@ -1,5 +1,10 @@
 # changelog
 
+## 4.0.3
+
+- 可定义业务错误码（见`@Open`注解中的`bizCode`属性）
+- 文档参数可指定最大长度（使用`@Length(max = xx)`）
+
 ## 4.0.2
 
 - 支持swagger排序（position属性）

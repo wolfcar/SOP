@@ -2,6 +2,7 @@ package com.gitee.sop.sdk.client;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
 import com.gitee.sop.sdk.common.DataNameBuilder;
 import com.gitee.sop.sdk.common.OpenConfig;
 import com.gitee.sop.sdk.common.RequestForm;
@@ -36,17 +37,17 @@ public class OpenClient {
     /**
      * 接口请求url
      */
-    private String url;
+    private final String url;
 
     /**
      * 平台提供的appId
      */
-    private String appId;
+    private final String appId;
 
     /**
      * 开放平台提供的私钥
      */
-    private String privateKey;
+    private final String privateKey;
 
     /**
      * 开放平台提供的公钥
@@ -56,17 +57,17 @@ public class OpenClient {
     /**
      * 配置项
      */
-    private OpenConfig openConfig;
+    private final OpenConfig openConfig;
 
     /**
      * 请求对象
      */
-    private OpenRequest openRequest;
+    private final OpenRequest openRequest;
 
     /**
      * 节点处理
      */
-    private DataNameBuilder dataNameBuilder;
+    private final DataNameBuilder dataNameBuilder;
 
     /**
      * 构建请求客户端
@@ -193,7 +194,7 @@ public class OpenClient {
     protected <T extends BaseResponse> T parseResponse(String resp, BaseRequest<T> request) {
         String method = request.getMethod();
         String rootNodeName = dataNameBuilder.build(method);
-        JSONObject jsonObject = JSON.parseObject(resp);
+        JSONObject jsonObject = JSON.parseObject(resp, Feature.OrderedField);
         String errorResponseName = this.openConfig.getErrorResponseName();
         boolean errorResponse = jsonObject.containsKey(errorResponseName);
         if (errorResponse) {
@@ -210,7 +211,7 @@ public class OpenClient {
             }
         }
         T t = data.toJavaObject(request.getResponseClass());
-        t.setBody(data.toJSONString());
+        t.setBody(jsonObject.getString(rootNodeName));
         return t;
     }
 

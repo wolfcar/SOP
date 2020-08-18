@@ -30,6 +30,7 @@ public class DocItem {
 
     List<DocParameter> requestParameters;
     List<DocParameter> responseParameters;
+    List<BizCode> bizCodeList;
 
     public String getNameVersion() {
         return name + version;

@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 
 @Data
@@ -17,5 +18,6 @@ public class StoryParam {
     private String name;
 
     @ApiModelProperty(value = "备注 (第二)", example = "xx", position = 2)
+    @Length(max = 64, message = "长度不能超过64")
     private String remark;
 }

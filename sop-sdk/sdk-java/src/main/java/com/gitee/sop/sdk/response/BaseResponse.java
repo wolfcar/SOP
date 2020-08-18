@@ -22,6 +22,8 @@ import lombok.Setter;
 @Getter
 public abstract class BaseResponse {
 
+    @JSONField(name = "request_id")
+    private String requestId;
     private String code;
     private String msg;
     @JSONField(name = "sub_code")
