@@ -1,14 +1,13 @@
 package com.gitee.app.config;
 
 import com.alibaba.nacos.api.annotation.NacosInjected;
-import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.alibaba.nacos.client.naming.utils.NetUtils;
 import com.alibaba.nacos.spring.context.annotation.discovery.EnableNacosDiscovery;
 import com.gitee.sop.servercommon.bean.ServiceConfig;
-import com.gitee.sop.servercommon.configuration.ServiceConfiguration;
+import com.gitee.sop.servercommon.configuration.SpringmvcConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -19,13 +18,14 @@ import org.springframework.beans.factory.annotation.Value;
  */
 @Slf4j
 @EnableNacosDiscovery
-public class OpenServiceConfig extends ServiceConfiguration {
+public class OpenServiceConfig extends SpringmvcConfiguration {
 
 
     public static final String SPRING_APPLICATION_NAME = "spring.application.name";
     public static final String SERVER_CONTEXT_PATH = "server.servlet.context-path";
     public static final String SERVER_IP = "server.ip";
     public static final String SERVER_PORT = "server.port";
+    public static final String METADATA_TIME_STARTUP = "server.startup-time";
 
     static {
         ServiceConfig.getInstance().setDefaultVersion("1.0");
@@ -65,7 +65,8 @@ public class OpenServiceConfig extends ServiceConfiguration {
         instance.setServiceName(serviceId);
         instance.setIp(ip);
         instance.setPort(port);
-        instance.getMetadata().put(SERVER_CONTEXT_PATH, contextPath);
+        instance.getMetadata().put(METADATA_SERVER_CONTEXT_PATH, contextPath);
+        instance.getMetadata().put(METADATA_TIME_STARTUP, String.valueOf(System.currentTimeMillis()));
         return instance;
     }
 
