@@ -20,7 +20,7 @@ public abstract class BaseRegistryListener implements RegistryListener {
 
     private static final int FIVE_SECONDS = 1000 * 5;
 
-    private Map<String, Long> updateTimeMap = new ConcurrentHashMap<>(16);
+    private final Map<String, Long> updateTimeMap = new ConcurrentHashMap<>(16);
 
     public static List<String> EXCLUDE_SERVICE_ID_LIST = new ArrayList<>(8);
 
@@ -54,7 +54,8 @@ public abstract class BaseRegistryListener implements RegistryListener {
         serviceListener.onAddInstance(instance);
     }
 
-    protected boolean canOperator(String serviceId) {
+    protected boolean canOperator(ServiceHolder serviceHolder) {
+        String serviceId = serviceHolder.getServiceId();
         // 被排除的服务，不能操作
         if (isExcludeService(serviceId)) {
             return false;

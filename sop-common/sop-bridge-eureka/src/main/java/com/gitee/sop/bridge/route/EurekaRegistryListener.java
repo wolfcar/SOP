@@ -48,6 +48,7 @@ public class EurekaRegistryListener extends BaseRegistryListener {
                     return instanceInfos.get(0);
                 })
                 .map(instanceInfo -> new ServiceHolder(instanceInfo.getAppName(), instanceInfo.getLastUpdatedTimestamp()))
+                .filter(this::canOperator)
                 .collect(Collectors.toList());
 
         final Set<ServiceHolder> currentServices = new HashSet<>(serviceList);
@@ -57,7 +58,7 @@ public class EurekaRegistryListener extends BaseRegistryListener {
         if (currentServices.size() > 0) {
             List<Application> newApplications = registeredApplications.stream()
                     .filter(application ->
-                            this.canOperator(application.getName()) && containsService(currentServices, application.getName()))
+                            containsService(currentServices, application.getName()))
                     .collect(Collectors.toList());
 
             this.doRegister(newApplications);
