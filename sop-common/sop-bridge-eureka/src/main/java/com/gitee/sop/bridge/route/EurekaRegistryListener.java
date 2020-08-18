@@ -1,6 +1,7 @@
 package com.gitee.sop.bridge.route;
 
 import com.gitee.sop.gatewaycommon.bean.InstanceDefinition;
+import com.gitee.sop.gatewaycommon.bean.SopConstants;
 import com.gitee.sop.gatewaycommon.route.BaseRegistryListener;
 import com.gitee.sop.gatewaycommon.route.RegistryEvent;
 import com.gitee.sop.gatewaycommon.route.ServiceHolder;
@@ -15,6 +16,8 @@ import org.springframework.context.ApplicationEvent;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,12 +45,19 @@ public class EurekaRegistryListener extends BaseRegistryListener {
                 .filter(application -> CollectionUtils.isNotEmpty(application.getInstances()))
                 .map(Application::getInstances)
                 .map(instanceInfos -> {
-                    // 根据更新时间倒叙
-                    instanceInfos.sort(Comparator.comparing(InstanceInfo::getLastUpdatedTimestamp).reversed());
-                    // 获取最新的个服务实例，说明这个服务实例刚刚重启过
-                    return instanceInfos.get(0);
+                    // 找到最新的一个
+                    Optional<InstanceInfo> instanceInfoOptional = instanceInfos
+                            .stream()
+                            .max(Comparator.comparing(InstanceInfo::getLastUpdatedTimestamp));
+                    return instanceInfoOptional.map(instanceInfo -> {
+                        String startupTime = instanceInfo.getMetadata().get(SopConstants.METADATA_KEY_TIME_STARTUP);
+                        if (startupTime == null) {
+                            return null;
+                        }
+                        return new ServiceHolder(instanceInfo.getAppName(), instanceInfo.getLastUpdatedTimestamp());
+                    }).orElse(null);
                 })
-                .map(instanceInfo -> new ServiceHolder(instanceInfo.getAppName(), instanceInfo.getLastUpdatedTimestamp()))
+                .filter(Objects::nonNull)
                 .filter(this::canOperator)
                 .collect(Collectors.toList());
 
