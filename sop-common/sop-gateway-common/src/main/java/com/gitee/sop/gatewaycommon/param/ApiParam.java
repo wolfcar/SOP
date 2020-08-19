@@ -16,7 +16,6 @@ import java.util.UUID;
 public class ApiParam extends JSONObject implements Param {
 
 
-
     public ApiParam() {
     }
 
@@ -25,38 +24,14 @@ public class ApiParam extends JSONObject implements Param {
     }
 
     private String requestId = UUID.randomUUID().toString().replace("-", "");
-    private boolean ignoreSign;
-    private boolean ignoreValidate;
-
-    private String restName;
-    private String restVersion;
 
     private String serviceId;
     private String ip;
-    private boolean restful;
     private boolean mergeResult = true;
 
     private boolean isGrayRequest;
 
     private transient UploadContext uploadContext;
-
-    public static ApiParam createRestfulApiParam(String path) {
-        ApiParam apiParam = new ApiParam();
-        apiParam.setName(path);
-        apiParam.setVersion("");
-        apiParam.setRestful(true);
-        apiParam.setMergeResult(false);
-        return apiParam;
-    }
-
-    public void fitNameVersion() {
-        if (restName != null) {
-            this.put(ParamNames.API_NAME, restName);
-        }
-        if (restVersion != null) {
-            this.put(ParamNames.VERSION_NAME, restVersion);
-        }
-    }
 
     public static ApiParam build(Map<String, ?> map) {
         ApiParam apiParam = new ApiParam();
@@ -82,25 +57,8 @@ public class ApiParam extends JSONObject implements Param {
         return sign;
     }
 
-    /**
-     * 是否忽略验证签名
-     *
-     * @return 返回true，忽略签名
-     */
-    public boolean fetchIgnoreSign() {
-        return ignoreSign;
-    }
-
-    public void setIgnoreSign(boolean ignoreSign) {
-        this.ignoreSign = ignoreSign;
-    }
-
-    public boolean fetchIgnoreValidate() {
-        return ignoreValidate;
-    }
-
-    public void setIgnoreValidate(boolean ignoreValidate) {
-        this.ignoreValidate = ignoreValidate;
+    public void setName(String name) {
+        put(ParamNames.API_NAME, name);
     }
 
     /**
@@ -108,15 +66,7 @@ public class ApiParam extends JSONObject implements Param {
      */
     @Override
     public String fetchName() {
-        String name = getString(ParamNames.API_NAME);
-        if (name == null) {
-            name = this.restName;
-        }
-        return name;
-    }
-
-    public void setName(String name) {
-        this.restName = name;
+        return getString(ParamNames.API_NAME);
     }
 
     public String fetchNameVersion() {
@@ -139,15 +89,7 @@ public class ApiParam extends JSONObject implements Param {
      */
     @Override
     public String fetchVersion() {
-        String version = getString(ParamNames.VERSION_NAME);
-        if (version == null) {
-            version = this.restVersion;
-        }
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.restVersion = version;
+        return getString(ParamNames.VERSION_NAME);
     }
 
     /**
@@ -161,6 +103,8 @@ public class ApiParam extends JSONObject implements Param {
     public void setAppKey(String appKey) {
         put(ParamNames.APP_KEY_NAME, appKey);
     }
+
+
 
     /**
      * 参数,urlencode后的
@@ -244,14 +188,6 @@ public class ApiParam extends JSONObject implements Param {
         return super.hashCode();
     }
 
-    public void setRestName(String restName) {
-        this.restName = restName;
-    }
-
-    public void setRestVersion(String restVersion) {
-        this.restVersion = restVersion;
-    }
-
     public void setIp(String ip) {
         this.ip = ip;
     }
@@ -284,12 +220,8 @@ public class ApiParam extends JSONObject implements Param {
         this.mergeResult = mergeResult;
     }
 
-    public boolean fetchRestful() {
-        return restful;
-    }
-
-    public void setRestful(boolean restful) {
-        this.restful = restful;
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
     }
 
     public String fetchRequestId() {
