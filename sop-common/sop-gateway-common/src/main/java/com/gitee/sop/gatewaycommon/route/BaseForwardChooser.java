@@ -24,7 +24,7 @@ public abstract class BaseForwardChooser<T> implements ForwardChooser<T>, ApiPar
         ApiParam apiParam = getApiParam(t);
         String nameVersion = apiParam.fetchNameVersion();
         TargetRoute targetRoute = RouteRepositoryContext.getRouteRepository().get(nameVersion);
-        String serviceId = targetRoute.getServiceRouteInfo().fetchServiceIdLowerCase();
+        String serviceId = targetRoute.getServiceDefinition().fetchServiceIdLowerCase();
         // 如果服务在灰度阶段，返回一个灰度版本号
         String grayVersion = envGrayManager.getVersion(serviceId, nameVersion);
         // 如果是灰度环境

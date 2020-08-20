@@ -3,14 +3,14 @@ package com.gitee.sop.gatewaycommon.bean;
 /**
  * @author tanghc
  */
-public interface TargetRoute<T> {
+public interface TargetRoute {
 
     /**
      * 返回服务信息
      *
      * @return 返回服务信息
      */
-    ServiceRouteInfo getServiceRouteInfo();
+    ServiceDefinition getServiceDefinition();
 
     /**
      * 返回微服务路由对象
@@ -19,10 +19,4 @@ public interface TargetRoute<T> {
      */
     RouteDefinition getRouteDefinition();
 
-    /**
-     * 返回网关路由对象
-     *
-     * @return 返回网关路由对象
-     */
-    T getTargetRouteDefinition();
 }

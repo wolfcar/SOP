@@ -7,5 +7,5 @@ import com.gitee.sop.gateway.entity.ConfigServiceRoute;
 /**
  * @author tanghc
  */
-public interface ConfigServiceRouteMapper extends CrudMapper<ConfigServiceRoute, Long> {
+public interface ConfigServiceRouteMapper extends CrudMapper<ConfigServiceRoute, String> {
 }

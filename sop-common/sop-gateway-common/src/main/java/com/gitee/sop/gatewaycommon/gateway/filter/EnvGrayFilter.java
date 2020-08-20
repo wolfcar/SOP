@@ -32,7 +32,7 @@ public class EnvGrayFilter implements GlobalFilter, Ordered {
         if (targetRoute == null) {
             return chain.filter(exchange);
         }
-        String serviceId = targetRoute.getServiceRouteInfo().fetchServiceIdLowerCase();
+        String serviceId = targetRoute.getServiceDefinition().fetchServiceIdLowerCase();
         // 如果服务在灰度阶段，返回一个灰度版本号
         String version = envGrayManager.getVersion(serviceId, nameVersion);
         if (version != null && envGrayManager.containsKey(serviceId, apiParam.fetchAppKey())) {

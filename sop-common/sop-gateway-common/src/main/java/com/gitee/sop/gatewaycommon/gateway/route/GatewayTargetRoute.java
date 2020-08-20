@@ -1,15 +1,30 @@
 package com.gitee.sop.gatewaycommon.gateway.route;
 
-import com.gitee.sop.gatewaycommon.bean.AbstractTargetRoute;
 import com.gitee.sop.gatewaycommon.bean.RouteDefinition;
-import com.gitee.sop.gatewaycommon.bean.ServiceRouteInfo;
+import com.gitee.sop.gatewaycommon.bean.ServiceDefinition;
+import com.gitee.sop.gatewaycommon.bean.TargetRoute;
 
 /**
  * @author tanghc
  */
-public class GatewayTargetRoute extends AbstractTargetRoute<org.springframework.cloud.gateway.route.RouteDefinition> {
+public class GatewayTargetRoute implements TargetRoute {
 
-    public GatewayTargetRoute(ServiceRouteInfo serviceRouteInfo, RouteDefinition routeDefinition, org.springframework.cloud.gateway.route.RouteDefinition targetRoute) {
-        super(serviceRouteInfo, routeDefinition, targetRoute);
+    private ServiceDefinition serviceDefinition;
+    private RouteDefinition routeDefinition;
+
+
+    public GatewayTargetRoute(ServiceDefinition serviceDefinition, RouteDefinition routeDefinition) {
+        this.serviceDefinition = serviceDefinition;
+        this.routeDefinition = routeDefinition;
+    }
+
+    @Override
+    public ServiceDefinition getServiceDefinition() {
+        return serviceDefinition;
+    }
+
+    @Override
+    public RouteDefinition getRouteDefinition() {
+        return routeDefinition;
     }
 }
