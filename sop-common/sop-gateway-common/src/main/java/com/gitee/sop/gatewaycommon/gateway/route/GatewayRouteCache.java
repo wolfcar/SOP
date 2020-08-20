@@ -52,18 +52,28 @@ public class GatewayRouteCache implements RouteLoader {
                     log.debug("新增路由：{}", JSON.toJSONString(routeDefinition));
                 }
             }
-            this.routeRepository.refresh();
+            this.refresh();
             callback.accept(null);
         } catch (Exception e) {
             log.error("加载路由信息失败，serviceRouteInfo:{}", serviceRouteInfo, e);
         }
     }
 
+    /**
+     * 添加路由信息到本地缓存，这里添加后Spring Cloud Gateway并不会识别路由，需要调用refresh()方法
+     *
+     * @see #refresh()
+     * @param serviceId 服务id
+     * @param routeDefinition 路由信息
+     */
     public void add(String serviceId, RouteDefinition routeDefinition) {
         GatewayTargetRoute targetRoute = new GatewayTargetRoute(new ServiceDefinition(serviceId), routeDefinition);
         routeRepository.add(targetRoute);
     }
 
+    /**
+     * 刷新路由到Spring Cloud Gateway路由管理器当中
+     */
     public void refresh() {
         this.routeRepository.refresh();
     }
