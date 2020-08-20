@@ -64,6 +64,10 @@ public class GatewayRouteCache implements RouteLoader {
         routeRepository.add(targetRoute);
     }
 
+    public void refresh() {
+        this.routeRepository.refresh();
+    }
+
     /**
      * 构建路由id MD5
      *
