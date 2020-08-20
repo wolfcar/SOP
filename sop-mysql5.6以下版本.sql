@@ -139,9 +139,6 @@ CREATE TABLE `config_route_limit` (
 CREATE TABLE `isv_info` (
   `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `app_key` VARCHAR(100) NOT NULL COMMENT 'appKey',
-  `secret` VARCHAR(200) DEFAULT NULL COMMENT 'secret',
-  `pub_key` TEXT COMMENT '公钥',
-  `pri_key` TEXT COMMENT '私钥',
   `status` TINYINT(4) UNSIGNED NOT NULL DEFAULT '0' COMMENT '1启用，2禁用',
   `sign_type` TINYINT(4) NOT NULL DEFAULT '1' COMMENT '1:RSA2,2:MD5',
   `remark` VARCHAR(128) DEFAULT NULL COMMENT '备注',
