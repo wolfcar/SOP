@@ -81,7 +81,7 @@ public class AbstractConfiguration implements ApplicationContextAware, Applicati
      * @param heartbeatEvent
      */
     @EventListener(classes = HeartbeatEvent.class)
-    public void listenNacosEvent(ApplicationEvent heartbeatEvent) {
+    public void listenEvent(ApplicationEvent heartbeatEvent) {
         // 没有启动完毕先等待
         if (!isStartupCompleted) {
             lock.lock();

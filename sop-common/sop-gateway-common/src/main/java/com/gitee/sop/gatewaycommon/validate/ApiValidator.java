@@ -129,7 +129,7 @@ public class ApiValidator implements Validator {
     }
 
     private void initFields(TargetRoute targetRoute, ApiParam apiParam) {
-        apiParam.setServiceId(targetRoute.getServiceRouteInfo().getServiceId());
+        apiParam.setServiceId(targetRoute.getServiceDefinition().getServiceId());
         boolean mergeResult;
         Boolean defaultSetting = ApiContext.getApiConfig().getMergeResult();
         if (defaultSetting != null) {

@@ -39,7 +39,7 @@ public class DefaultLimitManager implements LimitManager {
             // 被限流了
             return counter.get(routeConfig.getId()).incrementAndGet() <= execCountPerSecond;
         } catch (ExecutionException e) {
-            log.error("漏桶限流出错，routeConfig:{}", routeConfig, e);
+            log.error("窗口限流出错，routeConfig:{}", routeConfig, e);
             return false;
         }
     }

@@ -1,19 +1,15 @@
 package com.gitee.sop.gatewaycommon.gateway.route;
 
-import com.gitee.sop.gatewaycommon.bean.AbstractTargetRoute;
 import com.gitee.sop.gatewaycommon.bean.RouteDefinition;
 import com.gitee.sop.gatewaycommon.manager.RouteRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
 import org.springframework.cloud.gateway.route.Route;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.ApplicationContext;
-import org.springframework.util.AntPathMatcher;
-import org.springframework.util.PathMatcher;
 import reactor.core.publisher.Flux;
 
 import java.util.Collection;
@@ -31,8 +27,6 @@ import static java.util.Collections.synchronizedMap;
  */
 @Slf4j
 public class GatewayRouteRepository implements RouteRepository<GatewayTargetRoute>, RouteLocator {
-
-    private final PathMatcher pathMatcher = new AntPathMatcher();
 
     private static final Map<String, GatewayTargetRoute> routes = synchronizedMap(new LinkedHashMap<>());
 
@@ -56,7 +50,7 @@ public class GatewayRouteRepository implements RouteRepository<GatewayTargetRout
         RouteLocatorBuilder.Builder builder = routeLocatorBuilder.routes();
         List<RouteDefinition> routeDefinitionList = routes.values()
                 .stream()
-                .map(AbstractTargetRoute::getRouteDefinition)
+                .map(GatewayTargetRoute::getRouteDefinition)
                 .collect(Collectors.toList());
         routeDefinitionList.forEach(routeDefinition -> builder.route(routeDefinition.getId(),
                 r -> r.path(routeDefinition.getPath())
@@ -75,32 +69,7 @@ public class GatewayRouteRepository implements RouteRepository<GatewayTargetRout
         if (id == null) {
             return null;
         }
-        GatewayTargetRoute gatewayTargetRoute = routes.get(id);
-        if (gatewayTargetRoute != null) {
-            return gatewayTargetRoute;
-        }
-        for (Map.Entry<String, GatewayTargetRoute> entry : routes.entrySet()) {
-            // /food/get/?id?
-            String pattern = entry.getKey();
-            if (this.pathMatcher.match(pattern, id)) {
-                return clone(id, entry.getValue());
-            }
-        }
-        return null;
-    }
-
-    private GatewayTargetRoute clone(String path, GatewayTargetRoute gatewayTargetRoute) {
-        String prefix = "/" + gatewayTargetRoute.getServiceRouteInfo().getServiceId();
-        if (path.startsWith(prefix)) {
-            path = path.substring(prefix.length());
-        }
-        RouteDefinition routeDefinition = gatewayTargetRoute.getRouteDefinition();
-        RouteDefinition newRouteDefinition = new RouteDefinition();
-        BeanUtils.copyProperties(routeDefinition, newRouteDefinition);
-        newRouteDefinition.setPath(path);
-        return new GatewayTargetRoute(gatewayTargetRoute.getServiceRouteInfo()
-                , newRouteDefinition
-                , gatewayTargetRoute.getTargetRouteDefinition());
+        return routes.get(id);
     }
 
 
@@ -136,7 +105,7 @@ public class GatewayRouteRepository implements RouteRepository<GatewayTargetRout
     @Override
     public void deleteAll(String serviceId) {
         List<String> idList = routes.values().stream()
-                .filter(zuulTargetRoute -> StringUtils.equalsIgnoreCase(serviceId, zuulTargetRoute.getServiceRouteInfo().getServiceId()))
+                .filter(zuulTargetRoute -> StringUtils.equalsIgnoreCase(serviceId, zuulTargetRoute.getServiceDefinition().getServiceId()))
                 .map(zuulTargetRoute -> zuulTargetRoute.getRouteDefinition().getId())
                 .collect(Collectors.toList());
 

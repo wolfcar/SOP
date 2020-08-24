@@ -7,7 +7,7 @@ package com.gitee.sop.gatewaycommon.limit;
  */
 public enum LimitType {
     /**
-     * 漏桶策略。每秒处理固定数量的请求，超出请求返回错误信息。
+     * 窗口策略。每秒处理固定数量的请求，超出请求返回错误信息。
      */
     LEAKY_BUCKET(1),
     /**

@@ -5,7 +5,6 @@ import com.gitee.sop.gatewaycommon.bean.SopConstants;
 import com.gitee.sop.gatewaycommon.exception.ApiException;
 import com.gitee.sop.gatewaycommon.gateway.ServerWebExchangeUtil;
 import com.gitee.sop.gatewaycommon.gateway.route.GatewayForwardChooser;
-import com.gitee.sop.gatewaycommon.manager.EnvironmentKeys;
 import com.gitee.sop.gatewaycommon.param.ApiParam;
 import com.gitee.sop.gatewaycommon.route.ForwardInfo;
 import com.gitee.sop.gatewaycommon.util.RouteInterceptorUtil;

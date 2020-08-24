@@ -3,7 +3,7 @@ package com.gitee.sop.gatewaycommon.route;
 import com.alibaba.fastjson.JSON;
 import com.gitee.sop.gatewaycommon.bean.InstanceDefinition;
 import com.gitee.sop.gatewaycommon.bean.ServiceRouteInfo;
-import com.gitee.sop.gatewaycommon.manager.BaseRouteCache;
+import com.gitee.sop.gatewaycommon.gateway.route.GatewayRouteCache;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +24,8 @@ public class ServiceRouteListener extends BaseServiceListener {
 
     private static final String METADATA_SOP_ROUTES_PATH = "sop.routes.path";
 
-    private static final String HEADER_RESTFUL = "restful";
-
     @Autowired
-    private BaseRouteCache<?> baseRouteCache;
+    private GatewayRouteCache gatewayRouteCache;
 
     @Autowired
     private RoutesProcessor routesProcessor;
@@ -35,7 +33,7 @@ public class ServiceRouteListener extends BaseServiceListener {
     @Override
     public void onRemoveService(String serviceId) {
         log.info("服务下线，删除路由配置，serviceId: {}", serviceId);
-        baseRouteCache.remove(serviceId);
+        gatewayRouteCache.remove(serviceId);
         routesProcessor.removeAllRoutes(serviceId);
     }
 
@@ -48,7 +46,7 @@ public class ServiceRouteListener extends BaseServiceListener {
         if (responseEntity.getStatusCode() == HttpStatus.OK) {
             String body = responseEntity.getBody();
             ServiceRouteInfo serviceRouteInfo = JSON.parseObject(body, ServiceRouteInfo.class);
-            baseRouteCache.load(serviceRouteInfo, callback -> routesProcessor.saveRoutes(serviceRouteInfo, instance));
+            gatewayRouteCache.load(serviceRouteInfo, callback -> routesProcessor.saveRoutes(serviceRouteInfo, instance));
         } else {
             log.error("拉取路由配置异常，url: {}, status: {}, body: {}", url, responseEntity.getStatusCodeValue(), responseEntity.getBody());
         }

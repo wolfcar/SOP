@@ -177,8 +177,8 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item v-show="checkTypeKey(2)" prop="appKey" label="AppKey" :rules="checkTypeKey(2) ? rulesLimit.appKey : []">
-              <el-input v-model="limitDialogFormData.appKey" placeholder="需要限流的appKey" />
+            <el-form-item v-show="checkTypeKey(2)" prop="appKey" label="AppId" :rules="checkTypeKey(2) ? rulesLimit.appKey : []">
+              <el-input v-model="limitDialogFormData.appKey" placeholder="需要限流的AppId" />
             </el-form-item>
             <el-form-item v-show="checkTypeKey(3)" label="限流IP" prop="limitIp" :rules="checkTypeKey(3) ? rulesLimit.ip : []">
               <el-input v-model="limitDialogFormData.limitIp" type="textarea" :rows="2" placeholder="多个用英文逗号隔开" />
@@ -495,7 +495,7 @@ export default {
       }
       if (row.appKey) {
         val.push(row.appKey)
-        html.push('AppKey')
+        html.push('AppId')
       }
       if (row.limitIp) {
         val.push(row.limitIp)
