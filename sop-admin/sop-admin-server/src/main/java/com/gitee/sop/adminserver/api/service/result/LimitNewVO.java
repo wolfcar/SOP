@@ -41,9 +41,9 @@ public class LimitNewVO {
     private String serviceId;
 
     /**
-     * 限流策略，1：漏桶策略，2：令牌桶策略, 数据库字段：limit_type
+     * 限流策略，1：窗口策略，2：令牌桶策略, 数据库字段：limit_type
      */
-    @ApiDocField(description = "限流策略，1：漏桶策略，2：令牌桶策略")
+    @ApiDocField(description = "限流策略，1：窗口策略，2：令牌桶策略")
     private Byte limitType;
 
     /**

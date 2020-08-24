@@ -89,7 +89,7 @@ CREATE TABLE `config_limit` (
   `app_key` varchar(128) DEFAULT NULL,
   `limit_ip` varchar(300) DEFAULT NULL COMMENT '限流ip，多个用英文逗号隔开',
   `service_id` varchar(64) NOT NULL DEFAULT '' COMMENT '服务id',
-  `limit_type` tinyint(4) NOT NULL DEFAULT '1' COMMENT '限流策略，1：漏桶策略，2：令牌桶策略',
+  `limit_type` tinyint(4) NOT NULL DEFAULT '1' COMMENT '限流策略，1：窗口策略，2：令牌桶策略',
   `exec_count_per_second` int(11) DEFAULT NULL COMMENT '每秒可处理请求数',
   `duration_seconds` int(11) NOT NULL DEFAULT '1' COMMENT '限流持续时间，默认1秒，即每durationSeconds秒允许多少请求（当limit_type=1时有效）',
   `limit_code` varchar(64) DEFAULT NULL COMMENT '返回的错误码',
@@ -119,7 +119,7 @@ CREATE TABLE `config_route_limit` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `route_id` varchar(64) NOT NULL COMMENT '路由id',
   `service_id` varchar(64) NOT NULL DEFAULT '',
-  `limit_type` tinyint(4) NOT NULL DEFAULT '1' COMMENT '限流策略，1：漏桶策略，2：令牌桶策略',
+  `limit_type` tinyint(4) NOT NULL DEFAULT '1' COMMENT '限流策略，1：窗口策略，2：令牌桶策略',
   `exec_count_per_second` int(11) DEFAULT NULL COMMENT '每秒可处理请求数',
   `limit_code` varchar(64) DEFAULT NULL COMMENT '返回的错误码',
   `limit_msg` varchar(100) DEFAULT NULL COMMENT '返回的错误信息',
@@ -229,29 +229,8 @@ CREATE TABLE `user_info` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='用户信息表';
 
 
-
-
 INSERT INTO `admin_user_info` (`id`, `username`, `password`, `status`, `gmt_create`, `gmt_modified`) VALUES
 	(1,'admin','a62cd510fb9a8a557a27ef279569091f',1,'2019-04-02 19:55:26','2019-04-02 19:55:26');
-
-
-
-
-
-
-
-
-
-
-INSERT INTO `config_limit` (`id`, `route_id`, `app_key`, `limit_ip`, `service_id`, `limit_type`, `exec_count_per_second`, `duration_seconds`, `limit_code`, `limit_msg`, `token_bucket_count`, `limit_status`, `order_index`, `remark`, `gmt_create`, `gmt_modified`) VALUES
-	(1,'alipay.story.get1.0','','192.168.1.1,172.2.2.3','story-service',2,5,1,'','',6,1,3,NULL,'2019-05-17 19:21:35','2019-05-21 09:12:15'),
-	(2,'alipay.story.get1.0','2019032617262200001','','story-service',2,5,1,'service-budy','服务器忙',10,1,0,'','2019-05-17 19:39:30','2019-05-21 15:36:52'),
-	(3,'alipay.story.find1.0','20190331562013861008375808','','story-service',1,3,1,'service-busy','服务器忙',5,1,1,NULL,'2019-05-17 20:20:32','2019-05-20 17:40:17'),
-	(4,'alipay.story.get1.2','','','story-service',1,5,1,'service-busy','服务器忙',3,1,1,'','2019-05-20 16:27:21','2019-05-21 15:53:10'),
-	(5,'','20190401562373796095328256','','story-service',1,5,1,'service-busy','服务器忙',5,1,0,'这个appKey调用很频繁，重点照顾','2019-05-21 15:48:08','2019-05-21 18:45:32'),
-	(6,'','','10.1.30.54','story-service',1,5,1,'service-busy','服务器忙',5,1,0,'这个ip在攻击我们','2019-05-21 15:55:33','2019-05-21 18:17:29'),
-	(7,'story.get1.1','','10.1.30.54','story-service',1,5,1,'service-busy','服务器忙',5,1,0,NULL,'2019-05-21 16:30:48','2019-05-21 16:30:48'),
-	(8,'','20190513577548661718777857','10.1.30.54','story-service',1,5,1,'service-busy','服务器忙',5,1,0,NULL,'2019-05-21 17:10:45','2019-05-21 17:10:52');
 
 
 INSERT INTO `config_route_base` (`id`, `route_id`, `status`, `gmt_create`, `gmt_modified`) VALUES
@@ -270,8 +249,6 @@ INSERT INTO `config_route_limit` (`id`, `route_id`, `service_id`, `limit_type`, 
 	(2,'alipay.story.get1.0','story-service',2,5,'isp.service-busy','服务器正忙',5,0,'2019-04-10 21:05:51','2019-04-11 18:18:03'),
 	(3,'alipay.story.get1.2','story-service',2,10,'isp.service-busy','服务器正忙',3,1,'2019-04-11 17:26:04','2019-04-11 18:19:33'),
 	(4,'alipay.category.get1.0','story-service',1,5,'error-code','服务器忙',5,1,'2019-05-07 12:22:04','2019-05-07 12:25:06');
-
-
 
 
 INSERT INTO `isv_info` (`id`, `app_key`, `status`, `sign_type`, `remark`, `gmt_create`, `gmt_modified`) VALUES

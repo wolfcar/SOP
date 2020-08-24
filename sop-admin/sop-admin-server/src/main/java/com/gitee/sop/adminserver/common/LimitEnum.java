@@ -6,7 +6,7 @@ package com.gitee.sop.adminserver.common;
  */
 public enum LimitEnum {
     /**
-     * 限流策略，1：漏桶策略
+     * 限流策略，1：窗口策略
      */
     TYPE_LEAKY_BUCKET((byte) 1),
     /**
