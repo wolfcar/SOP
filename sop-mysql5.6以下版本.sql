@@ -228,7 +228,6 @@ CREATE TABLE `config_service_route` (
 
 INSERT INTO `admin_user_info` (`id`, `username`, `password`, `status`, `gmt_create`, `gmt_modified`) VALUES
 	(1,'admin','a62cd510fb9a8a557a27ef279569091f',1,'2019-04-02 19:55:26','2019-04-02 19:55:26');
-ALTER TABLE `admin_user_info` ENABLE KEYS;
 
 
 INSERT INTO `config_route_base` (`id`, `route_id`, `status`, `gmt_create`, `gmt_modified`) VALUES
