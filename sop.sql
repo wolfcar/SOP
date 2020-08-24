@@ -1,14 +1,8 @@
-/**
-适用于MYSQL 5.6+版本
-**/
+
 CREATE DATABASE IF NOT EXISTS `sop` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
 USE `sop`;
 
 
-
-
-SET @PREVIOUS_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS;
-SET FOREIGN_KEY_CHECKS = 0;
 
 
 DROP TABLE IF EXISTS `user_info`;
@@ -17,6 +11,7 @@ DROP TABLE IF EXISTS `perm_role`;
 DROP TABLE IF EXISTS `perm_isv_role`;
 DROP TABLE IF EXISTS `isv_keys`;
 DROP TABLE IF EXISTS `isv_info`;
+DROP TABLE IF EXISTS `config_service_route`;
 DROP TABLE IF EXISTS `config_route_limit`;
 DROP TABLE IF EXISTS `config_route_base`;
 DROP TABLE IF EXISTS `config_limit`;
@@ -25,7 +20,6 @@ DROP TABLE IF EXISTS `config_gray_instance`;
 DROP TABLE IF EXISTS `config_gray`;
 DROP TABLE IF EXISTS `config_common`;
 DROP TABLE IF EXISTS `admin_user_info`;
-DROP TABLE IF EXISTS `config_service_route`;
 
 
 CREATE TABLE `admin_user_info` (
@@ -138,6 +132,28 @@ CREATE TABLE `config_route_limit` (
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='路由限流配置';
 
 
+CREATE TABLE `config_service_route` (
+  `id` varchar(128) NOT NULL DEFAULT '' COMMENT '路由id',
+  `service_id` varchar(128) NOT NULL DEFAULT '',
+  `name` varchar(128) NOT NULL DEFAULT '' COMMENT '接口名',
+  `version` varchar(64) NOT NULL DEFAULT '' COMMENT '版本号',
+  `predicates` varchar(256) DEFAULT NULL COMMENT '路由断言（SpringCloudGateway专用）',
+  `filters` varchar(256) DEFAULT NULL COMMENT '路由过滤器（SpringCloudGateway专用）',
+  `uri` varchar(128) NOT NULL DEFAULT '' COMMENT '路由规则转发的目标uri',
+  `path` varchar(128) NOT NULL DEFAULT '' COMMENT 'uri后面跟的path',
+  `order_index` int(11) NOT NULL DEFAULT '0' COMMENT '路由执行的顺序',
+  `ignore_validate` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否忽略验证，业务参数验证除外',
+  `status` tinyint(4) NOT NULL DEFAULT '1' COMMENT '状态，0：待审核，1：启用，2：禁用',
+  `merge_result` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否合并结果',
+  `permission` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否需要授权才能访问',
+  `need_token` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否需要token',
+  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
+  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_serviceid` (`service_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='路由配置';
+
+
 CREATE TABLE `isv_info` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `app_key` varchar(100) NOT NULL COMMENT 'appKey',
@@ -212,84 +228,32 @@ CREATE TABLE `user_info` (
   KEY `idx_unamepwd` (`username`,`password`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='用户信息表';
 
-CREATE TABLE `config_service_route` (
-  `id` varchar(128) NOT NULL DEFAULT '' COMMENT '路由id',
-  `service_id` varchar(128) NOT NULL DEFAULT '',
-  `name` varchar(128) NOT NULL DEFAULT '' COMMENT '接口名',
-  `version` varchar(64) NOT NULL DEFAULT '' COMMENT '版本号',
-  `predicates` varchar(256) DEFAULT NULL COMMENT '路由断言（SpringCloudGateway专用）',
-  `filters` varchar(256) DEFAULT NULL COMMENT '路由过滤器（SpringCloudGateway专用）',
-  `uri` varchar(128) NOT NULL DEFAULT '' COMMENT '路由规则转发的目标uri',
-  `path` varchar(128) NOT NULL DEFAULT '' COMMENT 'uri后面跟的path',
-  `order_index` int(11) NOT NULL DEFAULT '0' COMMENT '路由执行的顺序',
-  `ignore_validate` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否忽略验证，业务参数验证除外',
-  `status` tinyint(4) NOT NULL DEFAULT '1' COMMENT '状态，0：待审核，1：启用，2：禁用',
-  `merge_result` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否合并结果',
-  `permission` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否需要授权才能访问',
-  `need_token` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否需要token',
-  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
-  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `idx_serviceid` (`service_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='路由配置';
 
 
-SET FOREIGN_KEY_CHECKS = @PREVIOUS_FOREIGN_KEY_CHECKS;
 
-
-SET @PREVIOUS_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS;
-SET FOREIGN_KEY_CHECKS = 0;
-
-
-LOCK TABLES `admin_user_info` WRITE;
-ALTER TABLE `admin_user_info` DISABLE KEYS;
 INSERT INTO `admin_user_info` (`id`, `username`, `password`, `status`, `gmt_create`, `gmt_modified`) VALUES
 	(1,'admin','a62cd510fb9a8a557a27ef279569091f',1,'2019-04-02 19:55:26','2019-04-02 19:55:26');
-ALTER TABLE `admin_user_info` ENABLE KEYS;
-UNLOCK TABLES;
 
 
-LOCK TABLES `config_common` WRITE;
-ALTER TABLE `config_common` DISABLE KEYS;
-ALTER TABLE `config_common` ENABLE KEYS;
-UNLOCK TABLES;
 
 
-LOCK TABLES `config_gray` WRITE;
-ALTER TABLE `config_gray` DISABLE KEYS;
-ALTER TABLE `config_gray` ENABLE KEYS;
-UNLOCK TABLES;
 
 
-LOCK TABLES `config_gray_instance` WRITE;
-ALTER TABLE `config_gray_instance` DISABLE KEYS;
-ALTER TABLE `config_gray_instance` ENABLE KEYS;
-UNLOCK TABLES;
 
 
-LOCK TABLES `config_ip_blacklist` WRITE;
-ALTER TABLE `config_ip_blacklist` DISABLE KEYS;
-ALTER TABLE `config_ip_blacklist` ENABLE KEYS;
-UNLOCK TABLES;
 
 
-LOCK TABLES `config_limit` WRITE;
-ALTER TABLE `config_limit` DISABLE KEYS;
-INSERT INTO `config_limit` (`id`, `route_id`, `app_key`, `limit_ip`, `service_id`, `limit_type`, `exec_count_per_second`, `limit_code`, `limit_msg`, `token_bucket_count`, `limit_status`, `order_index`, `remark`, `gmt_create`, `gmt_modified`) VALUES
-	(1,'alipay.story.get1.0','','192.168.1.1,172.2.2.3','story-service',2,5,'','',6,1,3,NULL,'2019-05-17 19:21:35','2019-05-21 09:12:15'),
-	(2,'alipay.story.get1.0','2019032617262200001','','story-service',2,5,'service-budy','服务器忙',10,1,0,'','2019-05-17 19:39:30','2019-05-21 15:36:52'),
-	(3,'alipay.story.find1.0','20190331562013861008375808','','story-service',1,3,'service-busy','服务器忙',5,1,1,NULL,'2019-05-17 20:20:32','2019-05-20 17:40:17'),
-	(4,'alipay.story.get1.2','','','story-service',1,5,'service-busy','服务器忙',3,1,1,'','2019-05-20 16:27:21','2019-05-21 15:53:10'),
-	(5,'','20190401562373796095328256','','story-service',1,5,'service-busy','服务器忙',5,1,0,'这个appKey调用很频繁，重点照顾','2019-05-21 15:48:08','2019-05-21 18:45:32'),
-	(6,'','','10.1.30.54','story-service',1,5,'service-busy','服务器忙',5,1,0,'这个ip在攻击我们','2019-05-21 15:55:33','2019-05-21 18:17:29'),
-	(7,'story.get1.1','','10.1.30.54','story-service',1,5,'service-busy','服务器忙',5,1,0,NULL,'2019-05-21 16:30:48','2019-05-21 16:30:48'),
-	(8,'','20190513577548661718777857','10.1.30.54','story-service',1,5,'service-busy','服务器忙',5,1,0,NULL,'2019-05-21 17:10:45','2019-05-21 17:10:52');
-ALTER TABLE `config_limit` ENABLE KEYS;
-UNLOCK TABLES;
+INSERT INTO `config_limit` (`id`, `route_id`, `app_key`, `limit_ip`, `service_id`, `limit_type`, `exec_count_per_second`, `duration_seconds`, `limit_code`, `limit_msg`, `token_bucket_count`, `limit_status`, `order_index`, `remark`, `gmt_create`, `gmt_modified`) VALUES
+	(1,'alipay.story.get1.0','','192.168.1.1,172.2.2.3','story-service',2,5,1,'','',6,1,3,NULL,'2019-05-17 19:21:35','2019-05-21 09:12:15'),
+	(2,'alipay.story.get1.0','2019032617262200001','','story-service',2,5,1,'service-budy','服务器忙',10,1,0,'','2019-05-17 19:39:30','2019-05-21 15:36:52'),
+	(3,'alipay.story.find1.0','20190331562013861008375808','','story-service',1,3,1,'service-busy','服务器忙',5,1,1,NULL,'2019-05-17 20:20:32','2019-05-20 17:40:17'),
+	(4,'alipay.story.get1.2','','','story-service',1,5,1,'service-busy','服务器忙',3,1,1,'','2019-05-20 16:27:21','2019-05-21 15:53:10'),
+	(5,'','20190401562373796095328256','','story-service',1,5,1,'service-busy','服务器忙',5,1,0,'这个appKey调用很频繁，重点照顾','2019-05-21 15:48:08','2019-05-21 18:45:32'),
+	(6,'','','10.1.30.54','story-service',1,5,1,'service-busy','服务器忙',5,1,0,'这个ip在攻击我们','2019-05-21 15:55:33','2019-05-21 18:17:29'),
+	(7,'story.get1.1','','10.1.30.54','story-service',1,5,1,'service-busy','服务器忙',5,1,0,NULL,'2019-05-21 16:30:48','2019-05-21 16:30:48'),
+	(8,'','20190513577548661718777857','10.1.30.54','story-service',1,5,1,'service-busy','服务器忙',5,1,0,NULL,'2019-05-21 17:10:45','2019-05-21 17:10:52');
 
 
-LOCK TABLES `config_route_base` WRITE;
-ALTER TABLE `config_route_base` DISABLE KEYS;
 INSERT INTO `config_route_base` (`id`, `route_id`, `status`, `gmt_create`, `gmt_modified`) VALUES
 	(1,'story.get1.1',1,'2019-04-09 19:15:58','2019-04-09 19:16:54'),
 	(2,'alipay.story.get1.0',1,'2019-04-09 19:19:57','2019-04-19 14:45:33'),
@@ -299,23 +263,17 @@ INSERT INTO `config_route_base` (`id`, `route_id`, `status`, `gmt_create`, `gmt_
 	(6,'alipay.category.get1.0',1,'2019-05-06 16:50:39','2019-05-20 17:01:48'),
 	(7,'permission.story.get1.0',1,'2019-05-06 20:03:17','2019-05-06 20:03:21'),
 	(8,'goods.add1.0',1,'2019-05-13 17:23:00','2019-05-13 17:23:11');
-ALTER TABLE `config_route_base` ENABLE KEYS;
-UNLOCK TABLES;
 
 
-LOCK TABLES `config_route_limit` WRITE;
-ALTER TABLE `config_route_limit` DISABLE KEYS;
 INSERT INTO `config_route_limit` (`id`, `route_id`, `service_id`, `limit_type`, `exec_count_per_second`, `limit_code`, `limit_msg`, `token_bucket_count`, `limit_status`, `gmt_create`, `gmt_modified`) VALUES
 	(1,'alipay.story.find1.0','story-service',1,10,'isp.service-busy','服务器正忙',NULL,1,'2019-04-10 20:55:08','2019-04-10 21:04:35'),
 	(2,'alipay.story.get1.0','story-service',2,5,'isp.service-busy','服务器正忙',5,0,'2019-04-10 21:05:51','2019-04-11 18:18:03'),
 	(3,'alipay.story.get1.2','story-service',2,10,'isp.service-busy','服务器正忙',3,1,'2019-04-11 17:26:04','2019-04-11 18:19:33'),
 	(4,'alipay.category.get1.0','story-service',1,5,'error-code','服务器忙',5,1,'2019-05-07 12:22:04','2019-05-07 12:25:06');
-ALTER TABLE `config_route_limit` ENABLE KEYS;
-UNLOCK TABLES;
 
 
-LOCK TABLES `isv_info` WRITE;
-ALTER TABLE `isv_info` DISABLE KEYS;
+
+
 INSERT INTO `isv_info` (`id`, `app_key`, `status`, `sign_type`, `remark`, `gmt_create`, `gmt_modified`) VALUES
 	(1,'2019032617262200001',1,1,NULL,'2019-03-27 10:10:34','2019-05-09 11:10:38'),
 	(3,'asdfasdf',2,1,NULL,'2019-03-27 11:01:11','2019-05-11 10:45:01'),
@@ -327,12 +285,8 @@ INSERT INTO `isv_info` (`id`, `app_key`, `status`, `sign_type`, `remark`, `gmt_c
 	(10,'easyopen_test',1,2,NULL,'2019-04-19 17:19:34','2019-04-19 17:30:09'),
 	(11,'20190513577548661718777856',1,1,NULL,'2019-05-13 17:24:17','2019-05-13 17:24:17'),
 	(12,'20190513577548661718777857',1,1,NULL,'2019-05-13 17:24:17','2019-05-13 17:24:17');
-ALTER TABLE `isv_info` ENABLE KEYS;
-UNLOCK TABLES;
 
 
-LOCK TABLES `isv_keys` WRITE;
-ALTER TABLE `isv_keys` DISABLE KEYS;
 INSERT INTO `isv_keys` (`id`, `app_key`, `sign_type`, `secret`, `key_format`, `public_key_isv`, `private_key_isv`, `public_key_platform`, `private_key_platform`, `gmt_create`, `gmt_modified`) VALUES
 	(1,'2019032617262200001',1,'',1,'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','','','2019-08-13 15:18:39','2019-08-13 15:18:39'),
 	(2,'asdfasdf',1,'',1,'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDOJTAsGoAsNGJdzaWm835mtpcY2YxGr4NPjnhQmfUrPdT+Zgi6jmm+olYuygNeB8cOSALmTzgXlef+6SdwfRJVEMYVAO7hqF0Ood9zTOc+kolgnWJtqX54CoodfABt0SNS/bsr6hCAWu17RGnbgBaK+ZaJD3NVqXVXE8E30cYHiQIDAQAB','MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAM4lMCwagCw0Yl3Npabzfma2lxjZjEavg0+OeFCZ9Ss91P5mCLqOab6iVi7KA14Hxw5IAuZPOBeV5/7pJ3B9ElUQxhUA7uGoXQ6h33NM5z6SiWCdYm2pfngKih18AG3RI1L9uyvqEIBa7XtEaduAFor5lokPc1WpdVcTwTfRxgeJAgMBAAECgYAM3XFGL1k0aQiChiUCaEvJKTgAywLgHm/5dRC5JwKP8knqnn+I9P5QcV0jimPvaFjZ4VCdAvCjOC3EUNSvRn7wR2Lb1+BGZZePTdxtHWE2aqJ1W1SvgQTqMsLlPBRPnXo5XH/ng3WEH15ynd5NR035xAluaI0X/y+PsRxE6TlfIQJBAPSYUyXa2yaEqmvIN+ECKALCLLeDdi2YW3Kjahgz0X9V4Y4aTdrHh8y603zXC0Wy8HeOhwGoyciaS8SmjxCMn4UCQQDXweW8xsUreLH8hfVUtyiY/KgUz+R5foJDNXD7TLE9CDoPSHy09qBe99HyVCZg/gNJH4O+tNr6C4916dYaVk01AkBYZ2HOEc8ZmeOaty/zJHtfm9zbqykgi6upwISNINV8Z4bxfHJdO7bKeVANFBBf7a/aFmqXX/EmjxYJioW03o6dAkEAp7ViXJCtJpNU1pNSFZ2hgvmxtSu7zuyVWKSrw8rjYiuI5eRUe13RXsCHgzQB+Ra5exdyEsUGCaL+yosPD73RmQJBALGuM8EQUcBgrpgpeLZ39Ni1DYXYG9aj+u+ar/UL6kI1mCNFgwroO4EVIvXPVxikMxUgiE2tVaBML5nm8VDNJ7s=','','','2019-08-13 15:18:39','2019-08-13 15:18:39'),
@@ -344,12 +298,8 @@ INSERT INTO `isv_keys` (`id`, `app_key`, `sign_type`, `secret`, `key_format`, `p
 	(8,'easyopen_test',2,'G9w0BAQEFAAOCAQ8AMIIBCgKCA',1,'','','','','2019-08-13 15:18:39','2019-08-13 15:18:39'),
 	(9,'20190513577548661718777856',1,'',1,'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCdGjz3IE2VQteDjQaFacXLCAIqdEIIVcf7LW7f142V55Q0xtcjDTOHjBHExZsG64/Y5WKz4oQVWGnXwtrled8Qg0YAA7ueat8mE8NzJSm9txbfU9hwXB77nJxVkFyaSG1p0IZFrNQpbbUxTX9755deP7DdcSF148LLr091V++S3QIDAQAB','MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBAJ0aPPcgTZVC14ONBoVpxcsIAip0QghVx/stbt/XjZXnlDTG1yMNM4eMEcTFmwbrj9jlYrPihBVYadfC2uV53xCDRgADu55q3yYTw3MlKb23Ft9T2HBcHvucnFWQXJpIbWnQhkWs1ClttTFNf3vnl14/sN1xIXXjwsuvT3VX75LdAgMBAAECgYB68z/nQDa3q/oykDocS21qujfHtfi/wTKjVylAsdezC+wnab6RRhGf8XUuhGARiGWpn8whcBNjCTC8lVju4vQ5IIx4Hb74vwDDMtNXeqwkLmARLYu2ELibauezSeqom8/J8cR3ho7Hr4VHPTiC8qvePRmu8AvXVQz2T7SOhEjDGQJBAOm8XOivr+atiknLbQhmo508ON3sjoN9VMwK9cmnup+ZPCsurJTHRja0MJQNdOXObUVJ6wJhs1PHWT+vITfXGJ8CQQCsESzxOYTkZaqBUFjbWVf1rSwjOOsylweTuq44YIJkHhwMjHf3kN/UTXbxsBPUGeT7/+2K5UwQ9snUPr0yTBcDAkA0FMezBWqxgNu+g7iA1bYBVCjrskkzHVsmuA56Z4hbBZ71lEnaQOjxSYdFhhYVGsEYXlciSbjWoyXM3e4N7jzLAkB0ejv+H33CTsAZQZalBdnxSQTz4vf0CyDp9BkzuMELnQZHyF79i2i5gqbd/N+vWMgVfq4CtC3F3gnKT54rii6ZAkAMBIvHriT5Zbs1fW+oxBP1rHqdsRvqs1zEyIadvJgKAFwFEisryfdw2mWm3vxQQ22RlOquBiZEDIlyM0z2m9PJ','','','2019-08-13 15:18:39','2019-08-13 15:18:39'),
 	(10,'20190513577548661718777857',1,'',1,'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCdGjz3IE2VQteDjQaFacXLCAIqdEIIVcf7LW7f142V55Q0xtcjDTOHjBHExZsG64/Y5WKz4oQVWGnXwtrled8Qg0YAA7ueat8mE8NzJSm9txbfU9hwXB77nJxVkFyaSG1p0IZFrNQpbbUxTX9755deP7DdcSF148LLr091V++S3QIDAQAB','MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBAJ0aPPcgTZVC14ONBoVpxcsIAip0QghVx/stbt/XjZXnlDTG1yMNM4eMEcTFmwbrj9jlYrPihBVYadfC2uV53xCDRgADu55q3yYTw3MlKb23Ft9T2HBcHvucnFWQXJpIbWnQhkWs1ClttTFNf3vnl14/sN1xIXXjwsuvT3VX75LdAgMBAAECgYB68z/nQDa3q/oykDocS21qujfHtfi/wTKjVylAsdezC+wnab6RRhGf8XUuhGARiGWpn8whcBNjCTC8lVju4vQ5IIx4Hb74vwDDMtNXeqwkLmARLYu2ELibauezSeqom8/J8cR3ho7Hr4VHPTiC8qvePRmu8AvXVQz2T7SOhEjDGQJBAOm8XOivr+atiknLbQhmo508ON3sjoN9VMwK9cmnup+ZPCsurJTHRja0MJQNdOXObUVJ6wJhs1PHWT+vITfXGJ8CQQCsESzxOYTkZaqBUFjbWVf1rSwjOOsylweTuq44YIJkHhwMjHf3kN/UTXbxsBPUGeT7/+2K5UwQ9snUPr0yTBcDAkA0FMezBWqxgNu+g7iA1bYBVCjrskkzHVsmuA56Z4hbBZ71lEnaQOjxSYdFhhYVGsEYXlciSbjWoyXM3e4N7jzLAkB0ejv+H33CTsAZQZalBdnxSQTz4vf0CyDp9BkzuMELnQZHyF79i2i5gqbd/N+vWMgVfq4CtC3F3gnKT54rii6ZAkAMBIvHriT5Zbs1fW+oxBP1rHqdsRvqs1zEyIadvJgKAFwFEisryfdw2mWm3vxQQ22RlOquBiZEDIlyM0z2m9PJ','','','2019-08-13 15:18:39','2019-08-13 15:18:39');
-ALTER TABLE `isv_keys` ENABLE KEYS;
-UNLOCK TABLES;
 
 
-LOCK TABLES `perm_isv_role` WRITE;
-ALTER TABLE `perm_isv_role` DISABLE KEYS;
 INSERT INTO `perm_isv_role` (`id`, `isv_id`, `role_code`, `gmt_create`, `gmt_modified`) VALUES
 	(18,5,'normal','2019-03-31 22:07:50','2019-03-31 22:07:50'),
 	(32,7,'normal','2019-04-01 20:27:33','2019-04-01 20:27:33'),
@@ -359,37 +309,17 @@ INSERT INTO `perm_isv_role` (`id`, `isv_id`, `role_code`, `gmt_create`, `gmt_mod
 	(52,6,'normal','2019-05-07 18:14:53','2019-05-07 18:14:53'),
 	(57,1,'normal','2019-05-09 11:10:38','2019-05-09 11:10:38'),
 	(58,11,'normal','2019-05-13 17:24:17','2019-05-13 17:24:17');
-ALTER TABLE `perm_isv_role` ENABLE KEYS;
-UNLOCK TABLES;
 
 
-LOCK TABLES `perm_role` WRITE;
-ALTER TABLE `perm_role` DISABLE KEYS;
 INSERT INTO `perm_role` (`id`, `role_code`, `description`, `gmt_create`, `gmt_modified`) VALUES
 	(1,'normal','普通权限','2019-03-29 15:00:10','2019-03-29 15:00:10'),
 	(2,'vip','VIP权限','2019-03-29 15:00:27','2019-03-29 15:00:27');
-ALTER TABLE `perm_role` ENABLE KEYS;
-UNLOCK TABLES;
 
 
-LOCK TABLES `perm_role_permission` WRITE;
-ALTER TABLE `perm_role_permission` DISABLE KEYS;
 INSERT INTO `perm_role_permission` (`id`, `role_code`, `route_id`, `gmt_create`, `gmt_modified`) VALUES
 	(29,'normal','permission.story.get1.0','2019-05-06 18:29:16','2019-05-06 18:29:16');
-ALTER TABLE `perm_role_permission` ENABLE KEYS;
-UNLOCK TABLES;
 
 
-LOCK TABLES `user_info` WRITE;
-ALTER TABLE `user_info` DISABLE KEYS;
 INSERT INTO `user_info` (`id`, `username`, `password`, `nickname`, `gmt_create`, `gmt_modified`) VALUES
 	(1,'zhangsan','123456','张三','2019-04-27 08:32:57','2019-04-27 08:32:57');
-ALTER TABLE `user_info` ENABLE KEYS;
-UNLOCK TABLES;
-
-
-
-
-SET FOREIGN_KEY_CHECKS = @PREVIOUS_FOREIGN_KEY_CHECKS;
-
 
