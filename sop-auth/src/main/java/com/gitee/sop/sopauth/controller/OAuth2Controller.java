@@ -35,7 +35,7 @@ public class OAuth2Controller {
     private OAuth2Service oAuth2Service;
 
     // 第一步：授权URL拼装
-    // https://localhost:8087/oauth2/appToAppAuth?app_id=2019032617262200001&redirect_uri=http%3a%2f%2flocalhost%3a8087%2foauth2callback
+    // http://localhost:8087/oauth2/appToAppAuth?app_id=2019032617262200001&redirect_uri=http%3a%2f%2flocalhost%3a8087%2foauth2callback
     @GetMapping("appToAppAuth")
     public String appToAppAuth(HttpServletRequest request, ModelMap modelMap) {
         String app_id = request.getParameter("app_id");
