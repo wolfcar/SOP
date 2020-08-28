@@ -61,7 +61,7 @@ public class ApiValidator implements Validator {
     /**
      * 单个文件大小
      */
-    @Value("${upload.max-file-size:10MB}")
+    @Value("${upload.max-file-size:${spring.servlet.multipart.max-file-size:10MB}}")
     private String maxFileSize;
 
 
