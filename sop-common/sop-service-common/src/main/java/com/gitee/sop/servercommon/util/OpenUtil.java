@@ -14,6 +14,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -22,6 +23,8 @@ import java.util.Set;
  */
 @Slf4j
 public class OpenUtil {
+
+    public static final String MULTIPART = "multipart/";
 
     /**
      * 将get类型的参数转换成map，
@@ -118,6 +121,21 @@ public class OpenUtil {
         String source = secret + time + secret;
         String serverSign = DigestUtils.md5DigestAsHex(source.getBytes());
         return serverSign.equals(sign);
+    }
+
+    /**
+     * 是否是文件上传请求
+     *
+     * @param request 请求
+     * @return true：是
+     */
+    public static boolean isMultipart(HttpServletRequest request) {
+        String contentType = request.getContentType();
+        // Don't use this filter on GET method
+        if (contentType == null) {
+            return false;
+        }
+        return contentType.toLowerCase(Locale.ENGLISH).startsWith(MULTIPART);
     }
 
 }

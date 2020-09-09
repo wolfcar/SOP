@@ -12,7 +12,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.charset.StandardCharsets;
@@ -83,9 +85,10 @@ public class Example1001_BaseController {
     // 忽略验证
     @ApiOperation(value = "忽略签名验证", notes = "忽略签名验证")
     @Open(value = "story.get.ignore", ignoreValidate = true)
-    @RequestMapping("/get/ignore/v1")
-    public StoryResult getStory21(StoryParam story) {
+    @RequestMapping(value = "/get/ignore/v1", method = {RequestMethod.GET, RequestMethod.POST})
+    public StoryResult getStory21(@RequestBody StoryParam story) {
         StoryResult result = new StoryResult();
+        result.setId((long) story.getId());
         result.setName(story.getName() + ", ignoreValidate = true");
         return result;
     }

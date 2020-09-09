@@ -181,10 +181,13 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
      * @param httpServletRequest
      */
     protected void bindUploadFile(Object param, HttpServletRequest httpServletRequest) {
+        if (httpServletRequest instanceof MyServletRequestWrapper) {
+            httpServletRequest = (HttpServletRequest)((MyServletRequestWrapper) httpServletRequest).getRequest();
+        }
         if (param == null) {
             return;
         }
-        if (this.isMultipartRequest(httpServletRequest)) {
+        if (OpenUtil.isMultipart(httpServletRequest)) {
             MultipartHttpServletRequest request = (MultipartHttpServletRequest) httpServletRequest;
             Class<?> bizClass = param.getClass();
             ReflectionUtils.doWithFields(bizClass, field -> {
@@ -194,10 +197,6 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
                 ReflectionUtils.setField(field, param, multipartFile);
             }, field -> field.getType() == MultipartFile.class);
         }
-    }
-
-    protected boolean isMultipartRequest(HttpServletRequest request) {
-        return request instanceof MultipartRequest;
     }
 
     /**
