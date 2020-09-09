@@ -1,5 +1,7 @@
 package com.gitee.sop.storyweb.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.gitee.sop.servercommon.annotation.BizCode;
 import com.gitee.sop.servercommon.annotation.Open;
 import com.gitee.sop.storyweb.controller.param.CategoryParam;
@@ -18,9 +20,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 签名验证通过后，到达这里进行具体的业务处理。
@@ -161,6 +166,21 @@ public class Example1001_BaseController {
         parent.setChildren(Arrays.asList(child1, child2));
 
         return parent;
+    }
+
+    private static String json = "{\"flightDate\":\"2020-09-01\",\"flightNo\":\"HO1705\",\"departureAirport\":\"ZSCN\",\"arrivalAirport\":\"ZPLJ\",\"ycy\":\"11521\",\"lcy\":\"4354\",\"cr\":\"145\",\"et\":\"1\",\"ye\":\"0\",\"td\":\"0\",\"gw\":\"0\",\"ew\":\"146\",\"xl\":\"1018\",\"yj\":\"0\",\"hw\":\"635\"}";
+    // 返回大数据
+    @Open(value = "bigdata.get")
+    @RequestMapping("/bigdata/v1")
+    public Map<String, Object> bigData(StoryParam param) {
+        int len = 2000;
+        List<JSONObject> list = new ArrayList<>(len);
+        for (int i = 0; i < len; i++) {
+            list.add(JSON.parseObject(json));
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("data", list);
+        return map;
     }
 
 }
