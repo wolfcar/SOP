@@ -13,6 +13,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
@@ -25,6 +26,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ServletRequestMetho
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -117,6 +119,10 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
             , NativeWebRequest nativeWebRequest
             , WebDataBinderFactory webDataBinderFactory
     ) throws Exception {
+        nativeWebRequest = new SopServletWebRequest(
+                (HttpServletRequest) nativeWebRequest.getNativeRequest(),
+                (HttpServletResponse) nativeWebRequest.getNativeResponse()
+        );
         if (openApiParams.contains(methodParameter)) {
             Object paramObj = this.getParamObject(methodParameter, nativeWebRequest);
             if (paramObj != null) {
@@ -175,10 +181,13 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
      * @param httpServletRequest
      */
     protected void bindUploadFile(Object param, HttpServletRequest httpServletRequest) {
+        if (httpServletRequest instanceof MyServletRequestWrapper) {
+            httpServletRequest = (HttpServletRequest)((MyServletRequestWrapper) httpServletRequest).getRequest();
+        }
         if (param == null) {
             return;
         }
-        if (this.isMultipartRequest(httpServletRequest)) {
+        if (OpenUtil.isMultipart(httpServletRequest)) {
             MultipartHttpServletRequest request = (MultipartHttpServletRequest) httpServletRequest;
             Class<?> bizClass = param.getClass();
             ReflectionUtils.doWithFields(bizClass, field -> {
@@ -188,10 +197,6 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
                 ReflectionUtils.setField(field, param, multipartFile);
             }, field -> field.getType() == MultipartFile.class);
         }
-    }
-
-    protected boolean isMultipartRequest(HttpServletRequest request) {
-        return request instanceof MultipartRequest;
     }
 
     /**
@@ -220,5 +225,11 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
 
     public void setParamValidator(ParamValidator paramValidator) {
         this.paramValidator = paramValidator;
+    }
+
+    private static final class SopServletWebRequest extends ServletWebRequest {
+        public SopServletWebRequest(HttpServletRequest request, HttpServletResponse response) {
+            super(new MyServletRequestWrapper(request), response);
+        }
     }
 }

@@ -5,6 +5,7 @@ import com.gitee.sop.gatewaycommon.bean.SopConstants;
 import com.gitee.sop.gatewaycommon.result.ResultExecutor;
 import org.apache.commons.lang3.StringUtils;
 import org.reactivestreams.Publisher;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.filter.NettyWriteResponseFilter;
@@ -12,12 +13,16 @@ import org.springframework.cloud.gateway.filter.factory.rewrite.CachedBodyOutput
 import org.springframework.cloud.gateway.support.BodyInserterContext;
 import org.springframework.cloud.gateway.support.DefaultClientResponse;
 import org.springframework.core.Ordered;
+import org.springframework.core.codec.AbstractDataBufferDecoder;
+import org.springframework.core.codec.Decoder;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.client.reactive.ClientHttpResponse;
+import org.springframework.http.codec.DecoderHttpMessageReader;
+import org.springframework.http.codec.HttpMessageReader;
 import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserter;
@@ -35,6 +40,8 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.O
  */
 public class GatewayModifyResponseGatewayFilter implements GlobalFilter, Ordered {
 
+    @Value("${spring.codec.max-in-memory-size:262144}")
+    private int maxInMemorySize;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -60,7 +67,7 @@ public class GatewayModifyResponseGatewayFilter implements GlobalFilter, Ordered
                 //this will prevent exception in case of using non-standard media types like "Content-Type: image"
                 httpHeaders.add(HttpHeaders.CONTENT_TYPE, originalResponseContentType);
                 ResponseAdapter responseAdapter = new ResponseAdapter(body, httpHeaders);
-                DefaultClientResponse clientResponse = new DefaultClientResponse(responseAdapter, ExchangeStrategies.withDefaults());
+                DefaultClientResponse clientResponse = new DefaultClientResponse(responseAdapter, getExchangeStrategies());
 
                 //TODO: flux or mono
                 Mono modifiedBody = clientResponse.bodyToMono(inClass)
@@ -95,6 +102,22 @@ public class GatewayModifyResponseGatewayFilter implements GlobalFilter, Ordered
         };
 
         return chain.filter(exchange.mutate().response(responseDecorator).build());
+    }
+
+    private ExchangeStrategies getExchangeStrategies() {
+        ExchangeStrategies exchangeStrategies = ExchangeStrategies.withDefaults();
+        // 修复返回大文本数据报org.springframework.core.io.buffer.DataBufferLimitException: Exceeded limit on max bytes to buffer : 262144
+        for (HttpMessageReader<?> messageReader : exchangeStrategies.messageReaders()) {
+            if (messageReader instanceof DecoderHttpMessageReader) {
+                DecoderHttpMessageReader reader = (DecoderHttpMessageReader) messageReader;
+                Decoder decoder = reader.getDecoder();
+                if (decoder instanceof AbstractDataBufferDecoder) {
+                    AbstractDataBufferDecoder dataBufferDecoder = (AbstractDataBufferDecoder)decoder;
+                    dataBufferDecoder.setMaxInMemorySize(maxInMemorySize);
+                }
+            }
+        }
+        return exchangeStrategies;
     }
 
     @Override

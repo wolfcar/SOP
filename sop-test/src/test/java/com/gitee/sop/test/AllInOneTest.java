@@ -275,6 +275,25 @@ public class AllInOneTest extends TestBase {
         client.execute(requestBuilder);
     }
 
+    /**
+     * 测试返回大json数据
+     */
+    public void testLargeResponseJson() {
+        Client.RequestBuilder requestBuilder = new Client.RequestBuilder()
+                .method("bigdata.get")
+                .version("1.0")
+                .bizContent(new BizContent().add("id", "1").add("name", "葫芦娃"))
+                .httpMethod(HttpTool.HTTPMethod.GET)
+                .callback((requestInfo, responseData) -> {
+                    int size = JSON.parseObject(responseData)
+                            .getJSONObject("bigdata_get_response")
+                            .getJSONArray("data").size();
+                    Assert.assertEquals(size, 2000);
+                });
+
+        client.execute(requestBuilder);
+    }
+
     static class BizContent extends HashMap<String, Object> {
         public BizContent add(String key, Object value) {
             this.put(key, value);

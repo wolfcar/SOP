@@ -4,6 +4,7 @@
 
 - 可定义业务错误码（见`@Open`注解中的`bizCode`属性）
 - 文档参数可指定最大长度（使用`@Length(max = xx)`）
+- 修复返回大文本导致的错误（Exceeded limit on max bytes to buffer : 262144）
 
 ## 4.0.2
 
