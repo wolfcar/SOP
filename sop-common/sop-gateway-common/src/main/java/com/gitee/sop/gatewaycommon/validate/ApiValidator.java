@@ -74,13 +74,13 @@ public class ApiValidator implements Validator {
         if (apiConfig.isIgnoreValidate()
                 || BooleanUtils.toBoolean(targetRoute.getRouteDefinition().getIgnoreValidate())) {
             if (log.isDebugEnabled()) {
-                log.debug("忽略所有验证(ignoreValidate=true), name:{}, version:{}", param.fetchName(), param.fetchVersion());
+                log.debug("忽略签名校验, name:{}, version:{}", param.fetchName(), param.fetchVersion());
             }
-            return;
+        } else {
+            // 需要验证签名,先校验appKey，后校验签名,顺序不能变
+            checkAppKey(param);
+            checkSign(param);
         }
-        // 需要验证签名,先校验appKey，后校验签名,顺序不能变
-        checkAppKey(param);
-        checkSign(param);
         checkTimeout(param);
         checkFormat(param);
         checkUploadFile(param);

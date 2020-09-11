@@ -1,6 +1,7 @@
 package com.gitee.sop.test;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -285,9 +286,11 @@ public class AllInOneTest extends TestBase {
                 .bizContent(new BizContent().add("id", "1").add("name", "葫芦娃"))
                 .httpMethod(HttpTool.HTTPMethod.GET)
                 .callback((requestInfo, responseData) -> {
-                    int size = JSON.parseObject(responseData)
-                            .getJSONObject("bigdata_get_response")
-                            .getJSONArray("data").size();
+                    int size = Optional.ofNullable(JSON.parseObject(responseData))
+                            .flatMap(jsonObject -> Optional.ofNullable(jsonObject.getJSONObject("bigdata_get_response")))
+                            .flatMap(jsonObject -> Optional.ofNullable(jsonObject.getJSONArray("data")))
+                            .map(JSONArray::size)
+                            .orElse(0);
                     Assert.assertEquals(size, 2000);
                 });
 
