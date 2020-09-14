@@ -1,6 +1,6 @@
 package com.gitee.sop.servercommon.util;
 
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 文件上传工具类
@@ -24,15 +25,19 @@ public class UploadUtil {
      * @return
      */
     public static Collection<MultipartFile> getUploadFiles(HttpServletRequest request) {
-        Map<String, MultipartFile> fileMap = null;
+        MultiValueMap<String, MultipartFile> fileMap = null;
         //检查form中是否有enctype="multipart/form-data"
-        if (ServletFileUpload.isMultipartContent(request)) {
+        String contentType = request.getContentType();
+        if (contentType != null && contentType.toLowerCase().contains("multipart")) {
             //将request变成多部分request
             MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest) request;
-            fileMap = multiRequest.getFileMap();
+            fileMap = multiRequest.getMultiFileMap();
         }
         return Optional.ofNullable(fileMap)
-                .map(Map::values)
+                .map(Map::entrySet)
+                .map(entry -> entry.stream()
+                        .flatMap(e -> e.getValue().stream())
+                        .collect(Collectors.toList()))
                 .orElse(Collections.emptyList());
     }
 }
