@@ -71,14 +71,13 @@ public class ApiValidator implements Validator {
         TargetRoute targetRoute = checkEnable(param);
         initFields(targetRoute, param);
         ApiConfig apiConfig = ApiContext.getApiConfig();
+        checkAppKey(param);
         if (apiConfig.isIgnoreValidate()
                 || BooleanUtils.toBoolean(targetRoute.getRouteDefinition().getIgnoreValidate())) {
             if (log.isDebugEnabled()) {
                 log.debug("忽略签名校验, name:{}, version:{}", param.fetchName(), param.fetchVersion());
             }
         } else {
-            // 需要验证签名,先校验appKey，后校验签名,顺序不能变
-            checkAppKey(param);
             checkSign(param);
         }
         checkTimeout(param);
