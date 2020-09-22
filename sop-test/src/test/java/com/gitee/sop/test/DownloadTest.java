@@ -37,7 +37,7 @@ public class DownloadTest extends TestBase {
         params.put("version", "1.0");
 
         // 业务参数
-        Map<String, String> bizContent = new HashMap<>();
+        Map<String, Object> bizContent = new HashMap<>();
         bizContent.put("id", "1");
         bizContent.put("name", "葫芦娃");
 

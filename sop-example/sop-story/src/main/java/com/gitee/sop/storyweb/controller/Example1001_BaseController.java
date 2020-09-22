@@ -4,15 +4,18 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.gitee.sop.servercommon.annotation.BizCode;
 import com.gitee.sop.servercommon.annotation.Open;
+import com.gitee.sop.servercommon.exception.ServiceException;
 import com.gitee.sop.storyweb.controller.param.CategoryParam;
 import com.gitee.sop.storyweb.controller.param.LargeTextParam;
 import com.gitee.sop.storyweb.controller.param.StoryParam;
 import com.gitee.sop.storyweb.controller.result.CategoryResult;
 import com.gitee.sop.storyweb.controller.result.StoryResult;
+import com.gitee.sop.storyweb.controller.result.TestResult;
 import com.gitee.sop.storyweb.controller.result.TreeResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -105,6 +108,16 @@ public class Example1001_BaseController {
         int length = param.getContent().getBytes(StandardCharsets.UTF_8).length;
         result.setName("length:" + length);
         return result;
+    }
+
+    // 绑定复杂对象
+    @Open(value = "sdt.get",version = "4.0")
+    @RequestMapping("/get/v4")
+    public TestResult getV4(@RequestBody TestResult testResult) {
+        if(StringUtils.isEmpty(testResult.getType())) {
+            throw new ServiceException("testResult.getType() 不能为null");
+        }
+        return testResult;
     }
 
     // 返回数组结果
