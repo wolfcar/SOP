@@ -37,7 +37,7 @@ public class LargeBodyPostTest extends TestBase {
         params.put("version", "1.0");
 
         // 业务参数
-        Map<String, String> bizContent = new HashMap<>();
+        Map<String, Object> bizContent = new HashMap<>();
         bizContent.put("id", "1");
         String root = System.getProperty("user.dir");
         File file = new File(root + "/src/main/resources/large_data.txt");

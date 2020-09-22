@@ -32,7 +32,7 @@ public class ThrowExceptionDemoTest extends TestBase {
         params.put("version", "1.0");
 
         // 业务参数
-        Map<String, String> bizContent = new HashMap<>();
+        Map<String, Object> bizContent = new HashMap<>();
         // 对应校验规则查看GoodsParam.java
         bizContent.put("goods_name", "1");
         bizContent.put("goods_remark", "iphone6");

@@ -5,8 +5,11 @@ import com.gitee.sop.test.alipay.AlipaySignature;
 import org.junit.Test;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,5 +56,54 @@ public class ParamBindTest extends TestBase {
         System.out.println(responseData);
     }
 
+    // 绑定复杂对象
+    @Test
+    public void testGet2() throws Exception {
+
+        // 公共请求参数
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("app_id", appId);
+        params.put("method", "sdt.get");
+        params.put("format", "json");
+        params.put("charset", "utf-8");
+        params.put("sign_type", "RSA2");
+        params.put("timestamp", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        params.put("version", "4.0");
+
+        // 业务参数
+        Map<String, Object> bizContent = new HashMap<>();
+        bizContent.put("label", "1");
+        bizContent.put("type", "葫芦娃");
+
+        List<Map<String, Object>> lsm = new ArrayList<Map<String,Object>>();
+        Map<String, Object> item = new HashMap<>();
+        item.put("label", "11");
+        item.put("type", "22");
+        lsm.add(item);
+
+        Map<String, Object> item2 = new HashMap<>();
+        item2.put("label", "33");
+        item2.put("type", "44");
+        lsm.add(item2);
+
+        bizContent.put("ss", lsm);
+
+        params.put("biz_content", JSON.toJSONString(bizContent));
+
+        String content = AlipaySignature.getSignContent(params);
+        String sign = AlipaySignature.rsa256Sign(content, privateKey, "utf-8");
+        params.put("sign", sign);
+
+        System.out.println("----------- 请求信息 -----------");
+        System.out.println("请求参数：" + buildParamQuery(params));
+        System.out.println("商户秘钥：" + privateKey);
+        System.out.println("待签名内容：" + content);
+        System.out.println("签名(sign)：" + sign);
+        System.out.println("URL参数：" + buildUrlQuery(params));
+
+        System.out.println("----------- 返回结果 -----------");
+        String responseData = post(url, params);// 发送请求
+        System.out.println(responseData);
+    }
 
 }
