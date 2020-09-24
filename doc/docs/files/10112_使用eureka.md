@@ -47,7 +47,7 @@ gateway.host=127.0.0.1:8081
 
 # eureka注册中心
 eureka.client.serviceUrl.defaultZone=http://localhost:1111/eureka/
-# 如果使用eureka，填eureka，使用nacos，填eureka
+# 如果使用eureka，填eureka，使用nacos，填nacos
 registry.name=eureka
 ```
 
