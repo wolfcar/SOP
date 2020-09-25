@@ -55,6 +55,17 @@ public class AllInOneTest extends TestBase {
         client.execute(requestBuilder);
     }
 
+    public void testSystemParam() {
+        Client.RequestBuilder requestBuilder = new Client.RequestBuilder()
+                .method("story.system.param.get")
+                .version("1.0")
+                .appAuthToken("123123")
+                .bizContent(new BizContent().add("id", "1").add("name", "葫芦娃"))
+                .httpMethod(HttpTool.HTTPMethod.GET);
+
+        client.execute(requestBuilder);
+    }
+
     /**
      * 以json方式提交(application/json)
      */
