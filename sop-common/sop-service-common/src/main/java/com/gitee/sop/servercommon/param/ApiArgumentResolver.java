@@ -4,7 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONValidator;
 import com.gitee.sop.servercommon.annotation.Open;
+import com.gitee.sop.servercommon.bean.OpenContext;
+import com.gitee.sop.servercommon.bean.OpenContextImpl;
 import com.gitee.sop.servercommon.bean.ParamNames;
+import com.gitee.sop.servercommon.bean.ServiceConfig;
+import com.gitee.sop.servercommon.bean.ServiceContext;
 import com.gitee.sop.servercommon.util.OpenUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
@@ -133,12 +137,18 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
         }
         HandlerMethodArgumentResolver resolver = getOtherArgumentResolver(methodParameter);
         if (resolver != null) {
-            return resolver.resolveArgument(
+            Object param = resolver.resolveArgument(
                     methodParameter
                     , modelAndViewContainer
                     , nativeWebRequest
                     , webDataBinderFactory
             );
+            OpenContext openContext = ServiceContext.getCurrentContext().getOpenContext();
+            if (openContext instanceof OpenContextImpl) {
+                OpenContextImpl openContextImpl = (OpenContextImpl) openContext;
+                openContextImpl.setBizObject(param);
+            }
+            return param;
         }
         return null;
     }
@@ -153,7 +163,10 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
      */
     protected Object getParamObject(MethodParameter methodParameter, NativeWebRequest nativeWebRequest) {
         HttpServletRequest request = (HttpServletRequest) nativeWebRequest.getNativeRequest();
+        ServiceContext currentContext = ServiceContext.getCurrentContext();
         JSONObject requestParams = OpenUtil.getRequestParams(request);
+        OpenContextImpl openContext = new OpenContextImpl(requestParams);
+        currentContext.setOpenContext(openContext);
         String bizContent = requestParams.getString(ParamNames.BIZ_CONTENT_NAME);
         if (bizContent == null) {
             return null;
@@ -169,6 +182,7 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
             Map<String, Object> query = OpenUtil.parseQueryToMap(bizContent);
             param = new JSONObject(query).toJavaObject(parameterType);
         }
+        openContext.setBizObject(param);
         this.bindUploadFile(param, request);
         return param;
     }

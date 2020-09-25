@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.gitee.sop.servercommon.annotation.BizCode;
 import com.gitee.sop.servercommon.annotation.Open;
+import com.gitee.sop.servercommon.bean.OpenContext;
+import com.gitee.sop.servercommon.bean.ServiceContext;
 import com.gitee.sop.servercommon.exception.ServiceException;
 import com.gitee.sop.storyweb.controller.param.CategoryParam;
 import com.gitee.sop.storyweb.controller.param.LargeTextParam;
@@ -16,6 +18,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -79,6 +82,18 @@ public class Example1001_BaseController {
         story.setId(1L);
         story.setName("海底小纵队(story.get2.0), " + "param:" + param);
         return story;
+    }
+
+    @Open(value = "story.system.param.get")
+    @GetMapping("/get/system/param/v1")
+    public StoryResult systemParam(StoryParam param) {
+        StoryResult result = new StoryResult();
+        OpenContext openContext = ServiceContext.getCurrentContext().getOpenContext();
+        System.out.println(param == openContext.getBizObject());
+        System.out.println("app_id:" + openContext.getAppId());
+        System.out.println("token:" + openContext.getAppAuthToken());
+        result.setName("系统参数：" + openContext);
+        return result;
     }
 
     // 参数绑定

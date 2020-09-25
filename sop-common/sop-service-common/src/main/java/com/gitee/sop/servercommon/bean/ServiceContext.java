@@ -10,8 +10,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ServiceContext extends ConcurrentHashMap<String, Object> {
 
-    public static final String REQUEST_KEY = "request";
-    public static final String RESPONSE_KEY = "response";
+    public static final String REQUEST_KEY = "sop-request";
+    public static final String RESPONSE_KEY = "sop-response";
+    public static final String OPEN_CONTEXT_KEY = "sop-open-context";
 
     protected static Class<? extends ServiceContext> contextClass = ServiceContext.class;
 
@@ -29,6 +30,14 @@ public class ServiceContext extends ConcurrentHashMap<String, Object> {
 
     public ServiceContext() {
         super();
+    }
+
+    public void setOpenContext(OpenContext openContext) {
+        set(OPEN_CONTEXT_KEY, openContext);
+    }
+
+    public OpenContext getOpenContext() {
+        return (OpenContext) get(OPEN_CONTEXT_KEY);
     }
 
     public Locale getLocale() {
