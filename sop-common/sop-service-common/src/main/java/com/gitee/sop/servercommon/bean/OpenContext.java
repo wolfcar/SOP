@@ -1,6 +1,7 @@
 package com.gitee.sop.servercommon.bean;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * 获取开放平台请求参数。
@@ -8,6 +9,19 @@ import java.util.Date;
  * @author tanghc
  */
 public interface OpenContext {
+
+    /**
+     * 获取某个参数值
+     * @param name 参数名称
+     * @return 没有返回null
+     */
+    String getParameter(String name);
+
+    /**
+     * 返回所有的请求参数
+     * @return 返回所有的请求参数
+     */
+    Map<String, Object> getParameterMap();
 
     /**
      * 返回appid

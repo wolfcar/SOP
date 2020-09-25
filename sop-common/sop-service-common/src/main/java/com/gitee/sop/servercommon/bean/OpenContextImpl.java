@@ -5,6 +5,7 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.Map;
 
 import static com.gitee.sop.servercommon.bean.ParamNames.API_NAME;
 import static com.gitee.sop.servercommon.bean.ParamNames.APP_AUTH_TOKEN_NAME;
@@ -22,7 +23,7 @@ import static com.gitee.sop.servercommon.bean.ParamNames.VERSION_NAME;
  * @author tanghc
  */
 public class OpenContextImpl implements OpenContext {
-    private JSONObject requestParams;
+    private final JSONObject requestParams;
     private Object bizObject;
 
     public OpenContextImpl(JSONObject requestParams) {
@@ -31,6 +32,16 @@ public class OpenContextImpl implements OpenContext {
 
     public void setBizObject(Object bizObject) {
         this.bizObject = bizObject;
+    }
+
+    @Override
+    public String getParameter(String name) {
+        return requestParams.getString(name);
+    }
+
+    @Override
+    public Map<String, Object> getParameterMap() {
+        return requestParams;
     }
 
     @Override
