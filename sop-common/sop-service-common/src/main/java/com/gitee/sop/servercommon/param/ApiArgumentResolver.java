@@ -7,7 +7,6 @@ import com.gitee.sop.servercommon.annotation.Open;
 import com.gitee.sop.servercommon.bean.OpenContext;
 import com.gitee.sop.servercommon.bean.OpenContextImpl;
 import com.gitee.sop.servercommon.bean.ParamNames;
-import com.gitee.sop.servercommon.bean.ServiceConfig;
 import com.gitee.sop.servercommon.bean.ServiceContext;
 import com.gitee.sop.servercommon.util.OpenUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -61,8 +60,6 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
 
     private RequestMappingHandlerAdapter requestMappingHandlerAdapter;
 
-    private static final List<MethodParameter> openApiParams = new ArrayList<>(64);
-
     static {
         try {
             pushBuilder = ClassUtils.forName("javax.servlet.http.PushBuilder",
@@ -86,8 +83,8 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(MethodParameter methodParameter) {
         // 是否有注解
-        if (hasApiAnnotation(methodParameter)) {
-            openApiParams.add(methodParameter);
+        if (!methodParameter.hasMethodAnnotation(Open.class)) {
+            return false;
         }
         Class<?> paramType = methodParameter.getParameterType();
         // 排除的
@@ -112,10 +109,6 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
         return !exclude;
     }
 
-    private boolean hasApiAnnotation(MethodParameter methodParameter) {
-        return methodParameter.hasMethodAnnotation(Open.class);
-    }
-
     @Override
     public Object resolveArgument(
             MethodParameter methodParameter
@@ -127,13 +120,11 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
                 (HttpServletRequest) nativeWebRequest.getNativeRequest(),
                 (HttpServletResponse) nativeWebRequest.getNativeResponse()
         );
-        if (openApiParams.contains(methodParameter)) {
-            Object paramObj = this.getParamObject(methodParameter, nativeWebRequest);
-            if (paramObj != null) {
-                // JSR-303验证
-                paramValidator.validateBizParam(paramObj);
-                return paramObj;
-            }
+        Object paramObj = this.getParamObject(methodParameter, nativeWebRequest);
+        if (paramObj != null) {
+            // JSR-303验证
+            paramValidator.validateBizParam(paramObj);
+            return paramObj;
         }
         HandlerMethodArgumentResolver resolver = getOtherArgumentResolver(methodParameter);
         if (resolver != null) {
