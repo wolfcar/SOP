@@ -54,11 +54,9 @@
       >
         <template slot="header">
           最大耗时(ms)
-          <i
-            class="el-icon-question"
-            style="cursor: pointer"
-            @click="$alert('耗时计算：签名验证成功后开始，微服务返回结果后结束')"
-          ></i>
+          <el-tooltip effect="dark" content="耗时计算：签名验证成功后开始，微服务返回结果后结束" placement="top">
+            <i class="el-icon-question" style="cursor: pointer"></i>
+          </el-tooltip>
         </template>
       </el-table-column>
       <el-table-column
@@ -88,11 +86,9 @@
       >
         <template slot="header">
           失败次数
-          <i
-            class="el-icon-question"
-            style="cursor: pointer"
-            @click="$alert('只统计微服务返回的未知错误，JSR-303验证错误算作成功')"
-          ></i>
+          <el-tooltip effect="dark" content="只统计微服务返回的未知错误，JSR-303验证错误算作成功" placement="top-end">
+            <i class="el-icon-question" style="cursor: pointer"></i>
+          </el-tooltip>
         </template>
         <template slot-scope="scope">
           <el-link

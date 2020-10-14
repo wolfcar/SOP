@@ -16,13 +16,8 @@
       highlight-current-row
     >
       <el-table-column
-        prop="id"
-        label="ID"
-        width="80"
-      />
-      <el-table-column
         prop="appKey"
-        label="appId"
+        label="AppId"
         width="250"
       />
       <el-table-column
@@ -37,11 +32,11 @@
       <el-table-column
         prop="roleList"
         label="角色"
-        width="100"
+        width="150"
         :show-overflow-tooltip="true"
       >
         <template slot-scope="scope">
-          <div v-html="roleRender(scope.row)"></div>
+          <span v-html="roleRender(scope.row)"></span>
         </template>
       </el-table-column>
       <el-table-column
@@ -60,23 +55,19 @@
         width="160"
       />
       <el-table-column
-        prop="gmtModified"
-        label="修改时间"
-        width="160"
-      />
-      <el-table-column
         prop="remark"
         label="备注"
-        width="120"
+        width="200"
         :show-overflow-tooltip="true"
       />
       <el-table-column
         label="操作"
-        width="150"
+        width="200"
       >
         <template slot-scope="scope">
           <el-button type="text" size="mini" @click="onTableUpdate(scope.row)">修改</el-button>
           <el-button type="text" size="mini" @click="onKeysUpdate(scope.row)">秘钥管理</el-button>
+          <el-button type="text" size="mini" @click="onExportKeys(scope.row)">导出秘钥</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -280,6 +271,20 @@ export default {
     },
     onKeysUpdate: function(row) {
       this.$router.push({ path: `keys?appKey=${row.appKey}` })
+    },
+    onExportKeys: function(row) {
+      this.post('isv.keys.get', { appKey: row.appKey }, function(resp) {
+        const data = resp.data
+        const appId = data.appKey
+        const privateKeyIsv = data.privateKeyIsv
+        const publicKeyPlatform = data.publicKeyPlatform
+        let content = `AppId：${appId}\n\n开发者私钥：\n${privateKeyIsv}\n\n`
+        if (publicKeyPlatform) {
+          content = content + `平台公钥：\n${publicKeyPlatform}`
+        }
+        const filename = `${appId}.txt`
+        this.downloadText(filename, content)
+      })
     },
     onSizeChange: function(size) {
       this.searchFormData.pageSize = size

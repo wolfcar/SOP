@@ -102,7 +102,7 @@ public class AllInOneTest extends TestBase {
                 .version("1.0")
                 .ignoreSign(true)
                 .bizContent(new BizContent().add("id", "222").add("name", "忽略222"))
-                .httpMethod(HttpTool.HTTPMethod.GET);
+                .httpMethod(HttpTool.HTTPMethod.POST);
 
         client.execute(requestBuilder);
     }
