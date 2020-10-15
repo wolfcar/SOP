@@ -75,6 +75,7 @@ public class ServiceApi {
                         return serviceId.contains(param.getServiceId());
                     }
                 })
+                .sorted()
                 .collect(Collectors.toList());
     }
 

@@ -106,7 +106,7 @@
         <el-tabs v-model="tabsActiveName" type="card">
           <el-tab-pane label="灰度用户" name="first">
             <el-alert
-              title="可以是appId或IP地址，多个用英文逗号隔开"
+              title="可以是AppId或IP地址，多个用英文逗号隔开"
               type="info"
               :closable="false"
               style="margin-bottom: 20px;"
@@ -114,13 +114,18 @@
             <el-form-item prop="userKeyContent">
               <el-input
                 v-model="grayForm.userKeyContent"
-                placeholder="可以是appId或IP地址，多个用英文逗号隔开"
+                placeholder="可以是AppId或IP地址，多个用英文逗号隔开"
                 type="textarea"
                 :rows="6"
               />
             </el-form-item>
           </el-tab-pane>
           <el-tab-pane label="接口配置" name="second">
+            <el-alert
+              title="灰度接口：接口名相同，版本号不同"
+              type="info"
+              :closable="false"
+            />
             <el-form-item>
               <el-button type="text" @click="addNameVersion">新增灰度接口</el-button>
             </el-form-item>
@@ -138,7 +143,8 @@
                     老接口：
                     <el-select
                       v-model="grayRouteConfig.oldRouteId"
-                      style="margin-right: 10px;"
+                      filterable
+                      style="margin-right: 10px;width: 250px"
                       @change="onChangeOldRoute(grayRouteConfig)"
                     >
                       <el-option
@@ -159,7 +165,9 @@
                     灰度接口：
                     <el-select
                       v-model="grayRouteConfig.newVersion"
+                      filterable
                       no-data-text="无数据"
+                      style="width: 250px"
                     >
                       <el-option
                         v-for="routeNew in getGraySelectData(grayRouteConfig.oldRouteId)"

@@ -13,6 +13,7 @@ import com.gitee.sop.adminserver.api.service.param.RouteAddParam;
 import com.gitee.sop.adminserver.api.service.param.RouteDeleteParam;
 import com.gitee.sop.adminserver.api.service.param.RoutePermissionParam;
 import com.gitee.sop.adminserver.api.service.param.RouteSearchParam;
+import com.gitee.sop.adminserver.api.service.param.RouteStatusUpdateParam;
 import com.gitee.sop.adminserver.api.service.param.RouteUpdateParam;
 import com.gitee.sop.adminserver.api.service.result.RouteVO;
 import com.gitee.sop.adminserver.bean.RouteConfigDto;
@@ -121,6 +122,26 @@ public class RouteApi {
     @ApiDocMethod(description = "修改路由")
     void updateRoute(RouteUpdateParam param) {
         this.updateRouteConfig(param);
+    }
+
+    @Api(name = "route.status.update")
+    @ApiDocMethod(description = "修改路由状态")
+    void updateRouteStatus(RouteStatusUpdateParam param) {
+        String routeId = param.getId();
+        ConfigRouteBase configRouteBase = configRouteBaseMapper.getByColumn("route_id", routeId);
+        boolean doSave = configRouteBase == null;
+        if (doSave) {
+            configRouteBase = new ConfigRouteBase();
+            configRouteBase.setRouteId(routeId);
+        }
+        configRouteBase.setStatus(param.getStatus());
+
+        int i = doSave ? configRouteBaseMapper.save(configRouteBase)
+                : configRouteBaseMapper.update(configRouteBase);
+
+        if (i > 0) {
+            this.sendMsg(configRouteBase);
+        }
     }
 
     @Api(name = "route.del")

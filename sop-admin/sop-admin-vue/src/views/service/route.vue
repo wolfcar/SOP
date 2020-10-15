@@ -1,176 +1,121 @@
 <template>
   <div class="app-container">
-    <el-container>
-      <el-aside style="min-height: 300px;width: 250px;">
-        <el-button
-          type="primary"
-          plain
-          size="mini"
-          icon="el-icon-plus"
-          style="display: none;"
-          @click.stop="addService"
+    <div v-if="tabsData.length === 0">
+      无服务
+    </div>
+    <div v-else>
+      <el-tabs v-model="tabsActive" type="card" @tab-click="selectTab">
+        <el-tab-pane v-for="tabName in tabsData" :key="tabName" :label="tabName" :name="tabName" />
+      </el-tabs>
+      <el-form :inline="true" :model="searchFormData" class="demo-form-inline" size="mini" @submit.native.prevent>
+        <el-form-item label="路由名称">
+          <el-input v-model="searchFormData.id" :clearable="true" placeholder="输入接口名或版本号" />
+        </el-form-item>
+        <el-form-item>
+          <el-checkbox v-model="searchFormData.permission">授权接口</el-checkbox>
+        </el-form-item>
+        <el-form-item>
+          <el-checkbox v-model="searchFormData.needToken">需要token</el-checkbox>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" icon="el-icon-search" native-type="submit" @click="onSearchTable">查询</el-button>
+        </el-form-item>
+      </el-form>
+      <el-button
+        v-show="isCustomService"
+        type="primary"
+        size="mini"
+        icon="el-icon-plus"
+        @click.stop="addRoute"
+      >
+        新建路由
+      </el-button>
+      <el-table
+        :data="pageInfo.rows"
+        border
+        highlight-current-row
+        style="margin-top: 10px;"
+      >
+        <el-table-column
+          prop="name"
+          label="接口名 (版本号)"
         >
-          新建服务
-        </el-button>
-        <el-input
-          v-model="filterText"
-          prefix-icon="el-icon-search"
-          placeholder="搜索服务..."
-          style="margin-bottom:10px;margin-top:10px;"
-          size="mini"
-          clearable
-        />
-        <el-tree
-          ref="serviceTree"
-          :data="treeData"
-          :props="defaultProps"
-          :filter-node-method="filterNode"
-          :highlight-current="true"
-          :expand-on-click-node="false"
-          empty-text="无数据"
-          node-key="serviceId"
-          class="filter-tree"
-          default-expand-all
-          @node-click="onNodeClick"
+          <template slot-scope="scope">
+            {{ getNameVersion(scope.row) }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="roles"
+          label="访问权限"
+          width="150"
+          :show-overflow-tooltip="true"
         >
-          <span slot-scope="{ node, data }" class="custom-tree-node">
-            <div>
-              <el-tooltip v-show="data.custom" content="自定义服务" class="item" effect="light" placement="left">
-                <i class="el-icon-warning-outline"></i>
-              </el-tooltip>
-              <span v-if="data.label.length < serviceTextLimitSize">{{ data.label }}</span>
-              <span v-else>
-                <el-tooltip :content="data.label" class="item" effect="light" placement="right">
-                  <span>{{ data.label.substring(0, serviceTextLimitSize) + '...' }}</span>
-                </el-tooltip>
-              </span>
-            </div>
-            <span>
-              <el-button
-                v-if="data.custom === 1"
-                type="text"
-                size="mini"
-                icon="el-icon-delete"
-                title="删除服务"
-                @click.stop="() => onDelService(data)"
-              />
+          <template slot-scope="scope">
+            <span v-if="!scope.row.permission">
+              （公开）
             </span>
-          </span>
-        </el-tree>
-      </el-aside>
-      <el-main style="padding-top:0">
-        <el-form :inline="true" :model="searchFormData" class="demo-form-inline" size="mini">
-          <el-form-item label="路由名称">
-            <el-input v-model="searchFormData.id" :clearable="true" placeholder="输入接口名或版本号" />
-          </el-form-item>
-          <el-form-item>
-            <el-checkbox v-model="searchFormData.permission">授权接口</el-checkbox>
-          </el-form-item>
-          <el-form-item>
-            <el-checkbox v-model="searchFormData.needToken">需要token</el-checkbox>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" icon="el-icon-search" @click="onSearchTable">查询</el-button>
-          </el-form-item>
-        </el-form>
-        <el-button
-          v-show="isCustomService"
-          type="primary"
-          size="mini"
-          icon="el-icon-plus"
-          @click.stop="addRoute"
+            <span v-else class="roles-content" @click="onTableAuth(scope.row)" v-html="roleRender(scope.row)"></span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="ignoreValidate"
+          label="签名校验"
+          width="120"
         >
-          新建路由
-        </el-button>
-        <el-table
-          :data="pageInfo.rows"
-          border
-          highlight-current-row
-          style="margin-top: 10px;"
+          <template slot-scope="scope">
+            <span v-if="scope.row.ignoreValidate === 0">校验</span>
+            <span v-if="scope.row.ignoreValidate === 1" style="color:#E6A23C">不校验</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="mergeResult"
+          label="统一格式输出"
+          width="120"
         >
-          <el-table-column
-            prop="name"
-            label="接口名 (版本号)"
-            width="350"
-          >
-            <template slot-scope="scope">
-              {{ scope.row.name + (scope.row.version ? ' (' + scope.row.version + ')' : '') }}
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="roles"
-            label="访问权限"
-            width="150"
-          >
-            <template slot-scope="scope">
-              <span v-html="roleRender(scope.row)"></span>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="ignoreValidate"
-            label="签名校验"
-            width="80"
-          >
-            <template slot-scope="scope">
-              <span v-if="scope.row.ignoreValidate === 0">校验</span>
-              <span v-if="scope.row.ignoreValidate === 1" style="color:#E6A23C">不校验</span>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="mergeResult"
-            label="统一格式输出"
-            width="120"
-          >
-            <template slot-scope="scope">
-              <span v-if="scope.row.mergeResult === 1">是</span>
-              <span v-if="scope.row.mergeResult === 0" style="color:#E6A23C">否</span>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="needToken"
-            label="需要token"
-            width="100"
-          >
-            <template slot-scope="scope">
-              <span v-if="scope.row.needToken === 1" style="font-weight: bold;color: #303133;">是</span>
-              <span v-if="scope.row.needToken === 0">否</span>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="status"
-            label="状态"
-            width="80"
-          >
-            <template slot-scope="scope">
-              <span v-if="scope.row.status === 0" style="color:#E6A23C">待审核</span>
-              <span v-if="scope.row.status === 1" style="color:#67C23A">已启用</span>
-              <span v-if="scope.row.status === 2" style="color:#F56C6C">已禁用</span>
-            </template>
-          </el-table-column>
-          <el-table-column
-            label="操作"
-            width="100"
-          >
-            <template slot-scope="scope">
-              <el-button type="text" size="mini" @click="onTableUpdate(scope.row)">修改</el-button>
-              <el-button v-if="scope.row.permission" type="text" size="mini" @click="onTableAuth(scope.row)">授权</el-button>
-              <el-button v-if="scope.row.custom" type="text" size="mini" @click="onTableDel(scope.row)">删除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-pagination
-          background
-          style="margin-top: 5px"
-          :current-page="searchFormData.pageIndex"
-          :page-size="searchFormData.pageSize"
-          :page-sizes="[10, 20, 40]"
-          :total="pageInfo.total"
-          layout="total, sizes, prev, pager, next"
-          @size-change="onSizeChange"
-          @current-change="onPageIndexChange"
-        />
-      </el-main>
-    </el-container>
+          <template slot-scope="scope">
+            <span v-if="scope.row.mergeResult === 1">是</span>
+            <span v-if="scope.row.mergeResult === 0" style="color:#E6A23C">否</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="needToken"
+          label="需要token"
+          width="120"
+        >
+          <template slot-scope="scope">
+            <span v-if="scope.row.needToken === 1" style="font-weight: bold;color: #303133;">是</span>
+            <span v-if="scope.row.needToken === 0">否</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="状态"
+          width="80"
+        >
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.status"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+              :active-value="1"
+              :inactive-value="2"
+              @change="onChangeStatus(scope.row)"
+            />
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        background
+        style="margin-top: 5px"
+        :current-page="searchFormData.pageIndex"
+        :page-size="searchFormData.pageSize"
+        :page-sizes="[10, 20, 40]"
+        :total="pageInfo.total"
+        layout="total, sizes, prev, pager, next"
+        @size-change="onSizeChange"
+        @current-change="onPageIndexChange"
+      />
+    </div>
     <!-- route dialog -->
     <el-dialog
       :title="routeDialogTitle"
@@ -270,11 +215,14 @@
   }
   .el-input.is-disabled .el-input__inner {color: #909399;}
   .el-radio__input.is-disabled+span.el-radio__label {color: #909399;}
+  .roles-content { cursor: pointer;color: #20a0ff }
 </style>
 <script>
 export default {
   data() {
     return {
+      tabsData: [],
+      tabsActive: '',
       serviceTextLimitSize: 20,
       filterText: '',
       treeData: [],
@@ -352,10 +300,21 @@ export default {
     }
   },
   created() {
-    this.loadTree()
+    this.loadTabs()
     this.loadRouteRole()
   },
   methods: {
+    loadTabs() {
+      this.post('registry.service.list', {}, function(resp) {
+        this.tabsData = resp.data
+        this.$nextTick(() => {
+          if (this.tabsData.length > 0) {
+            this.tabsActive = this.tabsData[0]
+            this.loadRouteData()
+          }
+        })
+      })
+    },
     // 加载树
     loadTree: function() {
       this.post('registry.service.list', {}, function(resp) {
@@ -382,6 +341,14 @@ export default {
         this.isCustomService = Boolean(data.custom)
         this.loadTable()
       }
+    },
+    selectTab() {
+      this.loadRouteData()
+    },
+    loadRouteData() {
+      this.serviceId = this.tabsActive
+      this.searchFormData.serviceId = this.serviceId
+      this.loadTable()
     },
     /**
      * 数组转成树状结构
@@ -420,6 +387,9 @@ export default {
       root.children = children
       result.push(root)
       return result
+    },
+    getNameVersion(row) {
+      return row.name + (row.version ? ' (' + row.version + ')' : '')
     },
     // table
     loadTable: function(param) {
@@ -469,6 +439,30 @@ export default {
         })
       })
     },
+    // element-ui switch开关 点击按钮后，弹窗确认后再改变开关状态
+    // https://blog.csdn.net/Gomeer/article/details/103697593
+    onChangeStatus: function(row) {
+      const newStatus = row.status
+      const oldStatus = newStatus === 1 ? 2 : 1
+      // 先将状态改成原来的值
+      row.status = oldStatus
+      const nameVersion = this.getNameVersion(row)
+      const msg = oldStatus === 1 ? `确认要禁用 ${nameVersion} 吗？` : `确认要启用 ${nameVersion} 吗？`
+      this.confirm(msg, function(done) {
+        const data = {
+          id: row.id,
+          status: newStatus
+        }
+        // 'route.role.update', this.authDialogFormData
+        this.post('route.status.update', data, function() {
+          done()
+          row.status = newStatus
+        })
+      }, (done) => {
+        row.status = oldStatus
+        done()
+      })
+    },
     onCloseRouteDialog: function() {
       this.resetForm('routeDialogFormRef')
     },
@@ -495,20 +489,17 @@ export default {
       })
     },
     roleRender: function(row) {
-      if (!row.permission) {
-        return '（公开）'
-      }
       const html = []
       const roles = row.roles
       for (let i = 0; i < roles.length; i++) {
         html.push(roles[i].description)
       }
-      return html.length > 0 ? html.join(', ') : '<span class="x-red">未授权</span>'
+      return html.length > 0 ? html.join(', ') : '点击授权'
     },
     onRouteDialogSave: function() {
       this.$refs.routeDialogFormRef.validate((valid) => {
         if (valid) {
-          const uri = this.routeDialogFormData.id ? 'route.update' : 'route.add'
+          const uri = this.routeDialogFormData.id ? 'route.status.update' : 'route.add'
           this.routeDialogFormData.serviceId = this.serviceId
           this.post(uri, this.routeDialogFormData, function() {
             this.routeDialogVisible = false

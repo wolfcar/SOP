@@ -1,229 +1,215 @@
 <template>
   <div class="app-container">
-    <el-container>
-      <el-aside style="min-height: 300px;width: 250px;">
-        <el-input v-model="filterText" prefix-icon="el-icon-search" placeholder="搜索服务..." style="margin-bottom:20px;" size="mini" clearable />
-        <el-tree
-          ref="tree2"
-          :data="treeData"
-          :props="defaultProps"
-          :filter-node-method="filterNode"
-          :highlight-current="true"
-          :expand-on-click-node="false"
-          empty-text="无数据"
-          node-key="id"
-          class="filter-tree"
-          default-expand-all
-          @node-click="onNodeClick"
+    <div v-if="tabsData.length === 0">
+      无服务
+    </div>
+    <div v-else>
+      <el-tabs v-model="tabsActive" type="card" @tab-click="selectTab">
+        <el-tab-pane v-for="tabName in tabsData" :key="tabName" :label="tabName" :name="tabName" />
+      </el-tabs>
+      <el-form :inline="true" :model="searchFormData" class="demo-form-inline" size="mini">
+        <el-form-item label="路由ID">
+          <el-input v-model="searchFormData.routeId" placeholder="接口名，支持模糊查询" clearable />
+        </el-form-item>
+        <el-form-item label="AppId">
+          <el-input v-model="searchFormData.appKey" placeholder="AppId，支持模糊查询" clearable />
+        </el-form-item>
+        <el-form-item label="IP">
+          <el-input v-model="searchFormData.limitIp" placeholder="ip，支持模糊查询" clearable />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" icon="el-icon-search" size="mini" @click="onSearchTable">查询</el-button>
+        </el-form-item>
+      </el-form>
+      <el-button type="primary" size="mini" icon="el-icon-plus" style="margin-bottom: 10px;" @click="onAdd">新增限流</el-button>
+      <el-table
+        :data="pageInfo.list"
+        border
+      >
+        <el-table-column
+          prop="limitKey"
+          label="限流维度"
+          width="400"
         >
-          <span slot-scope="{ node, data }" class="custom-tree-node">
-            <div>
-              <el-tooltip v-show="data.custom" content="自定义服务" class="item" effect="light" placement="left">
-                <i class="el-icon-warning-outline"></i>
-              </el-tooltip>
-              <span v-if="data.label.length < serviceTextLimitSize">{{ data.label }}</span>
-              <span v-else>
-                <el-tooltip :content="data.label" class="item" effect="light" placement="right">
-                  <span>{{ data.label.substring(0, serviceTextLimitSize) + '...' }}</span>
-                </el-tooltip>
-              </span>
-            </div>
-            <span>
-              <el-button
-                v-if="data.custom === 1"
-                type="text"
-                size="mini"
-                icon="el-icon-delete"
-                title="删除服务"
-                @click.stop="() => onDelService(data)"/>
-            </span>
-          </span>
-        </el-tree>
-      </el-aside>
-      <el-main style="padding-top:0">
-        <el-form :inline="true" :model="searchFormData" class="demo-form-inline" size="mini">
-          <el-form-item label="路由ID">
-            <el-input v-model="searchFormData.routeId" placeholder="接口名，支持模糊查询" clearable />
-          </el-form-item>
-          <el-form-item label="AppId">
-            <el-input v-model="searchFormData.appKey" placeholder="AppId，支持模糊查询" clearable />
-          </el-form-item>
-          <el-form-item label="IP">
-            <el-input v-model="searchFormData.limitIp" placeholder="ip，支持模糊查询" clearable />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" icon="el-icon-search" size="mini" @click="onSearchTable">查询</el-button>
-          </el-form-item>
-        </el-form>
-        <el-button type="primary" size="mini" icon="el-icon-plus" style="margin-bottom: 10px;" @click="onAdd">新增限流</el-button>
-        <el-table
-          :data="pageInfo.list"
-          border
+          <template slot-scope="scope">
+            <div v-html="limitRender(scope.row)"></div>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="limitType"
+          label="限流策略"
+          width="120"
         >
-          <el-table-column
-            prop="limitKey"
-            label="限流维度"
-            width="400"
-          >
-            <template slot-scope="scope">
-              <div v-html="limitRender(scope.row)"></div>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="limitType"
-            label="限流策略"
-            width="120"
-          >
-            <template slot="header" slot-scope>
-              限流策略 <i class="el-icon-question" style="cursor: pointer" @click="onLimitTypeTipClick"></i>
-            </template>
-            <template slot-scope="scope">
-              <span v-if="scope.row.limitType === 1">窗口策略</span>
-              <span v-if="scope.row.limitType === 2">令牌桶策略</span>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="info"
-            label="限流信息"
-            width="250"
-          >
-            <template slot-scope="scope">
-              <span v-html="infoRender(scope.row)"></span>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="limitStatus"
-            label="状态"
-            width="80"
-          >
-            <template slot-scope="scope">
-              <span v-if="scope.row.limitStatus === 1" style="color:#67C23A">已开启</span>
-              <span v-if="scope.row.limitStatus === 0" style="color:#909399">已关闭</span>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="orderIndex"
-            label="排序"
-            width="80"
-          />
-          <el-table-column
-            prop="remark"
-            label="备注"
-            width="150"
-            :show-overflow-tooltip="true"
-          />
-          <el-table-column
-            prop="gmtCreate"
-            label="创建时间"
-            width="160"
-          />
-          <el-table-column
-            prop="gmtModified"
-            label="修改时间"
-            width="160"
-          />
-          <el-table-column
-            label="操作"
-            fixed="right"
-            width="80"
-          >
-            <template slot-scope="scope">
-              <el-button type="text" size="mini" @click="onTableUpdate(scope.row)">修改</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-pagination
-          background
-          style="margin-top: 5px"
-          :current-page="searchFormData.pageIndex"
-          :page-size="searchFormData.pageSize"
-          :page-sizes="[5, 10, 20, 40]"
-          :total="pageInfo.total"
-          layout="total, sizes, prev, pager, next"
-          @size-change="onSizeChange"
-          @current-change="onPageIndexChange"
+          <template slot="header" slot-scope>
+            限流策略
+            <el-popover
+              ref="popover"
+              placement="top"
+              title="限流策略"
+              width="500"
+              trigger="hover">
+              <div>
+                <p>窗口策略：每秒处理固定数量的请求，超出请求数量返回错误信息。</p>
+                <p>令牌桶策略：每秒放置固定数量的令牌数，每个请求进来后先去拿令牌，拿到了令牌才能继续，拿不到则等候令牌重新生成了再拿。</p>
+              </div>
+            </el-popover>
+            <i v-popover:popover class="el-icon-question" style="cursor: pointer"></i>
+          </template>
+          <template slot-scope="scope">
+            <span v-if="scope.row.limitType === 1">窗口策略</span>
+            <span v-if="scope.row.limitType === 2">令牌桶策略</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="info"
+          label="限流信息"
+          width="250"
+        >
+          <template slot-scope="scope">
+            <span v-html="infoRender(scope.row)"></span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="limitStatus"
+          label="状态"
+          width="80"
+        >
+          <template slot-scope="scope">
+            <span v-if="scope.row.limitStatus === 1" style="color:#67C23A">已开启</span>
+            <span v-if="scope.row.limitStatus === 0" style="color:#909399">已关闭</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="orderIndex"
+          label="排序"
+          width="80"
         />
-        <!-- dialog -->
-        <el-dialog
-          :title="dlgTitle"
-          :visible.sync="limitDialogVisible"
-          :close-on-click-modal="false"
-          @close="onLimitDialogClose"
+        <el-table-column
+          prop="remark"
+          label="备注"
+          width="150"
+          :show-overflow-tooltip="true"
+        />
+        <el-table-column
+          prop="gmtCreate"
+          label="创建时间"
+          width="160"
+        />
+        <el-table-column
+          prop="gmtModified"
+          label="修改时间"
+          width="160"
+        />
+        <el-table-column
+          label="操作"
+          fixed="right"
+          width="80"
         >
-          <el-form
-            ref="limitDialogForm"
-            :model="limitDialogFormData"
-            :rules="rulesLimit"
-            label-width="150px"
-            size="mini"
+          <template slot-scope="scope">
+            <el-button type="text" size="mini" @click="onTableUpdate(scope.row)">修改</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        background
+        style="margin-top: 5px"
+        :current-page="searchFormData.pageIndex"
+        :page-size="searchFormData.pageSize"
+        :page-sizes="[5, 10, 20, 40]"
+        :total="pageInfo.total"
+        layout="total, sizes, prev, pager, next"
+        @size-change="onSizeChange"
+        @current-change="onPageIndexChange"
+      />
+    </div>
+    <!-- dialog -->
+    <el-dialog
+      :title="dlgTitle"
+      :visible.sync="limitDialogVisible"
+      :close-on-click-modal="false"
+      @close="onLimitDialogClose"
+    >
+      <el-form
+        ref="limitDialogForm"
+        :model="limitDialogFormData"
+        :rules="rulesLimit"
+        label-width="150px"
+        size="mini"
+      >
+        <el-form-item label="限流维度" prop="typeKey">
+          <el-checkbox-group v-model="limitDialogFormData.typeKey">
+            <el-checkbox v-model="limitDialogFormData.typeKey[0]" :label="1" name="typeKey">路由ID</el-checkbox>
+            <el-checkbox v-model="limitDialogFormData.typeKey[1]" :label="2" name="typeKey">AppId</el-checkbox>
+            <el-checkbox v-model="limitDialogFormData.typeKey[2]" :label="3" name="typeKey">IP</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item v-show="checkTypeKey(1)" prop="routeId" label="路由ID" :rules="checkTypeKey(1) ? rulesLimit.routeId : []">
+          <el-select v-model="limitDialogFormData.routeId" filterable placeholder="可筛选" style="width: 300px;">
+            <el-option
+              v-for="item in routeList"
+              :key="item.id"
+              :label="item.id"
+              :value="item.id"
+            >
+              <span style="float: left">{{ item.name }}</span>
+              <span style="float: right; color: #8492a6; font-size: 13px">{{ item.version }}</span>
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item v-show="checkTypeKey(2)" prop="appKey" label="AppId" :rules="checkTypeKey(2) ? rulesLimit.appKey : []">
+          <el-input v-model="limitDialogFormData.appKey" placeholder="需要限流的AppId" />
+        </el-form-item>
+        <el-form-item v-show="checkTypeKey(3)" label="限流IP" prop="limitIp" :rules="checkTypeKey(3) ? rulesLimit.ip : []">
+          <el-input v-model="limitDialogFormData.limitIp" type="textarea" :rows="2" placeholder="多个用英文逗号隔开" />
+        </el-form-item>
+        <el-form-item label="限流策略">
+          <el-radio-group v-model="limitDialogFormData.limitType">
+            <el-radio :label="1">窗口策略</el-radio>
+            <el-radio :label="2">令牌桶策略</el-radio>
+          </el-radio-group>
+          <el-popover
+            ref="popover"
+            placement="top"
+            title="限流策略"
+            width="500"
+            trigger="hover">
+            <div>
+              <p>窗口策略：每秒处理固定数量的请求，超出请求数量返回错误信息。</p>
+              <p>令牌桶策略：每秒放置固定数量的令牌数，每个请求进来后先去拿令牌，拿到了令牌才能继续，拿不到则等候令牌重新生成了再拿。</p>
+            </div>
+          </el-popover>
+          <i v-popover:popover class="el-icon-question" style="cursor: pointer"></i>
+        </el-form-item>
+        <el-form-item label="开启状态">
+          <el-switch
+            v-model="limitDialogFormData.limitStatus"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            :active-value="1"
+            :inactive-value="0"
           >
-            <el-form-item label="限流维度" prop="typeKey">
-              <el-checkbox-group v-model="limitDialogFormData.typeKey">
-                <el-checkbox v-model="limitDialogFormData.typeKey[0]" :label="1" name="typeKey">路由ID</el-checkbox>
-                <el-checkbox v-model="limitDialogFormData.typeKey[1]" :label="2" name="typeKey">AppId</el-checkbox>
-                <el-checkbox v-model="limitDialogFormData.typeKey[2]" :label="3" name="typeKey">IP</el-checkbox>
-              </el-checkbox-group>
-            </el-form-item>
-            <el-form-item v-show="checkTypeKey(1)" prop="routeId" label="路由ID" :rules="checkTypeKey(1) ? rulesLimit.routeId : []">
-              <el-select v-model="limitDialogFormData.routeId" filterable placeholder="可筛选" style="width: 300px;">
-                <el-option
-                  v-for="item in routeList"
-                  :key="item.id"
-                  :label="item.id"
-                  :value="item.id"
-                >
-                  <span style="float: left">{{ item.name }}</span>
-                  <span style="float: right; color: #8492a6; font-size: 13px">{{ item.version }}</span>
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item v-show="checkTypeKey(2)" prop="appKey" label="AppId" :rules="checkTypeKey(2) ? rulesLimit.appKey : []">
-              <el-input v-model="limitDialogFormData.appKey" placeholder="需要限流的AppId" />
-            </el-form-item>
-            <el-form-item v-show="checkTypeKey(3)" label="限流IP" prop="limitIp" :rules="checkTypeKey(3) ? rulesLimit.ip : []">
-              <el-input v-model="limitDialogFormData.limitIp" type="textarea" :rows="2" placeholder="多个用英文逗号隔开" />
-            </el-form-item>
-            <el-form-item label="限流策略">
-              <el-radio-group v-model="limitDialogFormData.limitType">
-                <el-radio :label="1">窗口策略</el-radio>
-                <el-radio :label="2">令牌桶策略</el-radio>
-              </el-radio-group>
-              <i class="el-icon-question limit-tip" @click="onLimitTypeTipClick"></i>
-            </el-form-item>
-            <el-form-item label="开启状态">
-              <el-switch
-                v-model="limitDialogFormData.limitStatus"
-                active-color="#13ce66"
-                inactive-color="#ff4949"
-                :active-value="1"
-                :inactive-value="0"
-              >
-              </el-switch>
-            </el-form-item>
-            <el-form-item label="排序" prop="orderIndex">
-              <el-input-number v-model="limitDialogFormData.orderIndex" controls-position="right" :min="0" />
-              <el-tooltip class="item" content="值小优先执行" placement="top">
-                <i class="el-icon-question limit-tip"></i>
-              </el-tooltip>
-            </el-form-item>
-            <el-form-item v-show="isWindowType()" label="请求数" prop="execCountPerSecond" :rules="isWindowType() ? rulesLimit.execCountPerSecond : []">
-              每 <el-input-number v-model="limitDialogFormData.durationSeconds" controls-position="right" :min="1" /> 秒可处理
-              <el-input-number v-model="limitDialogFormData.execCountPerSecond" controls-position="right" :min="1" /> 个请求
-            </el-form-item>
-            <el-form-item v-show="isTokenType()" label="令牌桶容量" prop="tokenBucketCount" :rules="isTokenType() ? rulesLimit.tokenBucketCount : []">
-              <el-input-number v-model="limitDialogFormData.tokenBucketCount" controls-position="right" :min="1" />
-            </el-form-item>
-            <el-form-item label="备注" prop="remark">
-              <el-input v-model="limitDialogFormData.remark" type="textarea" :rows="2" />
-            </el-form-item>
-          </el-form>
-          <div slot="footer" class="dialog-footer">
-            <el-button @click="limitDialogVisible = false">取 消</el-button>
-            <el-button type="primary" @click="onLimitDialogSave">保 存</el-button>
-          </div>
-        </el-dialog>
-      </el-main>
-    </el-container>
+          </el-switch>
+        </el-form-item>
+        <el-form-item label="排序" prop="orderIndex">
+          <el-input-number v-model="limitDialogFormData.orderIndex" controls-position="right" :min="0" />
+          <span class="tip" style="margin-left: 10px">值小优先执行</span>
+        </el-form-item>
+        <el-form-item v-show="isWindowType()" label="请求数" prop="execCountPerSecond" :rules="isWindowType() ? rulesLimit.execCountPerSecond : []">
+          每 <el-input-number v-model="limitDialogFormData.durationSeconds" controls-position="right" :min="1" /> 秒可处理
+          <el-input-number v-model="limitDialogFormData.execCountPerSecond" controls-position="right" :min="1" /> 个请求
+        </el-form-item>
+        <el-form-item v-show="isTokenType()" label="令牌桶容量" prop="tokenBucketCount" :rules="isTokenType() ? rulesLimit.tokenBucketCount : []">
+          <el-input-number v-model="limitDialogFormData.tokenBucketCount" controls-position="right" :min="1" />
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="limitDialogFormData.remark" type="textarea" :rows="2" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="limitDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="onLimitDialogSave">保 存</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <style>
@@ -242,6 +228,8 @@
 export default {
   data() {
     return {
+      tabsData: [],
+      tabsActive: '',
       serviceTextLimitSize: 20,
       filterText: '',
       treeData: [],
@@ -320,9 +308,20 @@ export default {
     }
   },
   created() {
-    this.loadTree()
+    this.loadTabs()
   },
   methods: {
+    loadTabs() {
+      this.post('registry.service.list', {}, function(resp) {
+        this.tabsData = resp.data
+        this.$nextTick(() => {
+          if (this.tabsData.length > 0) {
+            this.tabsActive = this.tabsData[0]
+            this.loadLimitData()
+          }
+        })
+      })
+    },
     // 加载树
     loadTree: function() {
       this.post('registry.service.list', {}, function(resp) {
@@ -343,6 +342,15 @@ export default {
         this.loadTable()
         this.loadRouteList(this.serviceId)
       }
+    },
+    selectTab() {
+      this.loadLimitData()
+    },
+    loadLimitData() {
+      this.serviceId = this.tabsActive
+      this.searchFormData.serviceId = this.serviceId
+      this.loadTable()
+      this.loadRouteList(this.serviceId)
     },
     /**
      * 数组转成树状结构
@@ -506,9 +514,3 @@ export default {
   }
 }
 </script>
-<style scoped>
-  .limit-tip {
-    cursor: pointer;
-    margin-left: 10px;
-  }
-</style>
