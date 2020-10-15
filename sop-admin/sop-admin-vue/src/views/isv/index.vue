@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
     <el-form :inline="true" :model="searchFormData" class="demo-form-inline" size="mini">
-      <el-form-item label="appId">
-        <el-input v-model="searchFormData.appKey" :clearable="true" placeholder="appId" style="width: 250px;" />
+      <el-form-item label="AppId">
+        <el-input v-model="searchFormData.appKey" :clearable="true" placeholder="AppId" style="width: 250px;" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" @click="onSearchTable">查询</el-button>
