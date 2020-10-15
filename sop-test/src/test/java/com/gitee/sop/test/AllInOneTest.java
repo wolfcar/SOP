@@ -219,6 +219,22 @@ public class AllInOneTest extends TestBase {
     }
 
     /**
+     * 传递header
+     */
+    public void testHeader() {
+        Map<String, String> header = new HashMap<>(8);
+        header.put("token", "aaaabbbb");
+        Client.RequestBuilder requestBuilder = new Client.RequestBuilder()
+                .method("test.head")
+                .version("1.0")
+                .header(header)
+                .bizContent(new BizContent().add("id", "1").add("name", "葫芦娃"))
+                .httpMethod(HttpTool.HTTPMethod.GET);
+
+        client.execute(requestBuilder);
+    }
+
+    /**
      * 测试post提交大文本内容
      * @throws IOException
      */
