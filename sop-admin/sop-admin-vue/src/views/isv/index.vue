@@ -45,8 +45,8 @@
         width="80"
       >
         <template slot-scope="scope">
-          <span v-if="scope.row.status === 1" style="color:#67C23A">已启用</span>
-          <span v-if="scope.row.status === 2" style="color:#F56C6C">已禁用</span>
+          <span v-if="scope.row.status === 1" style="color:#67C23A">启用</span>
+          <span v-if="scope.row.status === 2" style="color:#F56C6C">禁用</span>
         </template>
       </el-table-column>
       <el-table-column
