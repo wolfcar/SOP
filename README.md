@@ -105,9 +105,9 @@ System.out.println(responseData);
 
 ![服务列表](https://images.gitee.com/uploads/images/2019/0711/174825_2856281f_332975.png "服务列表")
 
-![路由管理](https://images.gitee.com/uploads/images/2019/0711/174843_1648591c_332975.png "路由管理")
+![路由管理](https://images.gitee.com/uploads/images/2020/1016/134039_bed1608d_332975.png "route.png")
 
-![限流管理](https://images.gitee.com/uploads/images/2019/0711/174900_9315cc8e_332975.png "限流管理")
+![限流管理](https://images.gitee.com/uploads/images/2020/1016/134102_f2dcfb25_332975.png "limit.png")
 
 ![秘钥信息](https://images.gitee.com/uploads/images/2019/0711/174921_bd817533_332975.png "秘钥信息")
 
