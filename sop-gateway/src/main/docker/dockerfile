@@ -1,8 +1,10 @@
 FROM java:8
 VOLUME /tmp
 VOLUME /log
-ADD sop-gateway-4.0.3-SNAPSHOT.jar sop-gateway-4.0.3.jar
+ADD *.jar app.jar
 
-ENV JAVA_OPTS="-Xms128m -Xmx128m --logging.file=log/sop-gateway/log.log --mysql.host=10.1.30.120:3306"
+ENV JAVA_OPTS="-Xms128m -Xmx128m"
+# springboot配置文件
+ENV CONF=" --logging.file=log/spring.log --mysql.host=10.1.30.120:3306 --register.url=10.1.30.110:8848"
 
-ENTRYPOINT java ${JAVA_OPTS} -Djava.security.egd=file:/dev/./urandom -jar /sop-gateway-4.0.3.jar
+ENTRYPOINT java ${JAVA_OPTS} -Djava.security.egd=file:/dev/./urandom -jar /app.jar ${CONF}

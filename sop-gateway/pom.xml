@@ -13,7 +13,6 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <docker.image.prefix>gitee.com/sop</docker.image.prefix>
     </properties>
 
     <dependencies>
@@ -102,7 +101,7 @@
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>1.0.0</version>
                 <configuration>
-                    <imageName>${docker.image.prefix}/${project.artifactId}</imageName>
+                    <imageName>${project.groupId}/${project.artifactId}</imageName>
                     <!--docker文件所在的目录-->
                     <dockerDirectory>src/main/docker</dockerDirectory>
                     <resources>
