@@ -5,4 +5,4 @@ ADD sop-gateway-4.0.3-SNAPSHOT.jar sop-gateway-4.0.3.jar
 
 ENV JAVA_OPTS="-Xms128m -Xmx128m --logging.file=log/sop-gateway/log.log --mysql.host=10.1.30.120:3306"
 
-ENTRYPOINT ["java","$JAVA_OPTS -Djava.security.egd=file:/dev/./urandom","-jar","/sop-gateway-4.0.3.jar"]
+ENTRYPOINT java ${JAVA_OPTS} -Djava.security.egd=file:/dev/./urandom -jar /sop-gateway-4.0.3.jar
