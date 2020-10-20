@@ -8,6 +8,7 @@ ADD sop-website/target/*.jar sop/sop-website/sop-website.jar
 ADD sop-auth/target/*.jar sop/sop-website/sop-auth.jar
 ADD sop-example/sop-story/target/*.jar sop/sop-story/sop-story.jar
 
+COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 ENTRYPOINT ["docker-entrypoint.sh"]
