@@ -95,14 +95,13 @@
                     <skipTests>true</skipTests>
                 </configuration>
             </plugin>
-            <!-- docker插件 -->
+            <!-- docker插件
             <plugin>
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>1.0.0</version>
                 <configuration>
                     <imageName>${project.groupId}/${project.artifactId}</imageName>
-                    <!--docker文件所在的目录-->
                     <dockerDirectory>src/main/docker</dockerDirectory>
                     <resources>
                         <resource>
@@ -113,6 +112,7 @@
                     </resources>
                 </configuration>
             </plugin>
+             -->
         </plugins>
     </build>
 
