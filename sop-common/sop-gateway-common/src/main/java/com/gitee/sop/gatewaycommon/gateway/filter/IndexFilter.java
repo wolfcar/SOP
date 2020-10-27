@@ -70,7 +70,7 @@ public class IndexFilter implements WebFilter {
         // 如果是restful请求，直接转发
         if (path.startsWith(EnvironmentKeys.SOP_RESTFUL_PATH.getValue())) {
             exchange.getAttributes().put(SopConstants.RESTFUL_REQUEST, true);
-            String restfulPath = ServerWebExchangeUtil.getRestfulPath(path);
+            String restfulPath = ServerWebExchangeUtil.getRestfulPath(path, EnvironmentKeys.SOP_RESTFUL_PATH.getValue());
             ServerWebExchange newExchange = ServerWebExchangeUtil.getForwardExchange(exchange, restfulPath);
             return chain.filter(newExchange);
         }

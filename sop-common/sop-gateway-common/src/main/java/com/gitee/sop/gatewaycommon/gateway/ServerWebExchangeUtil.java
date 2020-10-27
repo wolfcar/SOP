@@ -44,7 +44,6 @@ public class ServerWebExchangeUtil {
 
     private static final String THROWABLE_KEY = "sop.throwable";
     private static final String UNKNOWN_PATH = "/sop/unknown";
-    private static final String REST_PATH = "/rest";
 
     private static final FormHttpMessageConverter formHttpMessageConverter = new FormHttpMessageConverter();
 
@@ -77,10 +76,10 @@ public class ServerWebExchangeUtil {
         return ServerRequest.create(exchange, messageReaders);
     }
 
-    public static String getRestfulPath(String path) {
-        int index = path.indexOf(REST_PATH);
+    public static String getRestfulPath(String path, String prefix) {
+        int index = path.indexOf(prefix);
         // 取"/rest"的后面部分
-        return path.substring(index + REST_PATH.length());
+        return path.substring(index + prefix.length());
     }
 
     /**
