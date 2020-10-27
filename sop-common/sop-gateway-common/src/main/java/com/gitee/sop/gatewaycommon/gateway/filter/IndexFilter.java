@@ -5,6 +5,7 @@ import com.gitee.sop.gatewaycommon.bean.SopConstants;
 import com.gitee.sop.gatewaycommon.exception.ApiException;
 import com.gitee.sop.gatewaycommon.gateway.ServerWebExchangeUtil;
 import com.gitee.sop.gatewaycommon.gateway.route.GatewayForwardChooser;
+import com.gitee.sop.gatewaycommon.manager.EnvironmentKeys;
 import com.gitee.sop.gatewaycommon.param.ApiParam;
 import com.gitee.sop.gatewaycommon.route.ForwardInfo;
 import com.gitee.sop.gatewaycommon.util.RouteInterceptorUtil;
@@ -44,8 +45,6 @@ import java.util.Objects;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class IndexFilter implements WebFilter {
 
-    private static final String REST_PATH_PREFIX = "/rest";
-
     /** 路径白名单 */
     private static final List<String> PATH_WHITE_LIST = Arrays.asList(
             "/sop", "/actuator"
@@ -69,7 +68,7 @@ public class IndexFilter implements WebFilter {
             return chain.filter(exchange);
         }
         // 如果是restful请求，直接转发
-        if (path.startsWith(REST_PATH_PREFIX)) {
+        if (path.startsWith(EnvironmentKeys.SOP_RESTFUL_PATH.getValue())) {
             exchange.getAttributes().put(SopConstants.RESTFUL_REQUEST, true);
             String restfulPath = ServerWebExchangeUtil.getRestfulPath(path);
             ServerWebExchange newExchange = ServerWebExchangeUtil.getForwardExchange(exchange, restfulPath);
