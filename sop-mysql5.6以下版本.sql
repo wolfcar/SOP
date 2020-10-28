@@ -9,7 +9,6 @@ DROP TABLE IF EXISTS `perm_role`;
 DROP TABLE IF EXISTS `perm_isv_role`;
 DROP TABLE IF EXISTS `isv_keys`;
 DROP TABLE IF EXISTS `isv_info`;
-DROP TABLE IF EXISTS `config_route_limit`;
 DROP TABLE IF EXISTS `config_route_base`;
 DROP TABLE IF EXISTS `config_limit`;
 DROP TABLE IF EXISTS `config_ip_blacklist`;
@@ -112,22 +111,6 @@ CREATE TABLE `config_route_base` (
   UNIQUE KEY `uk_routeid` (`route_id`) USING BTREE
 ) ENGINE=INNODB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='路由配置表';
 
-
-CREATE TABLE `config_route_limit` (
-  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `route_id` VARCHAR(64) NOT NULL COMMENT '路由id',
-  `service_id` VARCHAR(64) NOT NULL DEFAULT '',
-  `limit_type` TINYINT(4) NOT NULL DEFAULT '1' COMMENT '限流策略，1：窗口策略，2：令牌桶策略',
-  `exec_count_per_second` INT(11) DEFAULT NULL COMMENT '每秒可处理请求数',
-  `limit_code` VARCHAR(64) DEFAULT NULL COMMENT '返回的错误码',
-  `limit_msg` VARCHAR(100) DEFAULT NULL COMMENT '返回的错误信息',
-  `token_bucket_count` INT(11) DEFAULT NULL COMMENT '令牌桶容量',
-  `limit_status` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '限流开启状态，1:开启，0关闭',
-  `gmt_create` DATETIME  DEFAULT NULL,
-  `gmt_modified` DATETIME DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_routeid` (`route_id`) USING BTREE
-) ENGINE=INNODB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='路由限流配置';
 
 
 CREATE TABLE `isv_info` (
@@ -239,13 +222,6 @@ INSERT INTO `config_route_base` (`id`, `route_id`, `status`, `gmt_create`, `gmt_
 	(6,'alipay.category.get1.0',1,'2019-05-06 16:50:39','2019-05-20 17:01:48'),
 	(7,'permission.story.get1.0',1,'2019-05-06 20:03:17','2019-05-06 20:03:21'),
 	(8,'goods.add1.0',1,'2019-05-13 17:23:00','2019-05-13 17:23:11');
-
-
-INSERT INTO `config_route_limit` (`id`, `route_id`, `service_id`, `limit_type`, `exec_count_per_second`, `limit_code`, `limit_msg`, `token_bucket_count`, `limit_status`, `gmt_create`, `gmt_modified`) VALUES
-	(1,'alipay.story.find1.0','story-service',1,10,'isp.service-busy','服务器正忙',NULL,1,'2019-04-10 20:55:08','2019-04-10 21:04:35'),
-	(2,'alipay.story.get1.0','story-service',2,5,'isp.service-busy','服务器正忙',5,0,'2019-04-10 21:05:51','2019-04-11 18:18:03'),
-	(3,'alipay.story.get1.2','story-service',2,10,'isp.service-busy','服务器正忙',3,1,'2019-04-11 17:26:04','2019-04-11 18:19:33'),
-	(4,'alipay.category.get1.0','story-service',1,5,'error-code','服务器忙',5,1,'2019-05-07 12:22:04','2019-05-07 12:25:06');
 
 
 INSERT INTO `isv_info` (`id`, `app_key`, `status`, `sign_type`, `remark`, `gmt_create`, `gmt_modified`) VALUES
