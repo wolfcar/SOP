@@ -22,9 +22,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -133,6 +135,19 @@ public class Example1001_BaseController {
             throw new ServiceException("testResult.getType() 不能为null");
         }
         return testResult;
+    }
+
+    // 获取header
+    @Open(value = "test.head",version = "1.0")
+    @GetMapping("/get/header/v1")
+    public StoryResult header(@RequestBody StoryParam story, HttpServletRequest request) {
+        HttpServletRequest servletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        StoryResult storyResult = new StoryResult();
+        storyResult.setId(1L);
+        storyResult.setName(story.getName()
+                + ", token1:" + request.getHeader("token")
+                + ", token2:" + servletRequest.getHeader("token"));
+        return storyResult;
     }
 
     // 返回数组结果

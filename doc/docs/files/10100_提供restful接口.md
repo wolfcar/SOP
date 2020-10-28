@@ -6,8 +6,6 @@
 
 `http://ip:port/rest/服务id/your_path`，其中`http://ip:port/rest/`为固定部分，后面跟微服务请求路径。
 
-> 可在微服务端指定一个配置：`sop.restful.prefix=xxx`。请求路径将变成：`http://ip:port/rest/xxx/your_path`
-
 下面是一个微服务的接口例子
 
 ```java
@@ -35,6 +33,10 @@ public class TraditionalWebappController {
 由此可见，对于前端调用者来说，它把网关看做一个大服务，只访问网关提供的请求，不需要关心网关后面的路由转发。网关后面各个微服务独自管理，
 微服务之间的调用可以使用dubbo或feign，有了版本号的管理，可以做到服务的平滑升级，对用户来说都是无感知的。结合SOP-Admin提供的上下线功能，
 可实现预发布环境功能。
+
+默认情况下，`http://ip:port/rest/`为固定部分，如果想要更改`rest`，可在网关配置文件指定：`sop.restful.path=/aaa`
+
+请求前缀将变成：`http://ip:port/aaa/`
 
 - 封装请求工具【可选】
 

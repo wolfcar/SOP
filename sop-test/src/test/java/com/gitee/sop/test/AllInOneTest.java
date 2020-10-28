@@ -112,10 +112,16 @@ public class AllInOneTest extends TestBase {
      */
     public void testJSR303() {
         Client client = new Client(url, appId, privateKey);
+        Map<String, String> headers = new HashMap<>(8);
+        headers.put("accept-language", "zh-CN");
         Client.RequestBuilder requestBuilder = new Client.RequestBuilder()
                 .method("goods.add")
                 .version("1.0")
-                .bizContent(new BizContent().add("goods_name", "iphone6").add("goods_remark", "iphone6").add("goods_comment", "1"))
+                .header(headers)
+                .bizContent(new BizContent()
+                        .add("goods_name", "iphone6")
+                        .add("goods_remark", "iphone6")
+                        .add("goods_comment", "1"))
                 .httpMethod(HttpTool.HTTPMethod.POST)
                 .callback((requestInfo, responseData) -> {
                     System.out.println(responseData);
@@ -214,6 +220,22 @@ public class AllInOneTest extends TestBase {
                     Assert.assertEquals(data.getString("code"), "10000");
                 })
                 ;
+
+        client.execute(requestBuilder);
+    }
+
+    /**
+     * 传递header
+     */
+    public void testHeader() {
+        Map<String, String> header = new HashMap<>(8);
+        header.put("token", "aaaabbbb");
+        Client.RequestBuilder requestBuilder = new Client.RequestBuilder()
+                .method("test.head")
+                .version("1.0")
+                .header(header)
+                .bizContent(new BizContent().add("id", "1").add("name", "葫芦娃"))
+                .httpMethod(HttpTool.HTTPMethod.GET);
 
         client.execute(requestBuilder);
     }
