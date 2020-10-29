@@ -56,4 +56,6 @@ public class SopConstants {
 
     public static final String METADATA_KEY_TIME_STARTUP = "server.startup-time";
 
+    public static final String CACHE_ROUTE_INFO = "cacheRouteInfo";
+
 }

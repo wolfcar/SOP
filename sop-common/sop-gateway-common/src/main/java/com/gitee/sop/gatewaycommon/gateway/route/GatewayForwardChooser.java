@@ -1,5 +1,7 @@
 package com.gitee.sop.gatewaycommon.gateway.route;
 
+import com.gitee.sop.gatewaycommon.bean.SopConstants;
+import com.gitee.sop.gatewaycommon.bean.TargetRoute;
 import com.gitee.sop.gatewaycommon.gateway.ServerWebExchangeUtil;
 import com.gitee.sop.gatewaycommon.param.ApiParam;
 import com.gitee.sop.gatewaycommon.route.BaseForwardChooser;
@@ -22,6 +24,9 @@ public class GatewayForwardChooser extends BaseForwardChooser<ServerWebExchange>
         if (ServerWebExchangeUtil.getThrowable(exchange) != null) {
             return ForwardInfo.getErrorForwardInfo();
         }
-        return super.getForwardInfo(exchange);
+        ForwardInfo forwardInfo = super.getForwardInfo(exchange);
+        TargetRoute targetRoute = forwardInfo.getTargetRoute();
+        exchange.getAttributes().put(SopConstants.CACHE_ROUTE_INFO, targetRoute.getRouteDefinition());
+        return forwardInfo;
     }
 }
