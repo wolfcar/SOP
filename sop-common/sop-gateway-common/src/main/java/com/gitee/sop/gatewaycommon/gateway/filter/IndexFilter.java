@@ -53,6 +53,10 @@ public class IndexFilter implements WebFilter {
     @Value("${sop.gateway-index-path:/}")
     private String indexPath;
 
+    /** sop.restful.enable=true ，开启restful请求，默认开启 */
+    @Value("${sop.restful.enable:true}")
+    private boolean enableRestful;
+
     @Autowired
     private Validator validator;
 
@@ -68,7 +72,7 @@ public class IndexFilter implements WebFilter {
             return chain.filter(exchange);
         }
         // 如果是restful请求，直接转发
-        if (path.startsWith(EnvironmentKeys.SOP_RESTFUL_PATH.getValue())) {
+        if (enableRestful && path.startsWith(EnvironmentKeys.SOP_RESTFUL_PATH.getValue())) {
             exchange.getAttributes().put(SopConstants.RESTFUL_REQUEST, true);
             String restfulPath = ServerWebExchangeUtil.getRestfulPath(path, EnvironmentKeys.SOP_RESTFUL_PATH.getValue());
             ServerWebExchange newExchange = ServerWebExchangeUtil.getForwardExchange(exchange, restfulPath);

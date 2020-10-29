@@ -38,6 +38,15 @@ public class TraditionalWebappController {
 
 请求前缀将变成：`http://ip:port/aaa/`
 
+- 关闭restful功能
+
+如果不想用该功能，在配置文件指定：
+
+```properties
+# 开启restful请求，默认开启
+sop.restful.enable=false
+```
+
 - 封装请求工具【可选】
 
 封装请求，方便调用，针对vue的封装如下：
