@@ -54,7 +54,7 @@ public class EurekaRegistryListener extends BaseRegistryListener {
                         if (startupTime == null) {
                             return null;
                         }
-                        return new ServiceHolder(instanceInfo.getAppName(), instanceInfo.getLastUpdatedTimestamp());
+                        return new ServiceHolder(instanceInfo.getAppName(), Long.parseLong(startupTime));
                     }).orElse(null);
                 })
                 .filter(Objects::nonNull)
