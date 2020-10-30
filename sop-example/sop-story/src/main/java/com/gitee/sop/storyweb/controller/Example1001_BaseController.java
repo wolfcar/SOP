@@ -10,6 +10,7 @@ import com.gitee.sop.servercommon.exception.ServiceException;
 import com.gitee.sop.storyweb.controller.param.CategoryParam;
 import com.gitee.sop.storyweb.controller.param.LargeTextParam;
 import com.gitee.sop.storyweb.controller.param.StoryParam;
+import com.gitee.sop.storyweb.controller.param.TypeEnum;
 import com.gitee.sop.storyweb.controller.result.CategoryResult;
 import com.gitee.sop.storyweb.controller.result.StoryResult;
 import com.gitee.sop.storyweb.controller.result.TestResult;
@@ -27,6 +28,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -95,6 +99,35 @@ public class Example1001_BaseController {
         System.out.println("app_id:" + openContext.getAppId());
         System.out.println("token:" + openContext.getAppAuthToken());
         result.setName("系统参数：" + openContext);
+        return result;
+    }
+
+    // 参数绑定，少量参数可以这样写，参数多了建议放进类里面
+    @Open(value = "story.oneparam")
+    @GetMapping("/oneParam/v1")
+    public StoryResult oneParam(@NotBlank(message = "id不能为空") String id, @NotBlank(message = "name不能为空")  String name) {
+        StoryResult result = new StoryResult();
+        result.setName("id：" + id + ", name:" + name);
+        return result;
+    }
+
+    // 参数绑定
+    @Open(value = "story.oneparam", version = "1.1")
+    @GetMapping("/oneParam/v2")
+    public StoryResult oneParamV2(
+            @NotNull(message = "id不能为空")
+            @Min(value = 1, message = "id必须大于0") Integer id) {
+        StoryResult result = new StoryResult();
+        result.setName("id：" + id);
+        return result;
+    }
+
+    // 参数绑定，枚举
+    @Open(value = "story.oneparam", version = "1.2")
+    @GetMapping("/oneParam/v3")
+    public StoryResult oneParamV2(@NotNull(message = "typeEnum不能为空") TypeEnum typeEnum) {
+        StoryResult result = new StoryResult();
+        result.setName("typeEnum：" + typeEnum.name());
         return result;
     }
 

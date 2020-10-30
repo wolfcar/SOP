@@ -8,6 +8,7 @@ import com.gitee.sop.servercommon.bean.OpenContext;
 import com.gitee.sop.servercommon.bean.OpenContextImpl;
 import com.gitee.sop.servercommon.bean.ParamNames;
 import com.gitee.sop.servercommon.bean.ServiceContext;
+import com.gitee.sop.servercommon.util.FieldUtil;
 import com.gitee.sop.servercommon.util.OpenUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
@@ -35,6 +36,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.lang.reflect.Parameter;
 import java.security.Principal;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -82,8 +84,8 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter methodParameter) {
-        // 是否有注解
-        if (!methodParameter.hasMethodAnnotation(Open.class)) {
+        Open open = methodParameter.getMethodAnnotation(Open.class);
+        if (open == null) {
             return false;
         }
         Class<?> paramType = methodParameter.getParameterType();
@@ -106,7 +108,25 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
                         Writer.class.isAssignableFrom(paramType)
         );
         // 除此之外都匹配
-        return !exclude;
+        boolean support = !exclude;
+        if (support) {
+            this.wrapSingleParam(methodParameter, open);
+        }
+        return support;
+    }
+
+    /**
+     * 包装单个值参数
+     * @param methodParameter 参数信息
+     * @param open open注解
+     */
+    private void wrapSingleParam(MethodParameter methodParameter, Open open) {
+        Parameter parameter = methodParameter.getParameter();
+        boolean isNumberStringEnumType = FieldUtil.isNumberStringEnumType(parameter.getType());
+        if (isNumberStringEnumType) {
+            log.debug("包装参数，方法：{}，参数名：{}", methodParameter.getMethod(), parameter.getName());
+            SingleParameterContext.add(parameter, open);
+        }
     }
 
     @Override
@@ -123,8 +143,15 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
         Object paramObj = this.getParamObject(methodParameter, nativeWebRequest);
         if (paramObj != null) {
             // JSR-303验证
-            paramValidator.validateBizParam(paramObj);
-            return paramObj;
+
+            if (paramObj instanceof SingleParameterWrapper) {
+                SingleParameterWrapper parameterWrapper = (SingleParameterWrapper) paramObj;
+                paramValidator.validateBizParam(parameterWrapper.getWrapperObject());
+                return parameterWrapper.getParamValue();
+            } else {
+                paramValidator.validateBizParam(paramObj);
+                return paramObj;
+            }
         }
         HandlerMethodArgumentResolver resolver = getOtherArgumentResolver(methodParameter);
         if (resolver != null) {
@@ -164,6 +191,17 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
         }
         // 方法参数类型
         Class<?> parameterType = methodParameter.getParameterType();
+        SingleParameterContextValue singleValue = SingleParameterContext.get(openContext.getMethod(), openContext.getVersion());
+        // 如果是单值参数
+        if (singleValue != null) {
+            JSONObject jsonObj = JSON.parseObject(bizContent);
+            Object paramValue = jsonObj.getObject(singleValue.getParameterName(), parameterType);
+            Object wrapperObject = jsonObj.toJavaObject(singleValue.getWrapClass());
+            SingleParameterWrapper singleParameterWrapper = new SingleParameterWrapper();
+            singleParameterWrapper.setParamValue(paramValue);
+            singleParameterWrapper.setWrapperObject(wrapperObject);
+            return singleParameterWrapper;
+        }
         Object param;
         // 如果是json字符串
         if (JSONValidator.from(bizContent).validate()) {
