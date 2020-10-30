@@ -67,6 +67,7 @@
 		<springfox-spring-web.version>2.9.2</springfox-spring-web.version>
 		<springfox-swagger2.version>2.9.2</springfox-swagger2.version>
 		<easyopen.version>1.16.9</easyopen.version>
+		<asm.version>6.2</asm.version>
 	</properties>
 
 	<dependencyManagement>
@@ -193,6 +194,12 @@
 				<groupId>commons-logging</groupId>
 				<artifactId>commons-logging</artifactId>
 				<version>${commons-logging.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.ow2.asm</groupId>
+				<artifactId>asm</artifactId>
+				<version>${asm.version}</version>
 			</dependency>
 
 			<dependency>
