@@ -39,7 +39,7 @@ public class GatewayResultExecutor extends BaseExecutorAdapter<ServerWebExchange
         List<String> errorCodeList = exchange.getResponse().getHeaders().get(SopConstants.X_SERVICE_ERROR_CODE);
         if (!CollectionUtils.isEmpty(errorCodeList)) {
             String errorCode = errorCodeList.get(0);
-            responseStatus = Integer.valueOf(errorCode);
+            responseStatus = Integer.parseInt(errorCode);
         }
         return responseStatus;
     }

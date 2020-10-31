@@ -68,6 +68,7 @@
 		<springfox-swagger2.version>2.9.2</springfox-swagger2.version>
 		<easyopen.version>1.16.9</easyopen.version>
 		<asm.version>6.2</asm.version>
+		<pagehelper.version>5.2.0</pagehelper.version>
 	</properties>
 
 	<dependencyManagement>
@@ -200,6 +201,12 @@
 				<groupId>org.ow2.asm</groupId>
 				<artifactId>asm</artifactId>
 				<version>${asm.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.github.pagehelper</groupId>
+				<artifactId>pagehelper</artifactId>
+				<version>${pagehelper.version}</version>
 			</dependency>
 
 			<dependency>

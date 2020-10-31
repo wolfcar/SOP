@@ -9,13 +9,13 @@ import java.util.function.Function;
  */
 public class MonitorManager {
 
-    private static Map<String, MonitorInfo> monitorMap = new ConcurrentHashMap<>(128);
+    private static Map<String, MonitorData> monitorMap = new ConcurrentHashMap<>(128);
 
-    public Map<String, MonitorInfo> getMonitorData() {
+    public Map<String, MonitorData> getMonitorData() {
         return monitorMap;
     }
 
-    public MonitorInfo getMonitorInfo(String routeId, Function<String, MonitorInfo> createFun) {
+    public MonitorData getMonitorInfo(String routeId, Function<String, MonitorData> createFun) {
         return monitorMap.computeIfAbsent(routeId, createFun);
     }
 

@@ -17,6 +17,8 @@ DROP TABLE IF EXISTS `config_gray`;
 DROP TABLE IF EXISTS `config_common`;
 DROP TABLE IF EXISTS `admin_user_info`;
 DROP TABLE IF EXISTS `config_service_route`;
+DROP TABLE IF EXISTS `monitor_info`;
+DROP TABLE IF EXISTS `monitor_info_error`;
 
 
 CREATE TABLE `admin_user_info` (
@@ -208,6 +210,40 @@ CREATE TABLE `config_service_route` (
   KEY `idx_serviceid` (`service_id`) USING BTREE
 ) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT='路由配置';
 
+CREATE TABLE `monitor_info` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `route_id` varchar(128) NOT NULL DEFAULT '' COMMENT '路由id',
+  `name` varchar(128) NOT NULL DEFAULT '' COMMENT '接口名',
+  `version` varchar(64) NOT NULL DEFAULT '' COMMENT '版本号',
+  `service_id` varchar(64) NOT NULL DEFAULT '',
+  `instance_id` varchar(128) NOT NULL DEFAULT '',
+  `max_time` int(11) NOT NULL DEFAULT '0' COMMENT '请求耗时最长时间',
+  `min_time` int(11) NOT NULL DEFAULT '0' COMMENT '请求耗时最小时间',
+  `total_time` bigint(20) NOT NULL DEFAULT '0' COMMENT '总时长，毫秒',
+  `total_request_count` bigint(20) NOT NULL DEFAULT '0' COMMENT '总调用次数',
+  `success_count` bigint(20) NOT NULL DEFAULT '0' COMMENT '成功次数',
+  `error_count` bigint(20) NOT NULL DEFAULT '0' COMMENT '失败次数（业务主动抛出的异常算作成功，如参数校验，未知的错误算失败）',
+  `gmt_create` DATETIME DEFAULT NULL,
+  `gmt_modified` DATETIME DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_routeid` (`route_id`) USING BTREE,
+  KEY `idex_name` (`name`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='接口监控信息';
+
+CREATE TABLE `monitor_info_error` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `error_id` varchar(64) NOT NULL DEFAULT '' COMMENT '错误id,md5Hex(instanceId + routeId + errorMsg)',
+  `route_id` varchar(128) NOT NULL DEFAULT '',
+  `error_msg` text NOT NULL,
+  `error_status` int(11) NOT NULL DEFAULT '0' COMMENT 'http status，非200错误',
+  `count` int(11) NOT NULL DEFAULT '0' COMMENT '错误次数',
+  `is_deleted` tinyint(4) NOT NULL DEFAULT '0',
+  `gmt_create` DATETIME DEFAULT NULL,
+  `gmt_modified` DATETIME DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_erririd` (`error_id`) USING BTREE,
+  KEY `idx_routeid` (`route_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `admin_user_info` (`id`, `username`, `password`, `status`, `gmt_create`, `gmt_modified`) VALUES
 	(1,'admin','a62cd510fb9a8a557a27ef279569091f',1,'2019-04-02 19:55:26','2019-04-02 19:55:26');

@@ -88,6 +88,6 @@ public interface RouteInterceptorContext {
      */
     default boolean isSuccessRequest() {
         int responseStatus = getResponseStatus();
-        return responseStatus == HttpStatus.OK.value() || responseStatus == SopConstants.BIZ_ERROR_STATUS;
+        return responseStatus == HttpStatus.OK.value();
     }
 }
