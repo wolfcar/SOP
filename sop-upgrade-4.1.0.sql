@@ -18,13 +18,16 @@ CREATE TABLE `monitor_info` (
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_routeid` (`route_id`) USING BTREE,
+  UNIQUE KEY `uk_routeid` (`route_id`,`instance_id`) USING BTREE,
   KEY `idex_name` (`name`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='接口监控信息';
+
+
 
 CREATE TABLE `monitor_info_error` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `error_id` varchar(64) NOT NULL DEFAULT '' COMMENT '错误id,md5Hex(instanceId + routeId + errorMsg)',
+  `instance_id` varchar(128) NOT NULL DEFAULT '' COMMENT '实例id',
   `route_id` varchar(128) NOT NULL DEFAULT '',
   `error_msg` text NOT NULL,
   `error_status` int(11) NOT NULL DEFAULT '0' COMMENT 'http status，非200错误',
@@ -33,6 +36,6 @@ CREATE TABLE `monitor_info_error` (
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_erririd` (`error_id`) USING BTREE,
+  UNIQUE KEY `uk_errorid` (`error_id`) USING BTREE,
   KEY `idx_routeid` (`route_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
