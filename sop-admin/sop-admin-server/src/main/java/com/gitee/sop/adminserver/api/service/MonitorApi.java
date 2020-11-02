@@ -29,8 +29,11 @@ import java.util.stream.Collectors;
 
 /**
  * @author tanghc
+ * @deprecated use com.gitee.sop.adminserver.api.service.MonitorNewApi
+ * @see MonitorNewApi
  */
-@ApiService
+@Deprecated
+//@ApiService
 @ApiDoc("服务管理-监控")
 @Slf4j
 public class MonitorApi {

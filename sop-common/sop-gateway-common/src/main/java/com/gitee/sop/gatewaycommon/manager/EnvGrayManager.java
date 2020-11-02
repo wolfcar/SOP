@@ -8,8 +8,6 @@ import com.gitee.sop.gatewaycommon.loadbalancer.ServiceGrayConfig;
  */
 public interface EnvGrayManager extends BeanInitializer {
 
-    String ENV_GRAY = "sop.env-gray";
-
     /**
      * 保存灰度配置
      * @param serviceGrayConfig 灰度配置

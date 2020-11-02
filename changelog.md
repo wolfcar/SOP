@@ -5,6 +5,7 @@
 需要执行`sop-upgrade-4.1.0.sql`
 
 - 重构路由监控功能
+- 升级SpringBoot，SpringCloud，SpringCloudAlibaba版本
 
 ## 4.0.3
 

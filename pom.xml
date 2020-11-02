@@ -46,7 +46,6 @@
 
 		<!-- Logging -->
 		<logback.version>1.2.3</logback.version>
-<!--		<slf4j.version>1.7.5</slf4j.version>-->
 
 		<!-- Test -->
 		<junit.version>4.11</junit.version>
@@ -58,8 +57,8 @@
 		<commons-lang3.version>3.8.1</commons-lang3.version>
 		<commons-codec.version>1.11</commons-codec.version>
 		<commons-logging.version>1.2</commons-logging.version>
-<!--		<validation-api.version>2.0.1.Final</validation-api.version>-->
-<!--		<hibernate-validator.version>6.0.13.Final</hibernate-validator.version>-->
+		<validation-api.version>2.0.1.Final</validation-api.version>
+		<hibernate-validator.version>6.0.13.Final</hibernate-validator.version>
 		<fastmybatis.version>1.9.1</fastmybatis.version>
 		<spring-data-redis.version>2.3.0.RELEASE</spring-data-redis.version>
 		<guava.version>29.0-jre</guava.version>
