@@ -119,7 +119,7 @@ public abstract class BaseExecutorAdapter<T, R> implements ResultExecutor<T, R> 
             defaultRouteInterceptorContext.setServiceResult(serviceResult);
             defaultRouteInterceptorContext.setFinishTimeMillis(System.currentTimeMillis());
             defaultRouteInterceptorContext.setResponseDataSize(serviceResult.length());
-            if (responseStatus != HttpStatus.OK.value() && responseStatus != SopConstants.BIZ_ERROR_STATUS) {
+            if (responseStatus != HttpStatus.OK.value()) {
                 String responseErrorMessage = getResponseErrorMessage(requestContext);
                 if (StringUtils.isEmpty(responseErrorMessage)) {
                     responseErrorMessage = serviceResult;

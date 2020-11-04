@@ -1,10 +1,6 @@
 package com.gitee.sop.gatewaycommon.gateway.configuration;
 
 import com.gitee.sop.gatewaycommon.bean.ApiConfig;
-import com.gitee.sop.gatewaycommon.gateway.controller.ConfigChannelController;
-import com.gitee.sop.gatewaycommon.gateway.controller.ErrorLogController;
-import com.gitee.sop.gatewaycommon.gateway.controller.GatewayController;
-import com.gitee.sop.gatewaycommon.gateway.controller.GatewayMonitorController;
 import com.gitee.sop.gatewaycommon.gateway.filter.GatewayModifyResponseGatewayFilter;
 import com.gitee.sop.gatewaycommon.gateway.filter.IndexFilter;
 import com.gitee.sop.gatewaycommon.gateway.filter.LimitFilter;
@@ -48,26 +44,6 @@ public class BaseGatewayConfiguration extends AbstractConfiguration {
     @Bean
     public IndexFilter indexFilter() {
         return new IndexFilter();
-    }
-
-    @Bean
-    public GatewayController gatewayErrorController() {
-        return new GatewayController();
-    }
-
-    @Bean
-    public ConfigChannelController configChannelController() {
-        return new ConfigChannelController();
-    }
-
-    @Bean
-    public ErrorLogController errorLogController() {
-        return new ErrorLogController();
-    }
-
-    @Bean
-    public GatewayMonitorController gatewayMonitorController() {
-        return new GatewayMonitorController();
     }
 
     /**

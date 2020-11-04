@@ -5,7 +5,6 @@ import com.gitee.sop.gatewaycommon.bean.ApiContext;
 import com.gitee.sop.gatewaycommon.bean.BeanInitializer;
 import com.gitee.sop.gatewaycommon.bean.SpringContext;
 import com.gitee.sop.gatewaycommon.gateway.loadbalancer.NacosServerIntrospector;
-import com.gitee.sop.gatewaycommon.interceptor.MonitorRouteInterceptor;
 import com.gitee.sop.gatewaycommon.interceptor.RouteInterceptor;
 import com.gitee.sop.gatewaycommon.limit.LimitManager;
 import com.gitee.sop.gatewaycommon.manager.EnvGrayManager;
@@ -17,17 +16,20 @@ import com.gitee.sop.gatewaycommon.manager.LimitConfigManager;
 import com.gitee.sop.gatewaycommon.manager.RouteConfigManager;
 import com.gitee.sop.gatewaycommon.manager.RouteRepositoryContext;
 import com.gitee.sop.gatewaycommon.message.ErrorFactory;
+import com.gitee.sop.gatewaycommon.monitor.MonitorManager;
 import com.gitee.sop.gatewaycommon.param.ParameterFormatter;
 import com.gitee.sop.gatewaycommon.route.RegistryListener;
 import com.gitee.sop.gatewaycommon.route.ServiceListener;
 import com.gitee.sop.gatewaycommon.route.ServiceRouteListener;
 import com.gitee.sop.gatewaycommon.secret.IsvManager;
+import com.gitee.sop.gatewaycommon.sync.SopAsyncConfigurer;
 import com.gitee.sop.gatewaycommon.util.RouteInterceptorUtil;
 import com.gitee.sop.gatewaycommon.validate.SignConfig;
 import com.gitee.sop.gatewaycommon.validate.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -156,6 +158,17 @@ public class AbstractConfiguration implements ApplicationContextAware, Applicati
         return ApiConfig.getInstance().getParameterFormatter();
     }
 
+    @Bean
+    public SopAsyncConfigurer sopAsyncConfigurer(@Value("${sop.monitor-route-interceptor.thread-pool-size:4}")
+                                                                int threadPoolSize) {
+        return new SopAsyncConfigurer("gatewayAsync", threadPoolSize);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public MonitorManager monitorManager() {
+        return new MonitorManager();
+    }
 
     /**
      * 跨域过滤器，gateway采用react形式，需要使用reactive包下的UrlBasedCorsConfigurationSource
@@ -231,7 +244,6 @@ public class AbstractConfiguration implements ApplicationContextAware, Applicati
     protected void initRouteInterceptor() {
         Map<String, RouteInterceptor> routeInterceptorMap = applicationContext.getBeansOfType(RouteInterceptor.class);
         Collection<RouteInterceptor> routeInterceptors = new ArrayList<>(routeInterceptorMap.values());
-        routeInterceptors.add(new MonitorRouteInterceptor());
         RouteInterceptorUtil.addInterceptors(routeInterceptors);
     }
 

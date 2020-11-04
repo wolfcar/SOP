@@ -18,6 +18,7 @@ import com.gitee.sop.storyweb.controller.result.TreeResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,6 +51,9 @@ import java.util.Map;
 @Api(tags = "故事接口")
 public class Example1001_BaseController {
 
+    @Value("${server.port}")
+    private int port;
+
     // http://localhost:2222/stroy/get
     // 原生的接口，可正常调用
     @RequestMapping("/get")
@@ -71,7 +75,7 @@ public class Example1001_BaseController {
     public StoryResult get_v1(StoryParam param) {
         StoryResult story = new StoryResult();
         story.setId(1L);
-        story.setName("海底小纵队(story.get1.0), " + "param:" + param);
+        story.setName("海底小纵队(story.get1.0), " + "param:" + param + ", port:" + port);
         return story;
     }
 

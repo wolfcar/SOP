@@ -2,7 +2,6 @@ package com.gitee.sop.servercommon.route;
 
 import com.gitee.sop.servercommon.bean.ServiceApiInfo;
 import com.gitee.sop.servercommon.util.OpenUtil;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -17,12 +16,10 @@ import javax.servlet.http.HttpServletResponse;
  * @author tanghc
  */
 @Slf4j
-@Getter
 @RestController
 public class ServiceRouteController {
 
     private static final String SECRET = "a3d9sf!1@odl90zd>fkASwq";
-    private static final String HEADER_RESTFUL = "restful";
 
     private static final ApiMetaBuilder apiMetaBuilder = new  ApiMetaBuilder();
 
@@ -40,10 +37,6 @@ public class ServiceRouteController {
             return null;
         }
         return getServiceRouteInfo(request, response);
-    }
-
-    protected ApiMetaBuilder getApiMetaBuilder() {
-        return new ApiMetaBuilder();
     }
 
     protected ServiceRouteInfo getServiceRouteInfo(HttpServletRequest request, HttpServletResponse response) {

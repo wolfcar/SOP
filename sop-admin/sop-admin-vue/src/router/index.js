@@ -76,7 +76,7 @@ export const constantRoutes = [
       {
         path: 'monitor',
         name: 'Monitor',
-        component: () => import('@/views/service/monitor'),
+        component: () => import('@/views/service/monitorNew'),
         meta: { title: '路由监控' }
       },
       {

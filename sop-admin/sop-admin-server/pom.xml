@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>com.gitee.sop</groupId>
 		<artifactId>sop-parent</artifactId>
-		<version>4.0.3-SNAPSHOT</version>
+		<version>4.1.0-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath> <!-- lookup parent from repository -->
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>sop-admin-server</artifactId>
-	<version>4.0.3-SNAPSHOT</version>
+	<version>4.1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<properties>
@@ -21,11 +21,6 @@
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>com.gitee.sop</groupId>
-			<artifactId>sop-bridge-eureka</artifactId>
-			<version>4.0.3-SNAPSHOT</version>
-		</dependency>
 
 		<!-- easyopen starter -->
 		<dependency>
@@ -62,6 +57,11 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.pagehelper</groupId>
+			<artifactId>pagehelper</artifactId>
 		</dependency>
 
 		<!-- optional-->

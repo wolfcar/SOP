@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.gitee.sop</groupId>
         <artifactId>sop-parent</artifactId>
-        <version>4.0.3-SNAPSHOT</version>
+        <version>4.1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
     </parent>
 
@@ -38,16 +38,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-
-        <!--
-        修复：Spring Cloud Hoxton.SR1 gateway 与reactor-netty 0.9.3.RELEASE不兼容问题
-        https://blog.csdn.net/sun800711/article/details/104061049
-        -->
-        <dependency>
-            <groupId>io.projectreactor.netty</groupId>
-            <artifactId>reactor-netty</artifactId>
-            <version>0.9.4.RELEASE</version>
         </dependency>
 
         <dependency>

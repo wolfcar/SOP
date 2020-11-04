@@ -72,7 +72,7 @@ public class GlobalExceptionHandler {
         int lineCount = 5;
         for (int i = 0; i < stackTrace.length && i < lineCount; i++) {
             StackTraceElement stackTraceElement = stackTrace[i];
-            msg.append("<br> at ").append(stackTraceElement.toString());
+            msg.append("\n at ").append(stackTraceElement.toString());
         }
         response.setHeader("x-service-error-message", UriUtils.encode(msg.toString(), StandardCharsets.UTF_8));
         return this.processError(request, response, new ServiceException("系统繁忙"));
