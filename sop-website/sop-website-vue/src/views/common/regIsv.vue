@@ -34,7 +34,7 @@
           prefix-icon="el-icon-lock"
         />
       </el-form-item>
-      <el-button type="primary" style="width: 100%;" @click.native.prevent="handleReg">注 册</el-button>
+      <el-button type="primary" style="width: 100%;" native-type="submit" @click="handleReg">注 册</el-button>
       <div class="footer">
         已有账号，<el-button type="text" @click="goLogin">去登录</el-button>
       </div>

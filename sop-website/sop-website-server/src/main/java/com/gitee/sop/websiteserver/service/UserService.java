@@ -2,6 +2,7 @@ package com.gitee.sop.websiteserver.service;
 
 import com.gitee.fastmybatis.core.query.Query;
 import com.gitee.sop.gatewaycommon.bean.NacosConfigs;
+import com.gitee.sop.gatewaycommon.sync.MyNamedThreadFactory;
 import com.gitee.sop.gatewaycommon.util.CopyUtil;
 import com.gitee.sop.websiteserver.bean.ChannelMsg;
 import com.gitee.sop.websiteserver.bean.ChannelOperation;
@@ -25,6 +26,9 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author tanghc
@@ -34,6 +38,10 @@ import java.util.Date;
 public class UserService {
 
     public static final byte STATUS_ENABLE = 1;
+
+    private final ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(4, 4,
+                0L,TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<>(), new MyNamedThreadFactory("push-thread"));
 
     @Autowired
     private UserAccountMapper userAccountMapper;
@@ -81,16 +89,17 @@ public class UserService {
      */
     public void updateIsvKey(IsvKeys isvKeys) {
         isvKeysMapper.updateIgnoreNull(isvKeys);
-        this.sendChannelMsg(isvKeys.getAppKey());
     }
 
-    private void sendChannelMsg(String appKey) {
-        IsvDetailDTO isvDetail = isvInfoMapper.getIsvDetail(appKey);
-        if (isvDetail == null) {
-            return;
-        }
-        ChannelMsg channelMsg = new ChannelMsg(ChannelOperation.ISV_INFO_UPDATE, isvDetail);
-        configPushService.publishConfig(NacosConfigs.DATA_ID_ISV, NacosConfigs.GROUP_CHANNEL, channelMsg);
+    public void sendChannelMsg(String appKey) {
+        threadPoolExecutor.execute(() -> {
+            IsvDetailDTO isvDetail = isvInfoMapper.getIsvDetail(appKey);
+            if (isvDetail == null) {
+                return;
+            }
+            ChannelMsg channelMsg = new ChannelMsg(ChannelOperation.ISV_INFO_UPDATE, isvDetail);
+            configPushService.publishConfig(NacosConfigs.DATA_ID_ISV, NacosConfigs.GROUP_CHANNEL, channelMsg);
+        });
     }
 
     public LoginUser getLoginUser(String username, String password) {

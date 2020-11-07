@@ -93,7 +93,8 @@ public class IsvController {
     public Result<IsvPublicKeyUploadResult> uploadPublicKey(@RequestBody @Valid IsvPublicKeyUploadParam param) {
         String publicKeyIsv = param.getPublicKeyIsv();
         LoginUser loginUser = UserContext.getLoginUser();
-        IsvKeys isvKeys = userService.getIsvKeys(loginUser.getAppKey());
+        String appKey = loginUser.getAppKey();
+        IsvKeys isvKeys = userService.getIsvKeys(appKey);
         RSATool rsaToolIsv = new RSATool(RSATool.KeyFormat.PKCS8, RSATool.KeyLength.LENGTH_2048);
         RSATool.KeyStore keyStorePlatform;
         try {
@@ -106,7 +107,7 @@ public class IsvController {
         String privateKeyPlatform = keyStorePlatform.getPrivateKey();
         if (isvKeys == null) {
             isvKeys = new IsvKeys();
-            isvKeys.setAppKey(loginUser.getAppKey());
+            isvKeys.setAppKey(appKey);
             // 私钥自己保存
             isvKeys.setPrivateKeyIsv("");
             isvKeys.setPublicKeyIsv(publicKeyIsv);
@@ -124,6 +125,7 @@ public class IsvController {
         isvPublicKeyUploadResult.setIsUploadPublicKey(BooleanUtils.toInteger(true));
         isvPublicKeyUploadResult.setPublicKeyIsv(isvKeys.getPublicKeyIsv());
         isvPublicKeyUploadResult.setPublicKeyPlatform(isvKeys.getPublicKeyPlatform());
+        userService.sendChannelMsg(appKey);
         return Result.ok(isvPublicKeyUploadResult);
     }
 
