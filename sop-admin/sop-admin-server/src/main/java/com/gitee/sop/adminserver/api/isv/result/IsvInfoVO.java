@@ -29,6 +29,8 @@ public class IsvInfoVO {
     @ApiDocField(description = "备注")
     private String remark;
 
+    private Long userId;
+
     /**  数据库字段：gmt_create */
     @ApiDocField(description = "添加时间")
     private Date gmtCreate;

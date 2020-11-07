@@ -31,6 +31,9 @@ public class IsvInfo {
     /** 1启用，2禁用, 数据库字段：status */
     private Byte status;
 
+    /** user_account.id */
+    private Long userId;
+
     /** 备注，数据库字段：remark */
     private String remark;
 

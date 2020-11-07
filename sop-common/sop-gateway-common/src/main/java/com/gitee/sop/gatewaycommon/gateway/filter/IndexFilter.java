@@ -83,6 +83,7 @@ public class IndexFilter implements WebFilter {
                 ServerRequest serverRequest = ServerWebExchangeUtil.createReadBodyRequest(exchange);
                 // 读取请求体中的内容
                 Mono<?> modifiedBody = serverRequest.bodyToMono(byte[].class)
+                        .switchIfEmpty(Mono.just("".getBytes()))
                         .flatMap(data -> {
                             // 构建ApiParam
                             ApiParam apiParam = ServerWebExchangeUtil.getApiParam(exchange, data);

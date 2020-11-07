@@ -19,7 +19,8 @@ DROP TABLE IF EXISTS `admin_user_info`;
 DROP TABLE IF EXISTS `config_service_route`;
 DROP TABLE IF EXISTS `monitor_info`;
 DROP TABLE IF EXISTS `monitor_info_error`;
-
+DROP TABLE IF EXISTS `user_account`;
+DROP TABLE IF EXISTS `isp_resource`;
 
 CREATE TABLE `admin_user_info` (
   `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -245,6 +246,34 @@ CREATE TABLE `monitor_info_error` (
   UNIQUE KEY `uk_errorid` (`error_id`) USING BTREE,
   KEY `idx_routeid` (`route_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `isv_info` ADD COLUMN `user_id` BIGINT NULL DEFAULT 0 COMMENT 'user_account.id' AFTER `remark`;
+
+CREATE  INDEX `idx_userid` USING BTREE ON `isv_info` (`user_id`);
+
+CREATE TABLE `user_account` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `username` varchar(128) NOT NULL DEFAULT '' COMMENT '用户名（邮箱）',
+  `password` varchar(128) NOT NULL DEFAULT '' COMMENT '密码',
+  `status` tinyint(4) NOT NULL DEFAULT '1' COMMENT '2：邮箱未验证，1：启用，0：禁用',
+  `gmt_create` DATETIME DEFAULT NULL,
+  `gmt_modified` DATETIME DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_username` (`username`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户信息';
+
+CREATE TABLE `isp_resource` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL DEFAULT '' COMMENT '资源名称',
+  `content` varchar(128) NOT NULL DEFAULT '' COMMENT '资源内容（URL）',
+  `ext_content` text,
+  `version` varchar(32) NOT NULL DEFAULT '' COMMENT '版本',
+  `type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '资源类型：0：SDK链接',
+  `is_deleted` tinyint(4) NOT NULL DEFAULT '0',
+  `gmt_create` DATETIME DEFAULT NULL,
+  `gmt_modified` DATETIME DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='ISP资源表';
 
 INSERT INTO `admin_user_info` (`id`, `username`, `password`, `status`, `gmt_create`, `gmt_modified`) VALUES
 	(1,'admin','a62cd510fb9a8a557a27ef279569091f',1,'2019-04-02 19:55:26','2019-04-02 19:55:26');

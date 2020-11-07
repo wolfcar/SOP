@@ -59,7 +59,7 @@ export const constantRoutes = [
     path: '/service',
     component: Layout,
     name: 'Service',
-    meta: { title: '服务管理', icon: 'example' },
+    meta: { title: '服务管理', icon: 'example', open: true },
     children: [
       {
         path: 'list',
@@ -90,6 +90,12 @@ export const constantRoutes = [
         name: 'Blacklist',
         component: () => import('@/views/service/ipBlacklist'),
         meta: { title: 'IP黑名单' }
+      },
+      {
+        path: 'sdk',
+        name: 'Sdk',
+        component: () => import('@/views/service/sdk'),
+        meta: { title: 'SDK管理' }
       }
     ]
   },
@@ -98,7 +104,7 @@ export const constantRoutes = [
     path: '/isv',
     component: Layout,
     name: 'Isv',
-    meta: { title: 'ISV管理', icon: 'user' },
+    meta: { title: 'ISV管理', icon: 'user', open: true },
     children: [
       {
         path: 'list',
