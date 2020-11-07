@@ -4,6 +4,7 @@ import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.internal.http.HttpMethod;
+import org.springframework.util.StringUtils;
 
 /**
  * https://github.com/Netflix/eureka/wiki/Eureka-REST-operations
@@ -60,16 +61,13 @@ public enum EurekaUri {
     }
 
     public Request getRequest(String url, String... args) {
-        if (url.endsWith("/")) {
-            url = url.substring(0, url.length() - 1);
-        }
+        url = StringUtils.trimTrailingCharacter(url, '/');
         String requestUrl = url + getUri(args);
-        Request request = this.getBuilder()
+        return this.getBuilder()
                 .url(requestUrl)
                 .addHeader("Content-Type", "application/json")
                 .addHeader("Accept", "application/json")
                 .build();
-        return request;
     }
 
     public Request.Builder getBuilder() {

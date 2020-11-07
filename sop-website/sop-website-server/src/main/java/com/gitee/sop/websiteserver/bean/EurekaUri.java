@@ -5,6 +5,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.internal.http.HttpMethod;
 import org.apache.commons.lang.ArrayUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
@@ -49,13 +50,13 @@ public enum EurekaUri {
     }
 
     public Request getRequest(String url, String... args) {
+        url = StringUtils.trimTrailingCharacter(url, '/');
         String requestUrl = url + getUri(args);
-        Request request = this.getBuilder()
+        return this.getBuilder()
                 .url(requestUrl)
                 .addHeader("Content-Type", "application/json")
                 .addHeader("Accept", "application/json")
                 .build();
-        return request;
     }
 
     public Request.Builder getBuilder() {

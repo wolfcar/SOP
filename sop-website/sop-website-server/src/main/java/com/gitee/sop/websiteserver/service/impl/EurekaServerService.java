@@ -51,7 +51,7 @@ public class EurekaServerService implements ServerService  {
             }
             List<EurekaInstance> instanceList = eurekaApplication.getInstance();
             return instanceList.stream()
-                    .map(eurekaInstance -> eurekaInstance.getIpAddr() + ":" + eurekaInstance.getPort())
+                    .map(eurekaInstance -> eurekaInstance.getIpAddr() + ":" + eurekaInstance.fetchPort())
                     .collect(Collectors.toList());
         }
         return Collections.emptyList();
