@@ -10,6 +10,7 @@
         :unique-opened="false"
         :active-text-color="variables.menuActiveText"
         :collapse-transition="false"
+        :default-openeds="opened"
         mode="vertical"
       >
         <sidebar-item v-for="route in routes" :key="route.path" :item="route" :base-path="route.path" />
@@ -32,6 +33,13 @@ export default {
     ]),
     routes() {
       return this.$router.options.routes
+    },
+    opened() {
+      return this.routes.filter(route => {
+        return route.meta && route.meta.open
+      }).map(route => {
+        return route.path
+      })
     },
     activeMenu() {
       const route = this.$route

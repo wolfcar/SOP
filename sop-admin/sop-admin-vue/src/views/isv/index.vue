@@ -32,11 +32,26 @@
       <el-table-column
         prop="roleList"
         label="角色"
-        width="150"
         :show-overflow-tooltip="true"
       >
         <template slot-scope="scope">
           <span v-html="roleRender(scope.row)"></span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="userId"
+        label="注册用户"
+        width="100"
+      >
+        <template slot="header">
+          注册用户
+          <el-tooltip content="注册用户自行管理秘钥" placement="top">
+            <i class="el-icon-question" style="cursor: pointer"></i>
+          </el-tooltip>
+        </template>
+        <template slot-scope="scope">
+          <span v-if="scope.row.userId" style="font-weight: bold;">是</span>
+          <span v-else>否</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -57,7 +72,6 @@
       <el-table-column
         prop="remark"
         label="备注"
-        width="200"
         :show-overflow-tooltip="true"
       />
       <el-table-column
@@ -66,8 +80,8 @@
       >
         <template slot-scope="scope">
           <el-button type="text" size="mini" @click="onTableUpdate(scope.row)">修改</el-button>
-          <el-button type="text" size="mini" @click="onKeysUpdate(scope.row)">秘钥管理</el-button>
-          <el-button type="text" size="mini" @click="onExportKeys(scope.row)">导出秘钥</el-button>
+          <el-button v-if="!scope.row.userId" type="text" size="mini" @click="onKeysUpdate(scope.row)">秘钥管理</el-button>
+          <el-button v-if="!scope.row.userId" type="text" size="mini" @click="onExportKeys(scope.row)">导出秘钥</el-button>
         </template>
       </el-table-column>
     </el-table>

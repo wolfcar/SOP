@@ -37,9 +37,6 @@ public class ConfigPushService {
     @Autowired
     private ServerService serverService;
 
-    @Value("${gateway.host:}")
-    private String gatewayHost;
-
     @Value("${sop.secret}")
     private String secret;
 

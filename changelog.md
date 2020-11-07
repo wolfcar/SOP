@@ -1,5 +1,13 @@
 # changelog
 
+## 4.2.0
+
+需要执行`sop-upgrade-4.2.0.sql`
+
+- 新增ISV用户平台
+- 新增门户网站（portal）
+- 新增`C++`,`Rust`语言SDK
+
 ## 4.1.0
 
 需要执行`sop-upgrade-4.1.0.sql`

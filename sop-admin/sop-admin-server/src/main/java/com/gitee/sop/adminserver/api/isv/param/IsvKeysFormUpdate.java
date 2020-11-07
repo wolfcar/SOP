@@ -29,14 +29,6 @@ public class IsvKeysFormUpdate {
     @Max(value = 2, message = "秘钥格式错误")
     private Byte keyFormat;
 
-    /** 开发者生成的公钥, 数据库字段：public_key_isv */
-    @ApiDocField(description = "开发者生成的公钥")
-    private String publicKeyIsv;
-
-    /** 开发者生成的私钥（交给开发者）, 数据库字段：private_key_isv */
-    @ApiDocField(description = "开发者生成的私钥")
-    private String privateKeyIsv;
-
     /** 平台生成的公钥（交给开发者）, 数据库字段：public_key_platform */
     @ApiDocField(description = "平台生成的公钥")
     private String publicKeyPlatform;
