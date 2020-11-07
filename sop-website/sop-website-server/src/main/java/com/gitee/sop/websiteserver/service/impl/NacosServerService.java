@@ -1,6 +1,5 @@
 package com.gitee.sop.websiteserver.service.impl;
 
-import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
 import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingFactory;
@@ -9,7 +8,6 @@ import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.gitee.sop.websiteserver.service.ServerService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
