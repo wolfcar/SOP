@@ -8,7 +8,7 @@ import needle from 'needle'
 import md5 from 'js-md5'
 import axios from 'axios'
 
-const baseURL = process.env.VUE_APP_BASE_API
+const baseURL = process.env.VUE_APP_BASE_API || `${location.protocol}//${location.host}`
 const OPC_USER_TYPE_KEY = 'sop-user-type'
 
 // 创建axios实例
