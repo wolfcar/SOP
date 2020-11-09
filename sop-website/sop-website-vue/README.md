@@ -8,8 +8,15 @@
 - 执行`npm run dev`，访问`http://localhost:9529/`
 
 
-- 修改端口号：打开`vue.config.js`，找到`port`属性
+## 修改端口号
+
+打开`vue.config.js`，找到`port`属性
+
+## 修改请求url
+
+- 开发环境：打开`.env.development`文件，修改`VUE_APP_BASE_API`
+- 生产环境：打开`.env.production`文件，修改`VUE_APP_BASE_API`
 
 ## 构建
 
-开发完毕后，运行`build.sh`脚本
+开发完毕后，运行`build.sh`脚本，生成后的内容在dist目录
