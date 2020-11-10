@@ -50,16 +50,11 @@
       label="示例值"
     >
       <template slot-scope="scope">
-        <div v-if="editable">
-
+        <div v-if="scope.row.type === 'enum'">
+          {{ (scope.row.enums || []).join('、') }}
         </div>
         <div v-else>
-          <div v-if="scope.row.type === 'enum'">
-            {{ (scope.row.enums || []).join('、') }}
-          </div>
-          <div v-else>
-            {{ scope.row.paramExample }}
-          </div>
+          {{ scope.row.paramExample }}
         </div>
       </template>
     </el-table-column>
@@ -73,10 +68,6 @@ export default {
     data: {
       type: Array,
       default: () => []
-    },
-    editable: {
-      type: Boolean,
-      default: false
     },
     tree: {
       type: Boolean,

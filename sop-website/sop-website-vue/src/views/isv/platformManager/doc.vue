@@ -24,12 +24,25 @@
         />
       </el-aside>
       <el-main style="padding-top: 0">
-        <doc-view
-          v-show="item"
-          :item="item"
-          :url-prod="docVO.urlProd"
-          uri="/portal/isv/getDocItem"
-        />
+        <el-tabs>
+          <el-tabs v-show="item" v-model="active" type="card">
+            <el-tab-pane name="info">
+              <span slot="label"><i class="el-icon-document"></i> 接口信息</span>
+              <doc-view
+                :item="item"
+                :url-prod="docVO.urlProd"
+              />
+            </el-tab-pane>
+            <el-tab-pane name="debug">
+              <span slot="label"><i class="el-icon-position"></i> 接口调试</span>
+              <docdebug
+                :item="item"
+                :app-id="docVO.appId"
+                :gateway-url="docVO.gatewayUrl"
+              />
+            </el-tab-pane>
+          </el-tabs>
+        </el-tabs>
       </el-main>
     </el-container>
   </div>
@@ -38,13 +51,16 @@
 <script>
 import 'mavon-editor/dist/css/index.css'
 import docView from '@/components/DocView'
+import docdebug from '@/components/Docdebug'
 
 export default {
-  components: { docView },
+  components: { docView, docdebug },
   data() {
     return {
       active: 'info',
       docVO: {
+        appId: '',
+        gatewayUrl: '',
         urlProd: '',
         urlTest: '',
         menuProjects: []

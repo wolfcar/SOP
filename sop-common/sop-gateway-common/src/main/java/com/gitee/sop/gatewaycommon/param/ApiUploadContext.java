@@ -17,15 +17,16 @@ public class ApiUploadContext implements UploadContext {
     /**
      * key: 表单name
      */
-    private Map<String, MultipartFile> fileMap;
+    private Map<String, List<MultipartFile>> fileMap;
     private List<MultipartFile> allFile;
 
-    public ApiUploadContext(Map<String, MultipartFile> map) {
+    public ApiUploadContext(Map<String, List<MultipartFile>> map) {
         if (map == null) {
             map = Collections.emptyMap();
         }
         this.fileMap = map;
-        this.allFile = new ArrayList<>(map.values());
+        this.allFile = new ArrayList<>();
+        map.values().forEach(list -> this.allFile.addAll(list));
     }
 
     @Override
@@ -34,7 +35,7 @@ public class ApiUploadContext implements UploadContext {
     }
 
     @Override
-    public MultipartFile getFile(String name) {
+    public List<MultipartFile> getFile(String name) {
         return fileMap.get(name);
     }
 

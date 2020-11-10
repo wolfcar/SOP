@@ -5,9 +5,6 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout'
-const _import = require('@/router/_import_' + process.env.NODE_ENV)
-
-const menuKey = 'route-menus'
 
 /**
  * Note: sub-menus only appear when route children.length >= 1
