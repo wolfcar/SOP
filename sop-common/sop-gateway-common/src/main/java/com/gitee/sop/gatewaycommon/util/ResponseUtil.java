@@ -27,12 +27,12 @@ public class ResponseUtil {
     private static Logger log = LoggerFactory.getLogger(ResponseUtil.class);
 
     public static void writeJson(HttpServletResponse response, Object result) {
-        response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(UTF_8);
         try {
             response.getWriter().write(result instanceof String ? (String)result : JSON.toJSONString(result));
         } catch (IOException e) {
-            log.error("doWriter", e);
+            log.error("writeJson error", e);
         }
     }
 

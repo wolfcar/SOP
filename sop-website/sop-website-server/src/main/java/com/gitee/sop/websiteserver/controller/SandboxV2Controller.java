@@ -1,12 +1,12 @@
 package com.gitee.sop.websiteserver.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.gitee.sop.websiteserver.bean.HttpTool;
 import com.gitee.sop.websiteserver.sign.AlipayApiException;
 import com.gitee.sop.websiteserver.sign.AlipaySignature;
 import com.gitee.sop.websiteserver.util.UploadUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.Headers;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.apache.commons.io.IOUtils;
@@ -21,15 +21,16 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,21 +44,23 @@ import java.util.stream.Collectors;
 
 /**
  * 沙箱环境代理类
+ *
  * @author tanghc
  */
 @Slf4j
 @RestController
 @RequestMapping("sandbox")
-public class SandboxController {
+public class SandboxV2Controller {
 
     @Value("${api.url-sandbox}")
     private String url;
 
     static HttpTool httpTool = new HttpTool();
 
-    @RequestMapping("/test")
-    public SandboxResult proxy(
-            @RequestParam String appId
+    @RequestMapping("/test_v2")
+    public void proxy(
+            @RequestParam(required = false) String gatewayUrl
+            , @RequestParam String appId
             , @RequestParam String privateKey
             , @RequestParam(required = false) String token
             , @RequestParam String method
@@ -67,12 +70,14 @@ public class SandboxController {
             , @RequestParam(defaultValue = "false") boolean isDownloadRequest
             , HttpServletRequest request
             , HttpServletResponse response
-    ) throws AlipayApiException {
+    ) throws AlipayApiException, IOException {
 
         Assert.isTrue(StringUtils.isNotBlank(appId), "AppId不能为空");
         Assert.isTrue(StringUtils.isNotBlank(privateKey), "PrivateKey不能为空");
         Assert.isTrue(StringUtils.isNotBlank(method), "method不能为空");
-
+        if (StringUtils.isEmpty(gatewayUrl)) {
+            gatewayUrl = url;
+        }
         // 公共请求参数
         Map<String, String> params = new HashMap<String, String>();
         params.put("app_id", appId);
@@ -90,12 +95,9 @@ public class SandboxController {
         // 业务参数
         params.put("biz_content", bizContent);
 
-        SandboxResult result = new SandboxResult();
-
-        result.params = buildParamQuery(params);
+        String paramsQuery = buildParamQuery(params);
 
         String content = AlipaySignature.getSignContent(params);
-        result.beforeSign = content;
 
         String sign = null;
         try {
@@ -103,7 +105,6 @@ public class SandboxController {
         } catch (AlipayApiException e) {
             throw new RuntimeException("构建签名失败");
         }
-        result.sign = sign;
 
         params.put("sign", sign);
 
@@ -121,28 +122,24 @@ public class SandboxController {
                 .collect(Collectors.toList());
 
         try {
-            String responseData;
-            if (isDownloadRequest) {
-                Response resp = httpTool.requestForResponse(url, params, Collections.emptyMap(), HttpTool.HTTPMethod.GET);
-                Headers respHeaders = resp.headers();
-                ResponseBody body = resp.body();
-                if (body == null) {
-                    return null;
-                }
-                respHeaders
-                        .names()
-                        .forEach(name -> response.setHeader(name, respHeaders.get(name)));
-
-                IOUtils.copy(body.byteStream(), response.getOutputStream());
-                response.flushBuffer();
-                return null;
-            } else if (!CollectionUtils.isEmpty(files)) {
-                responseData = httpTool.requestFileString(url, params, Collections.emptyMap(), files);
-            } else {
-                responseData = httpTool.request(url, params, Collections.emptyMap(), HttpTool.HTTPMethod.fromValue(httpMethod));
+            Response resp = httpTool.request(gatewayUrl, params, Collections.emptyMap(), HttpTool.HTTPMethod.fromValue(httpMethod), files);
+            ResponseBody body = resp.body();
+            if (body == null) {
+                return;
             }
-            result.apiResult = responseData;
-            return result;
+            Map<String, List<String>> headersMap = resp.headers().toMultimap();
+            Map<String, String> targetHeaders = new HashMap<>(headersMap.size() * 2);
+            headersMap.forEach((key, value) -> {
+                String headerValue = String.join(",", value);
+                response.setHeader(key, headerValue);
+                targetHeaders.put(key, headerValue);
+            });
+            response.addHeader("target-response-headers", JSON.toJSONString(targetHeaders));
+            response.addHeader("sendbox-params", UriUtils.encode(paramsQuery, StandardCharsets.UTF_8));
+            response.addHeader("sendbox-beforesign", UriUtils.encode(content, StandardCharsets.UTF_8));
+            response.addHeader("sendbox-sign", UriUtils.encode(sign, StandardCharsets.UTF_8));
+            IOUtils.copy(body.byteStream(), response.getOutputStream());
+            response.flushBuffer();
         } catch (Exception e) {
             log.error("请求失败", e);
             throw new RuntimeException("请求失败");
@@ -155,12 +152,13 @@ public class SandboxController {
         private String beforeSign;
         private String sign;
 
-        private String apiResult;
+        private Object apiResult;
     }
 
 
     /**
      * 发送get请求
+     *
      * @param url
      * @return JSON或者字符串
      * @throws Exception
@@ -168,7 +166,7 @@ public class SandboxController {
     public static String get(String url, Map<String, String> params) {
         CloseableHttpClient httpClient = null;
         CloseableHttpResponse response = null;
-        try{
+        try {
             httpClient = HttpClients.createDefault();
             List<NameValuePair> nameValuePairs = params.entrySet()
                     .stream()
@@ -193,10 +191,10 @@ public class SandboxController {
             /**
              * 通过EntityUitls获取返回内容
              */
-            return EntityUtils.toString(response.getEntity(),"UTF-8");
-        }catch (Exception e){
+            return EntityUtils.toString(response.getEntity(), "UTF-8");
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             IOUtils.closeQuietly(httpClient);
             IOUtils.closeQuietly(response);
         }

@@ -198,6 +198,11 @@ public class HttpTool {
         return paramBuilder.build();
     }
 
+    public String requestFileString(String url, Map<String, ?> form, Map<String, String> header, List<UploadFile> files) throws IOException {
+        return requestFile(url, form, header, files).body().string();
+    }
+
+
     /**
      * 提交表单，并且上传文件
      *
@@ -208,7 +213,7 @@ public class HttpTool {
      * @return
      * @throws IOException
      */
-    public String requestFile(String url, Map<String, ?> form, Map<String, String> header, List<UploadFile> files)
+    public Response requestFile(String url, Map<String, ?> form, Map<String, String> header, List<UploadFile> files)
             throws IOException {
         // 创建MultipartBody.Builder，用于添加请求的数据
         MultipartBody.Builder bodyBuilder = new MultipartBody.Builder();
@@ -236,13 +241,19 @@ public class HttpTool {
         addHeader(builder, header);
 
         Request request = builder.build();
-        Response response = httpClient.newCall(request).execute();
-        try {
-            return response.body().string();
-        } finally {
-            response.close();
+        return httpClient.newCall(request).execute();
+    }
+
+    public Response request(String url, Map<String, ?> form, Map<String, String> header, HTTPMethod method, List<UploadFile> files) throws IOException {
+        if (files != null && files.size() > 0) {
+            return requestFile(url, form, header, files);
+        } else {
+            return requestForResponse(url, form, header, method);
         }
     }
+
+
+
 
     /**
      * 请求数据

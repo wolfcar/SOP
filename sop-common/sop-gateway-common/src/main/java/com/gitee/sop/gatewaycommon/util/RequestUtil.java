@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
@@ -36,7 +37,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -298,9 +298,9 @@ public class RequestUtil {
                 }
             }
             if (multipartFileList.size() > 0) {
-                Map<String, MultipartFile> multipartFileMap = multipartFileList
+                Map<String, List<MultipartFile>> multipartFileMap = multipartFileList
                         .stream()
-                        .collect(Collectors.toMap(MultipartFile::getName, Function.identity()));
+                        .collect(Collectors.groupingBy(MultipartFile::getName));
                 uploadContext = new ApiUploadContext(multipartFileMap);
             }
             uploadInfo.setUploadParams(uploadParams);
@@ -315,8 +315,14 @@ public class RequestUtil {
         UploadInfo uploadInfo = new UploadInfo();
         Map<String, String> uploadParams = new HashMap<>(16);
         request.getParameterMap().forEach((key, value)-> uploadParams.put(key, value[0]));
-
-        Map<String, MultipartFile> multipartFileMap = request.getMultiFileMap().toSingleValueMap();
+        MultiValueMap<String, MultipartFile> multiFileMap = request.getMultiFileMap();
+        List<MultipartFile> multipartFileList = new ArrayList<>(10);
+        for (String key : multiFileMap.keySet()) {
+            multipartFileList.addAll(multiFileMap.get(key));
+        }
+        Map<String, List<MultipartFile>> multipartFileMap = multipartFileList
+                .stream()
+                .collect(Collectors.groupingBy(MultipartFile::getName));
         UploadContext uploadContext = new ApiUploadContext(multipartFileMap);
 
         uploadInfo.setUploadParams(uploadParams);

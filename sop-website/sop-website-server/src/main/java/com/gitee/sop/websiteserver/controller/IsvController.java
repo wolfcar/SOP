@@ -62,6 +62,9 @@ public class IsvController {
     @Value("${api.url-prod}")
     String urlProd;
 
+    @Value("${api.url-sandbox}")
+    String gatewayUrl;
+
     @GetMapping("/getIsvPortal")
     public Result<IsvInfoResult> getIsvInfo() {
         LoginUser loginUser = UserContext.getLoginUser();
@@ -180,6 +183,9 @@ public class IsvController {
                     return menuProject;
                 }).collect(Collectors.toList());
         DocVO docVO = new DocVO();
+        LoginUser loginUser = UserContext.getLoginUser();
+        docVO.setGatewayUrl(gatewayUrl);
+        docVO.setAppId(loginUser.getAppKey());
         docVO.setMenuProjects(menuProjects);
         docVO.setUrlProd(urlProd);
         docVO.setUrlTest(urlTest);

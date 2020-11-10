@@ -11,6 +11,8 @@ import java.util.Collection;
 @Getter
 @Setter
 public class DocVO {
+    private String gatewayUrl;
+    private String appId;
     private String urlTest;
     private String urlProd;
     private Collection<MenuProject> menuProjects;

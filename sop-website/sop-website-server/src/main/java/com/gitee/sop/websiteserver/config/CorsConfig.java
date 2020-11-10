@@ -30,6 +30,10 @@ public class CorsConfig {
         corsConfiguration.addAllowedOrigin("*");
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addAllowedMethod("*");
+        corsConfiguration.addExposedHeader("target-response-headers");
+        corsConfiguration.addExposedHeader("sendbox-params");
+        corsConfiguration.addExposedHeader("sendbox-beforesign");
+        corsConfiguration.addExposedHeader("sendbox-sign");
         return corsConfiguration;
     }
 

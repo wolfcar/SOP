@@ -25,7 +25,7 @@ public interface UploadContext {
      *            表单名称
      * @return 返回上传文件信息
      */
-    MultipartFile getFile(String name);
+    List<MultipartFile> getFile(String name);
 
     /**
      * 获取所有的上传文件

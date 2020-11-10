@@ -155,10 +155,6 @@ export default {
       type: Object,
       default: () => {}
     },
-    uri: {
-      type: String,
-      default: ''
-    },
     urlProd: {
       type: String,
       default: ''

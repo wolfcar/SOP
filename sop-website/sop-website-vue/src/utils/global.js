@@ -8,7 +8,7 @@ import needle from 'needle'
 import md5 from 'js-md5'
 import axios from 'axios'
 
-const baseURL = process.env.VUE_APP_BASE_API
+const baseURL = process.env.VUE_APP_BASE_API || `${location.protocol}//${location.host}`
 const OPC_USER_TYPE_KEY = 'sop-user-type'
 
 // 创建axios实例
@@ -53,6 +53,43 @@ Object.assign(Vue.prototype, {
       }
     }, (error, response) => {
       that.doResponse(error, response, callback, errorCallback)
+    })
+  },
+  request(method, uri, data, headers, isJson, isForm, files, callback) {
+    // 如果是文件上传，使用axios，needle上传文件不完美，不支持一个name对应多个文件
+    if (files && files.length > 0) {
+      this.doMultipart(uri, data, files, headers, callback)
+      return
+    }
+    const that = this
+    if (isForm) {
+      headers['Content-Type'] = 'application/x-www-form-urlencoded'
+    }
+    needle.request(method, baseURL + uri, data, {
+      // 设置header
+      headers: headers,
+      json: isJson
+    }, (error, response) => {
+      callback.call(that, error, response)
+    })
+  },
+  doMultipart(uri, data, files, headers, callback) {
+    const that = this
+    const formData = new FormData()
+    files.forEach(fileConfig => {
+      fileConfig.files.forEach(file => {
+        formData.append(fileConfig.name, file)
+      })
+    })
+    for (const name in data) {
+      formData.append(name, data[name])
+    }
+    client.post(uri, formData, {
+      headers: headers
+    }).then(function(response) {
+      callback.call(that, null, response)
+    }).catch(function(error) {
+      callback.call(that, error, null)
     })
   },
   doResponse(error, response, callback, errorCallback) {
@@ -226,9 +263,6 @@ Object.assign(Vue.prototype, {
   goLogin() {
     removeToken()
     this.$router.replace({ path: `/login` })
-    setTimeout(function() {
-      location.reload()
-    }, 200)
   },
   goRoute: function(path) {
     this.$router.push({ path: path })
