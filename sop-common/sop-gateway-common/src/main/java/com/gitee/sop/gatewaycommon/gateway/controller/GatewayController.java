@@ -39,6 +39,7 @@ public class GatewayController {
         ApiException exception = ErrorEnum.ISV_INVALID_METHOD.getErrorMeta().getException();
         ResultExecutor<ServerWebExchange, String> resultExecutor = ApiContext.getApiConfig().getGatewayResultExecutor();
         String gatewayResult = resultExecutor.buildErrorResult(exchange, exception);
+        exchange.getResponse().getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         return Mono.just(gatewayResult);
     }
 
