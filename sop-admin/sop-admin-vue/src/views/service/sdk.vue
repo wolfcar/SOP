@@ -104,7 +104,7 @@ export default {
       sdkFormLoading: false,
       sdkFormRule: {
         name: [
-          { required: true, message: '请填名称', trigger: 'blur' }
+          { required: true, message: '请选择语言', trigger: 'blur' }
         ],
         version: [
           { required: true, message: '请填版本', trigger: 'blur' }
