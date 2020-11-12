@@ -7,7 +7,7 @@ import { getToken, removeToken } from './auth'
 
 // 创建axios实例
 const client = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API, // api 的 base_url
+  baseURL: process.env.VUE_APP_BASE_API + '/api', // api 的 base_url
   timeout: 60000 // 请求超时时间,60秒
 })
 
