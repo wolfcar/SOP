@@ -1,5 +1,7 @@
 # SOP Admin 前端vue实现
 
+此工程基于前端脚手架：`https://github.com/PanJiaChen/vue-element-admin`
+
   前提：先安装好npm，[npm安装教程](https://blog.csdn.net/zhangwenwu2/article/details/52778521)
 
 1. 启动服务端程序，运行`SopAdminServerApplication.java`
