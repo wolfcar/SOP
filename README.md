@@ -127,7 +127,7 @@ System.out.println(responseData);
 - sop-gateway：网关，统一访问入口，含`Spring Cloud Zuul`和`Spring Cloud Gateway`实现
 - sop-example：微服务示例，含springboot,springmvc示例
 - sop-website：开放平台对应网站，提供文档API、沙箱测试等内容
-- sop-auth：应用授权服务
+- sop-auth：应用授权服务示例
 - sop-admin：后台管理
 - sop-sdk：基础sdk，含Java、C#版本
 - sop-test：接口调用测试用例
@@ -137,6 +137,7 @@ System.out.println(responseData);
 - master：发版分支（当前为4.0版本）
 - develop：日常开发分支
 - eureka：使用eureka注册中心
+- pr：接受PR的分支，提交PR请提交到此分支
 
 ## 相关文档
 
