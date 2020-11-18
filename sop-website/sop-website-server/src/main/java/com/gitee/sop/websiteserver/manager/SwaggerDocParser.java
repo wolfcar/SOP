@@ -220,6 +220,7 @@ public class SwaggerDocParser implements DocParser {
         JSONObject responseObject = docRoot.getJSONObject("definitions").getJSONObject(ref);
         String className = responseObject.getString("title");
         JSONObject extProperties = docRoot.getJSONObject(className);
+        JSONArray requiredProperties = responseObject.getJSONArray("required");
         JSONObject properties = responseObject.getJSONObject("properties");
         List<DocParameter> docParameterList = new ArrayList<>();
         if (properties == null) {
@@ -236,6 +237,8 @@ public class SwaggerDocParser implements DocParser {
             JSONObject fieldInfo = properties.getJSONObject(fieldName);
             DocParameter docParameter = fieldInfo.toJavaObject(DocParameter.class);
             docParameter.setName(fieldName);
+            docParameter.setRequired(
+                    com.alibaba.nacos.common.utils.CollectionUtils.contains(requiredProperties, fieldName));
             if (extProperties != null) {
                 JSONObject prop = extProperties.getJSONObject(fieldName);
                 if (prop != null) {
