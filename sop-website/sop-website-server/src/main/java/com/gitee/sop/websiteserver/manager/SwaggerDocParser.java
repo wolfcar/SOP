@@ -14,9 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.DigestUtils;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -238,7 +236,7 @@ public class SwaggerDocParser implements DocParser {
             DocParameter docParameter = fieldInfo.toJavaObject(DocParameter.class);
             docParameter.setName(fieldName);
             docParameter.setRequired(
-                    com.alibaba.nacos.common.utils.CollectionUtils.contains(requiredProperties, fieldName));
+                    !CollectionUtils.isEmpty(requiredProperties) && requiredProperties.contains(fieldName));
             if (extProperties != null) {
                 JSONObject prop = extProperties.getJSONObject(fieldName);
                 if (prop != null) {
