@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 public class GlobalExceptionHandler {
 
+
     /**
      * 与网关约定好的状态码，表示业务出错
      */
@@ -33,9 +34,14 @@ public class GlobalExceptionHandler {
     private static final int SYSTEM_ERROR_CODE = 5050;
 
     /**
-     * 返回错误信息headerName
+     * header中的错误code
      */
     private static final String X_SERVICE_ERROR_HEADER_NAME = "x-service-error-code";
+
+    /**
+     * header中的错误信息
+     */
+    private static final String X_SERVICE_ERROR_MESSAGE = "x-service-error-message";
 
     /**
      * 捕获手动抛出的异常
@@ -63,7 +69,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public Object exceptionHandler(HttpServletRequest request, HttpServletResponse response, Exception exception) {
-        response.addHeader(X_SERVICE_ERROR_HEADER_NAME, String.valueOf(SYSTEM_ERROR_CODE));
         log.error("系统错误", exception);
         StringBuilder msg = new StringBuilder();
         msg.append(exception.getMessage());
@@ -74,7 +79,10 @@ public class GlobalExceptionHandler {
             StackTraceElement stackTraceElement = stackTrace[i];
             msg.append("\n at ").append(stackTraceElement.toString());
         }
-        response.setHeader("x-service-error-message", UriUtils.encode(msg.toString(), StandardCharsets.UTF_8));
+        // 需要设置两个值，这样网关会收到错误信息
+        // 并且会统计到监控当中
+        response.setHeader(X_SERVICE_ERROR_HEADER_NAME, String.valueOf(SYSTEM_ERROR_CODE));
+        response.setHeader(X_SERVICE_ERROR_MESSAGE, UriUtils.encode(msg.toString(), StandardCharsets.UTF_8));
         return this.processError(request, response, new ServiceException("系统繁忙"));
     }
 

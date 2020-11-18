@@ -2,8 +2,11 @@ package com.gitee.sop.gatewaycommon.gateway.codec;
 
 import com.gitee.sop.gatewaycommon.manager.EnvironmentKeys;
 import org.springframework.core.codec.AbstractDataBufferDecoder;
+import org.springframework.core.codec.Decoder;
+import org.springframework.http.codec.DecoderHttpMessageReader;
 import org.springframework.http.codec.HttpMessageReader;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.server.HandlerStrategies;
 
 import java.lang.reflect.Method;
@@ -42,5 +45,24 @@ public class MessageReaderFactory {
             }
         }
         return messageReaders;
+    }
+
+    public static void initMaxInMemorySize(ExchangeStrategies exchangeStrategies) {
+        // 修复返回大文本数据报org.springframework.core.io.buffer.DataBufferLimitException: Exceeded limit on max bytes to buffer : 262144
+        String maxInMemorySizeValueStr = EnvironmentKeys.MAX_IN_MEMORY_SIZE.getValue();
+        int maxInMemorySizeValue = Integer.parseInt(maxInMemorySizeValueStr);
+        if (DEFAULT_SIZE == maxInMemorySizeValue) {
+            return;
+        }
+        for (HttpMessageReader<?> messageReader : exchangeStrategies.messageReaders()) {
+            if (messageReader instanceof DecoderHttpMessageReader) {
+                DecoderHttpMessageReader reader = (DecoderHttpMessageReader) messageReader;
+                Decoder decoder = reader.getDecoder();
+                if (decoder instanceof AbstractDataBufferDecoder) {
+                    AbstractDataBufferDecoder dataBufferDecoder = (AbstractDataBufferDecoder)decoder;
+                    dataBufferDecoder.setMaxInMemorySize(maxInMemorySizeValue);
+                }
+            }
+        }
     }
 }

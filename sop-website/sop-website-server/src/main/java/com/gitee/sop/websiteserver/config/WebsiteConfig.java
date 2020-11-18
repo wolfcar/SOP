@@ -8,13 +8,10 @@ import com.gitee.sop.gatewaycommon.manager.EnvironmentContext;
 import com.gitee.sop.gatewaycommon.route.RegistryListener;
 import com.gitee.sop.gatewaycommon.route.ServiceListener;
 import com.gitee.sop.websiteserver.listener.ServiceDocListener;
-import com.gitee.sop.websiteserver.manager.DocManager;
 import com.gitee.sop.websiteserver.service.impl.EurekaServerService;
 import com.gitee.sop.websiteserver.service.impl.NacosServerService;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
@@ -35,9 +32,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 public class WebsiteConfig implements WebMvcConfigurer, EnvironmentAware, ApplicationContextAware {
-
-    @Autowired
-    DocManager docManager;
 
     @Autowired
     private RegistryListener registryListener;

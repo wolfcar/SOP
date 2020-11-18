@@ -103,7 +103,8 @@ public class SandboxV2Controller {
         try {
             sign = AlipaySignature.rsa256Sign(content, privateKey, "utf-8");
         } catch (AlipayApiException e) {
-            throw new RuntimeException("构建签名失败");
+            log.error("构建签名失败", e);
+            throw new RuntimeException("构建签名失败", e);
         }
 
         params.put("sign", sign);

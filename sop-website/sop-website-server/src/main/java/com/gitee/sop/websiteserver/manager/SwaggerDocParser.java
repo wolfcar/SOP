@@ -14,9 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.DigestUtils;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -220,6 +218,7 @@ public class SwaggerDocParser implements DocParser {
         JSONObject responseObject = docRoot.getJSONObject("definitions").getJSONObject(ref);
         String className = responseObject.getString("title");
         JSONObject extProperties = docRoot.getJSONObject(className);
+        JSONArray requiredProperties = responseObject.getJSONArray("required");
         JSONObject properties = responseObject.getJSONObject("properties");
         List<DocParameter> docParameterList = new ArrayList<>();
         if (properties == null) {
@@ -236,6 +235,8 @@ public class SwaggerDocParser implements DocParser {
             JSONObject fieldInfo = properties.getJSONObject(fieldName);
             DocParameter docParameter = fieldInfo.toJavaObject(DocParameter.class);
             docParameter.setName(fieldName);
+            docParameter.setRequired(
+                    !CollectionUtils.isEmpty(requiredProperties) && requiredProperties.contains(fieldName));
             if (extProperties != null) {
                 JSONObject prop = extProperties.getJSONObject(fieldName);
                 if (prop != null) {
