@@ -13,6 +13,7 @@ import com.gitee.sop.gatewaycommon.route.ServiceHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.util.CollectionUtils;
 
@@ -33,6 +34,9 @@ import java.util.stream.Collectors;
 public class NacosRegistryListener extends BaseRegistryListener {
 
     private volatile Set<NacosServiceHolder> cacheServices = new HashSet<>();
+
+    @Value("${nacos.discovery.group:${spring.cloud.nacos.discovery.group:DEFAULT_GROUP}}")
+    private String nacosGroup;
 
     @Autowired
     private NacosDiscoveryProperties nacosDiscoveryProperties;
@@ -95,7 +99,7 @@ public class NacosRegistryListener extends BaseRegistryListener {
                     List<Instance> allInstances;
                     try {
                         // 获取服务实例
-                       allInstances = namingService.getAllInstances(serviceName);
+                       allInstances = namingService.getAllInstances(serviceName, nacosGroup);
                     } catch (NacosException e) {
                         log.error("namingService.getAllInstances(serviceName)错误，serviceName：{}", serviceName, e);
                         return null;
