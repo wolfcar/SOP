@@ -36,6 +36,9 @@ public class RegistryServiceNacosImpl implements RegistryService {
     @Value("${nacos.discovery.namespace:${spring.cloud.nacos.discovery.namespace:}}")
     private String nacosNamespace;
 
+    @Value("${nacos.discovery.group:${spring.cloud.nacos.discovery.group:DEFAULT_GROUP}}")
+    private String nacosGroup;
+
     private NamingService namingService;
 
     @PostConstruct
@@ -59,7 +62,7 @@ public class RegistryServiceNacosImpl implements RegistryService {
         for (String serviceName : serverList) {
             ServiceInfo serviceInfo = new ServiceInfo();
             serviceInfo.setServiceId(serviceName);
-            List<Instance> instanceList = namingService.getAllInstances(serviceName);
+            List<Instance> instanceList = namingService.getAllInstances(serviceName, nacosGroup);
             if (CollectionUtils.isEmpty(instanceList)) {
                 serviceInfo.setInstances(Collections.emptyList());
             } else {

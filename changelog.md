@@ -1,5 +1,9 @@
 # changelog
 
+## 4.2.1
+
+- 可指定nacos的group，（`spring.cloud.nacos.discovery.group=xx`）
+
 ## 4.2.0
 
 需要执行`sop-upgrade-4.2.0.sql`

@@ -29,6 +29,9 @@ public class NacosServerService implements ServerService  {
     @Value("${nacos.discovery.namespace:${spring.cloud.nacos.discovery.namespace:}}")
     private String nacosNamespace;
 
+    @Value("${nacos.discovery.group:${spring.cloud.nacos.discovery.group:DEFAULT_GROUP}}")
+    private String nacosGroup;
+
     private NamingService namingService;
 
     @PostConstruct
@@ -49,7 +52,7 @@ public class NacosServerService implements ServerService  {
         Objects.requireNonNull(serviceId, "serviceId can not be null");
         List<String> list = Collections.emptyList();
         try {
-            List<Instance> allInstances = namingService.getAllInstances(serviceId);
+            List<Instance> allInstances = namingService.getAllInstances(serviceId, nacosGroup);
             list = allInstances.stream().map(instance -> instance.getIp() + ":" + instance.getPort())
                     .collect(Collectors.toList());
         } catch (NacosException e) {
