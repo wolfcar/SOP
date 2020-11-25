@@ -147,33 +147,26 @@
         size="mini"
         class="key-view"
       >
-        <el-form-item label="">
-          <el-alert
-            title="带 ★ 的分配给开发者"
-            type="warning"
-            :closable="false"
-          />
-        </el-form-item>
-        <el-form-item :label="selfLabel('appId')">
+        <el-form-item label="appId">
           <span>{{ isvKeysFormData.appKey }}</span>
         </el-form-item>
         <el-form-item v-show="showKeys()" label="秘钥格式">
           <span v-if="isvKeysFormData.keyFormat === 1">PKCS8(JAVA适用)</span>
           <span v-if="isvKeysFormData.keyFormat === 2">PKCS1(非JAVA适用)</span>
         </el-form-item>
-        <el-form-item v-show="isvKeysFormData.signType === 2" :label="selfLabel('secret')">
+        <el-form-item v-show="isvKeysFormData.signType === 2" label="secret">
           <span>{{ isvKeysFormData.secret }}</span>
         </el-form-item>
         <el-tabs v-show="showKeys()" v-model="activeName" type="card" class="keyTabs">
           <el-tab-pane label="ISV公私钥" name="first">
             <el-form-item label="ISV公钥">
-              <el-input v-model="isvKeysFormData.publicKeyIsv" type="textarea" readonly />
+              <el-input v-model="isvKeysFormData.publicKeyIsv" type="textarea" placeholder="未上传" readonly />
             </el-form-item>
-            <el-form-item :label="selfLabel('ISV私钥')">
+            <el-form-item v-show="isvKeysFormData.userId === 0" label="ISV私钥">
               <el-input v-model="isvKeysFormData.privateKeyIsv" type="textarea" readonly />
             </el-form-item>
           </el-tab-pane>
-          <el-tab-pane label="平台公私钥[可选]" name="second">
+          <el-tab-pane label="平台公私钥" name="second">
             <el-form-item label="平台公钥">
               <el-input v-model="isvKeysFormData.publicKeyPlatform" type="textarea" readonly />
             </el-form-item>
@@ -235,7 +228,8 @@ export default {
         privateKeyIsv: '',
         publicKeyPlatform: '',
         privateKeyPlatform: '',
-        signType: ''
+        signType: '',
+        userId: 0
       }
     }
   },
@@ -261,6 +255,7 @@ export default {
         this.isvKeysDialogVisible = true
         this.$nextTick(() => {
           Object.assign(this.isvKeysFormData, resp.data)
+          this.isvKeysFormData.userId = row.userId
         })
       })
     },
@@ -332,9 +327,6 @@ export default {
       this.isSaveButtonDisabled = false
       this.isvDialogFormData.status = 1
       this.isvDialogFormData.roleCode = []
-    },
-    selfLabel: function(lab) {
-      return '★ ' + lab
     },
     roleRender: function(row) {
       const html = []
