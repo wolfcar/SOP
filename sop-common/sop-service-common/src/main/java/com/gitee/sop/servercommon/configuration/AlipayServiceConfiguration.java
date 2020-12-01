@@ -2,7 +2,6 @@ package com.gitee.sop.servercommon.configuration;
 
 import com.gitee.sop.servercommon.bean.ServiceConfig;
 import com.gitee.sop.servercommon.param.SopHandlerMethodArgumentResolver;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 /**
@@ -16,12 +15,11 @@ public class AlipayServiceConfiguration extends BaseServiceConfiguration {
         ServiceConfig.getInstance().setDefaultVersion("1.0");
     }
 
-    @Autowired
-    private RequestMappingHandlerAdapter requestMappingHandlerAdapter;
 
     @Override
     protected void doAfter() {
         super.doAfter();
+        RequestMappingHandlerAdapter requestMappingHandlerAdapter = getApplicationContext().getBean(RequestMappingHandlerAdapter.class);
         SopHandlerMethodArgumentResolver sopHandlerMethodArgumentResolver = ServiceConfig.getInstance().getMethodArgumentResolver();
         sopHandlerMethodArgumentResolver.setRequestMappingHandlerAdapter(requestMappingHandlerAdapter);
     }
