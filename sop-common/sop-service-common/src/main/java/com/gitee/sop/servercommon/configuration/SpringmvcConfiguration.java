@@ -5,7 +5,10 @@ import com.gitee.sop.servercommon.interceptor.ServiceContextInterceptor;
 import com.gitee.sop.servercommon.message.ServiceErrorFactory;
 import com.gitee.sop.servercommon.route.ServiceRouteController;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeansException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -21,12 +24,19 @@ import java.util.List;
  * @author tanghc
  */
 @Slf4j
-public class SpringmvcConfiguration implements WebMvcConfigurer {
+public class SpringmvcConfiguration implements WebMvcConfigurer, ApplicationContextAware {
 
     public static final String METADATA_SERVER_CONTEXT_PATH = "server.servlet.context-path";
 
+    private ApplicationContext applicationContext;
+
     public SpringmvcConfiguration() {
         ServiceConfig.getInstance().getI18nModules().add("i18n/isp/bizerror");
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 
     @Override
@@ -86,4 +96,7 @@ public class SpringmvcConfiguration implements WebMvcConfigurer {
         ServiceErrorFactory.initMessageSource(ServiceConfig.getInstance().getI18nModules());
     }
 
+    public ApplicationContext getApplicationContext() {
+        return applicationContext;
+    }
 }
