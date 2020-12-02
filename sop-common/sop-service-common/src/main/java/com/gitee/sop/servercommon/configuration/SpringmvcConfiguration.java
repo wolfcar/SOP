@@ -3,18 +3,19 @@ package com.gitee.sop.servercommon.configuration;
 import com.gitee.sop.servercommon.bean.ServiceConfig;
 import com.gitee.sop.servercommon.interceptor.ServiceContextInterceptor;
 import com.gitee.sop.servercommon.message.ServiceErrorFactory;
+import com.gitee.sop.servercommon.param.SopHandlerMethodArgumentResolver;
 import com.gitee.sop.servercommon.route.ServiceRouteController;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 import javax.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
@@ -24,19 +25,26 @@ import java.util.List;
  * @author tanghc
  */
 @Slf4j
-public class SpringmvcConfiguration implements WebMvcConfigurer, ApplicationContextAware {
+public class SpringmvcConfiguration implements WebMvcConfigurer, BeanPostProcessor {
 
     public static final String METADATA_SERVER_CONTEXT_PATH = "server.servlet.context-path";
 
-    private ApplicationContext applicationContext;
+    static {
+        ServiceConfig.getInstance().setDefaultVersion("1.0");
+    }
 
     public SpringmvcConfiguration() {
         ServiceConfig.getInstance().getI18nModules().add("i18n/isp/bizerror");
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        if (bean instanceof RequestMappingHandlerAdapter) {
+            RequestMappingHandlerAdapter requestMappingHandlerAdapter = (RequestMappingHandlerAdapter) bean;
+            SopHandlerMethodArgumentResolver sopHandlerMethodArgumentResolver = ServiceConfig.getInstance().getMethodArgumentResolver();
+            sopHandlerMethodArgumentResolver.setRequestMappingHandlerAdapter(requestMappingHandlerAdapter);
+        }
+        return bean;
     }
 
     @Override
@@ -96,7 +104,4 @@ public class SpringmvcConfiguration implements WebMvcConfigurer, ApplicationCont
         ServiceErrorFactory.initMessageSource(ServiceConfig.getInstance().getI18nModules());
     }
 
-    public ApplicationContext getApplicationContext() {
-        return applicationContext;
-    }
 }
