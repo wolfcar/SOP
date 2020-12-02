@@ -2,7 +2,6 @@ package com.gitee.sop.gatewaycommon.gateway.filter;
 
 import com.gitee.sop.gatewaycommon.bean.ApiContext;
 import com.gitee.sop.gatewaycommon.bean.SopConstants;
-import com.gitee.sop.gatewaycommon.gateway.codec.MessageReaderFactory;
 import com.gitee.sop.gatewaycommon.result.ResultExecutor;
 import org.apache.commons.lang3.StringUtils;
 import org.reactivestreams.Publisher;
@@ -60,7 +59,7 @@ public class GatewayModifyResponseGatewayFilter implements GlobalFilter, Ordered
                 //this will prevent exception in case of using non-standard media types like "Content-Type: image"
                 httpHeaders.add(HttpHeaders.CONTENT_TYPE, originalResponseContentType);
                 ResponseAdapter responseAdapter = new ResponseAdapter(body, httpHeaders);
-                DefaultClientResponse clientResponse = new DefaultClientResponse(responseAdapter, getExchangeStrategies());
+                DefaultClientResponse clientResponse = new DefaultClientResponse(responseAdapter, ExchangeStrategies.withDefaults());
 
                 //TODO: flux or mono
                 Mono modifiedBody = clientResponse.bodyToMono(inClass)
@@ -95,13 +94,6 @@ public class GatewayModifyResponseGatewayFilter implements GlobalFilter, Ordered
         };
 
         return chain.filter(exchange.mutate().response(responseDecorator).build());
-    }
-
-    private ExchangeStrategies getExchangeStrategies() {
-        ExchangeStrategies exchangeStrategies = ExchangeStrategies.withDefaults();
-        // 修复返回大文本数据报org.springframework.core.io.buffer.DataBufferLimitException: Exceeded limit on max bytes to buffer : 262144
-        MessageReaderFactory.initMaxInMemorySize(exchangeStrategies);
-        return exchangeStrategies;
     }
 
     @Override
