@@ -3,7 +3,6 @@ package com.gitee.sop.gatewaycommon.bean;
 import lombok.Data;
 import org.springframework.util.StringUtils;
 
-import javax.validation.ValidationException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -24,7 +23,7 @@ public class GatewayPredicateDefinition {
     public GatewayPredicateDefinition(String text) {
         int eqIdx = text.indexOf(61);
         if (eqIdx <= 0) {
-            throw new ValidationException("Unable to parse GatewayPredicateDefinition text '" + text + "', must be of the form name=value");
+            throw new RuntimeException("Unable to parse GatewayPredicateDefinition text '" + text + "', must be of the form name=value");
         } else {
             this.setName(text.substring(0, eqIdx));
             String[] params = StringUtils.tokenizeToStringArray(text.substring(eqIdx + 1), ",");

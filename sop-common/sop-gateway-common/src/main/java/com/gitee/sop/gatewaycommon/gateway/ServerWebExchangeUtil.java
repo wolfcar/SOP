@@ -3,7 +3,6 @@ package com.gitee.sop.gatewaycommon.gateway;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.gitee.sop.gatewaycommon.bean.SopConstants;
-import com.gitee.sop.gatewaycommon.gateway.codec.MessageReaderFactory;
 import com.gitee.sop.gatewaycommon.gateway.common.FileUploadHttpServletRequest;
 import com.gitee.sop.gatewaycommon.gateway.common.RequestContentDataExtractor;
 import com.gitee.sop.gatewaycommon.gateway.common.SopServerHttpRequestDecorator;
@@ -23,6 +22,7 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.reactive.function.server.HandlerStrategies;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilterChain;
@@ -47,7 +47,7 @@ public class ServerWebExchangeUtil {
 
     private static final FormHttpMessageConverter formHttpMessageConverter = new FormHttpMessageConverter();
 
-    private static final List<HttpMessageReader<?>> messageReaders = MessageReaderFactory.build();
+    private static final List<HttpMessageReader<?>> messageReaders = HandlerStrategies.withDefaults().messageReaders();
 
     /**
      * 重定向
