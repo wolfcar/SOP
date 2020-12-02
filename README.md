@@ -96,10 +96,9 @@ System.out.println(responseData);
 - 文档整合
 - 应用授权
 - 监控日志
-- 支持nacos/eureka
+- 注册中心支持nacos/eureka
 - 网关动态修改参数
 - 预发布/灰度环境切换
-- 支持eureka注册中心
 
 ## 界面预览
 
