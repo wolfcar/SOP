@@ -353,6 +353,24 @@ public class AllInOneTest extends TestBase {
         client.execute(requestBuilder);
     }
 
+    /**
+     * 以get方式提交
+     */
+    public void testBindParam() {
+        Client.RequestBuilder requestBuilder = new Client.RequestBuilder()
+                .method("story.param.bind")
+                .version("1.0")
+                .addSystemParam("id", "1")
+                .addSystemParam("name", "葫芦娃")
+                .httpMethod(HttpTool.HTTPMethod.GET)
+                .callback(((requestInfo, responseData) -> {
+                    System.out.println(responseData);
+                    Assert.assertTrue(responseData.contains("参数绑定：id:1, name:葫芦娃"));
+                }));
+
+        client.execute(requestBuilder);
+    }
+
     static class BizContent extends HashMap<String, Object> {
         public BizContent add(String key, Object value) {
             this.put(key, value);
