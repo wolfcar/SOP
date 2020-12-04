@@ -225,6 +225,29 @@ public class AllInOneTest extends TestBase {
     }
 
     /**
+     * 演示大文件上传，先配置网关参数：spring.servlet.multipart.max-file-size=1MB
+     */
+    public void testBigFile() {
+        Client client = new Client(url, appId, privateKey);
+        String root = System.getProperty("user.dir");
+        Client.RequestBuilder requestBuilder = new Client.RequestBuilder()
+                .method("file.upload3")
+                .version("1.0")
+                .bizContent(new BizContent().add("remark", "test file upload"))
+                // 添加文件
+                .addFile("image", new File(root + "/src/main/resources/large_img.png"))
+                .callback((requestInfo, responseData) -> {
+                    System.out.println(responseData);
+                    JSONObject jsonObject = JSON.parseObject(responseData);
+                    JSONObject data = jsonObject.getJSONObject(requestInfo.getDataNode());
+                    Assert.assertEquals(data.getString("sub_code"), "isv.invalid-file-size");
+                })
+                ;
+
+        client.execute(requestBuilder);
+    }
+
+    /**
      * 传递header
      */
     public void testHeader() {
