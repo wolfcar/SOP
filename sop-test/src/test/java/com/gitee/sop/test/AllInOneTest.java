@@ -354,7 +354,7 @@ public class AllInOneTest extends TestBase {
     }
 
     /**
-     * 以get方式提交
+     * 单个参数绑定
      */
     public void testBindParam() {
         Client.RequestBuilder requestBuilder = new Client.RequestBuilder()
