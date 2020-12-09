@@ -85,7 +85,7 @@ public class NacosRegistryListener extends BaseRegistryListener {
         NamingService namingService = nacosDiscoveryProperties.namingServiceInstance();
         ListView<String> servicesOfServer = null;
         try {
-            servicesOfServer = namingService.getServicesOfServer(1, Integer.MAX_VALUE);
+            servicesOfServer = namingService.getServicesOfServer(1, Integer.MAX_VALUE, nacosGroup);
         } catch (NacosException e) {
             log.error("namingService.getServicesOfServer()错误", e);
         }

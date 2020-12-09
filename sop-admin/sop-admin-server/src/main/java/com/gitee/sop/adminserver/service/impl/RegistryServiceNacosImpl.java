@@ -56,7 +56,7 @@ public class RegistryServiceNacosImpl implements RegistryService {
 
     @Override
     public List<ServiceInfo> listAllService(int pageNo, int pageSize) throws Exception {
-        ListView<String> servicesOfServer = namingService.getServicesOfServer(pageNo, pageSize);
+        ListView<String> servicesOfServer = namingService.getServicesOfServer(pageNo, pageSize, nacosGroup);
         List<String> serverList = servicesOfServer.getData();
         List<ServiceInfo> serviceInfoList = new ArrayList<>();
         for (String serviceName : serverList) {
