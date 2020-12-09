@@ -225,6 +225,29 @@ public class AllInOneTest extends TestBase {
     }
 
     /**
+     * 演示大文件上传，先配置网关参数：spring.servlet.multipart.max-file-size=1MB
+     */
+    public void testBigFile() {
+        Client client = new Client(url, appId, privateKey);
+        String root = System.getProperty("user.dir");
+        Client.RequestBuilder requestBuilder = new Client.RequestBuilder()
+                .method("file.upload3")
+                .version("1.0")
+                .bizContent(new BizContent().add("remark", "test file upload"))
+                // 添加文件
+                .addFile("image", new File(root + "/src/main/resources/large_img.png"))
+                .callback((requestInfo, responseData) -> {
+                    System.out.println(responseData);
+                    JSONObject jsonObject = JSON.parseObject(responseData);
+                    JSONObject data = jsonObject.getJSONObject(requestInfo.getDataNode());
+                    Assert.assertEquals(data.getString("sub_code"), "isv.invalid-file-size");
+                })
+                ;
+
+        client.execute(requestBuilder);
+    }
+
+    /**
      * 传递header
      */
     public void testHeader() {
@@ -326,6 +349,24 @@ public class AllInOneTest extends TestBase {
                             .orElse(0);
                     Assert.assertEquals(size, 2000);
                 });
+
+        client.execute(requestBuilder);
+    }
+
+    /**
+     * 单个参数绑定
+     */
+    public void testBindParam() {
+        Client.RequestBuilder requestBuilder = new Client.RequestBuilder()
+                .method("story.param.bind")
+                .version("1.0")
+                .addSystemParam("id", "1")
+                .addSystemParam("name", "葫芦娃")
+                .httpMethod(HttpTool.HTTPMethod.GET)
+                .callback(((requestInfo, responseData) -> {
+                    System.out.println(responseData);
+                    Assert.assertTrue(responseData.contains("参数绑定：id:1, name:葫芦娃"));
+                }));
 
         client.execute(requestBuilder);
     }

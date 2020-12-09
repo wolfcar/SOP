@@ -2,7 +2,6 @@
 
 一个开放平台解决方案项目，基于Spring Cloud实现，目标让用户快速搭建自己的开放平台。
 
-SOP提供了两种接口调用方式，分别是：[支付宝开放平台](https://docs.open.alipay.com/api)的调用方式和[淘宝开放平台](http://open.taobao.com/api.htm?docId=285&docType=2)的调用方式。
 通过简单的配置后，你的项目就具备了和支付宝开放平台的一样的接口提供能力。
 
 SOP封装了开放平台大部分功能包括：签名验证、统一异常处理、统一返回内容 、业务参数验证（JSR-303）、秘钥管理等，未来还会实现更多功能。
@@ -78,6 +77,7 @@ System.out.println(responseData);
 
 > 如上图所示，整个系统运行后，开发者只需关注微服务中的业务代码，接口变更后重新部署微服务应用即可
 
+
 ## 已完成列表
 
 - 签名验证
@@ -86,7 +86,6 @@ System.out.println(responseData);
 - session管理
 - 秘钥管理
 - 微服务端自动验证（JSR-303）
-- 支持Spring Cloud Gateway
 - Admin管理平台，统一管理微服务配置，管理路由管理，微服务上下线
 - 门户网站，提供用户注册账号
 - 接入方管理+秘钥管理
@@ -97,10 +96,9 @@ System.out.println(responseData);
 - 文档整合
 - 应用授权
 - 监控日志
-- 支持nacos
+- 注册中心支持nacos/eureka
 - 网关动态修改参数
 - 预发布/灰度环境切换
-- 支持eureka注册中心
 
 ## 界面预览
 

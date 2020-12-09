@@ -174,6 +174,8 @@ public class Client {
     public static class RequestBuilder {
         private static final String DEFAULT_VERSION = "1.0";
 
+        private Map<String, String> systemParam;
+
         private String url;
         private String method;
         private String version = DEFAULT_VERSION;
@@ -278,6 +280,20 @@ public class Client {
         }
 
         /**
+         * 添加系统参数
+         * @param name 参数名
+         * @param value 参数值
+         * @return 返回RequestBuilder
+         */
+        public RequestBuilder addSystemParam(String name, String value) {
+            if (systemParam == null) {
+                systemParam = new HashMap<>(8);
+            }
+            systemParam.put(name, value);
+            return this;
+        }
+
+        /**
          * 设置token
          *
          * @param appAuthToken 给定的token
@@ -376,9 +392,14 @@ public class Client {
             params.put("charset", "utf-8");
             params.put("sign_type", "RSA2");
             params.put("timestamp", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+            if (systemParam != null) {
+                params.putAll(systemParam);
+            }
 
-            // 业务参数
-            params.put("biz_content", JSON.toJSONString(bizContent == null ? Collections.emptyMap() : bizContent));
+            if (bizContent != null) {
+                // 业务参数
+                params.put("biz_content", JSON.toJSONString(bizContent));
+            }
 
             if (!ignoreSign) {
                 String content = AlipaySignature.getSignContent(params);

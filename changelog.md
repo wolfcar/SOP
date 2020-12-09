@@ -1,8 +1,17 @@
 # changelog
 
+## 4.2.3
+
+- 修复nacos的group不生效问题
+
+## 4.2.2
+
+- 优化版本号
+
 ## 4.2.1
 
 - 可指定nacos的group，（`spring.cloud.nacos.discovery.group=xx`）
+- 修复spring循环依赖问题
 
 ## 4.2.0
 
