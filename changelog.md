@@ -1,5 +1,9 @@
 # changelog
 
+## 4.2.4
+
+- 修复sop-auth模块启动失败问题
+
 ## 4.2.3
 
 - 修复nacos的group不生效问题

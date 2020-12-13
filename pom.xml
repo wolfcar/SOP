@@ -12,7 +12,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.gitee.sop</groupId>
 	<artifactId>sop-parent</artifactId>
-	<version>4.2.3-SNAPSHOT</version>
+	<version>4.2.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>一个开放平台解决方案项目，基于Spring Cloud实现，目标是能够让用户快速得搭建起自己的开放平台</description>
 
@@ -60,7 +60,6 @@
 		<validation-api.version>2.0.1.Final</validation-api.version>
 		<hibernate-validator.version>6.0.13.Final</hibernate-validator.version>
 		<fastmybatis.version>1.9.1</fastmybatis.version>
-		<spring-data-redis.version>2.3.0.RELEASE</spring-data-redis.version>
 		<guava.version>29.0-jre</guava.version>
 		<swagger.version>1.5.21</swagger.version>
 		<springfox-spring-web.version>2.9.2</springfox-spring-web.version>
@@ -162,12 +161,6 @@
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
 				<version>${logback.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.springframework.data</groupId>
-				<artifactId>spring-data-redis</artifactId>
-				<version>${spring-data-redis.version}</version>
 			</dependency>
 
 			<!-- commons -->
