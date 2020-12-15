@@ -10,6 +10,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
 import org.apache.commons.io.IOUtils;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,7 +40,7 @@ public class Example1002_FileUploadController {
      */
     @ApiOperation(value = "文件上传例1", notes = "上传文件demo")
     @Open("file.upload")
-    @RequestMapping("file1")
+    @PostMapping(value = "file1", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public FileUploadResult file1(FileUploadParam param) {
         // 获取上传的文件
         MultipartFile file1 = param.getFile1();
@@ -64,7 +66,7 @@ public class Example1002_FileUploadController {
             // 多文件上传、不确定文件数量上传，必须申明下面这句，否则沙盒界面不会出现上传控件
             , extensions = @Extension(properties = @ExtensionProperty(name = "multiple", value = "multiple")))
     @Open("file.upload2")
-    @RequestMapping("file2")
+    @PostMapping(value = "file2", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public FileUploadResult file2(FileUploadParam2 param, HttpServletRequest request) {
         System.out.println(param.getRemark());
         FileUploadResult result = new FileUploadResult();
@@ -78,7 +80,7 @@ public class Example1002_FileUploadController {
     }
 
     @Open("file.upload3")
-    @RequestMapping("file3")
+    @PostMapping(value = "file3", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public FileUploadResult file3(FileUploadParam2 param, HttpServletRequest request) {
         System.out.println(param.getRemark());
         FileUploadResult result = new FileUploadResult();
