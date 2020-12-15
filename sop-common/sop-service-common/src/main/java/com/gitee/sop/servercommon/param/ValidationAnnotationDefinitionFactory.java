@@ -17,6 +17,8 @@ import org.hibernate.validator.constraints.SafeHtml;
 import org.hibernate.validator.constraints.ScriptAssert;
 import org.hibernate.validator.constraints.URL;
 import org.hibernate.validator.constraints.UniqueElements;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.AssertTrue;
@@ -40,7 +42,9 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,6 +53,8 @@ import java.util.Map;
 public class ValidationAnnotationDefinitionFactory {
 
     private static final Map<Class<?>, ValidationAnnotationBuilder<?>> store = new HashMap<>(64);
+
+    private static final List<Class<?>> excludeList = Arrays.asList(RequestParam.class, PathVariable.class);
 
     static {
         new BaseValidationAnnotationBuilder<ApiModelProperty>(){};
@@ -107,6 +113,9 @@ public class ValidationAnnotationDefinitionFactory {
 
     public static ValidationAnnotationDefinition build(Annotation annotation) {
         Class<?> jsr303Anno = annotation.annotationType();
+        if (excludeList.contains(jsr303Anno)) {
+            return null;
+        }
         ValidationAnnotationBuilder validationAnnotationBuilder = store.get(jsr303Anno);
         if (validationAnnotationBuilder == null) {
             return null;
