@@ -160,8 +160,10 @@ public class SwaggerDocParser implements DocParser {
             JSONObject schema = fieldJson.getJSONObject("schema");
             if (schema != null) {
                 RefInfo refInfo = getRefInfo(schema);
-                List<DocParameter> parameterList = this.buildDocParameters(refInfo.ref, docRoot, true);
-                docParameterList.addAll(parameterList);
+                if (refInfo != null) {
+                    List<DocParameter> parameterList = this.buildDocParameters(refInfo.ref, docRoot, true);
+                    docParameterList.addAll(parameterList);
+                }
             } else {
                 DocParameter docParameter = fieldJson.toJavaObject(DocParameter.class);
                 docParameterList.add(docParameter);
