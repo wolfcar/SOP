@@ -1,6 +1,5 @@
 package com.gitee.sop.gatewaycommon.interceptor;
 
-import com.gitee.sop.gatewaycommon.bean.SopConstants;
 import com.gitee.sop.gatewaycommon.param.ApiParam;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.http.HttpStatus;
