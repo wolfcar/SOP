@@ -1,5 +1,9 @@
 # changelog
 
+## 4.2.5
+
+- 修复restful负载均衡问题
+
 ## 4.2.4
 
 - 修复sop-auth模块启动失败问题
