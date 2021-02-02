@@ -35,8 +35,12 @@ public class RestfulController {
         return proxy.uri(uri).forward();
     }
 
+    /**
+     * 从path中解析出serviceId
+     * @param path 格式：/rest/<serviceId><real_path>
+     * @return 返回serviceId
+     */
     private String getServiceId(String path) {
-        // /rest/story-service/food/getFoodById
         path = path.substring(PREFIX_LEN);
         int index = path.indexOf('/');
         path = path.substring(0, index);
