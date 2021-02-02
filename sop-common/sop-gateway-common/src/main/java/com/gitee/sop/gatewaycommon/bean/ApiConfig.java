@@ -28,12 +28,12 @@ import com.gitee.sop.gatewaycommon.result.ResultExecutorForGateway;
 import com.gitee.sop.gatewaycommon.secret.CacheIsvManager;
 import com.gitee.sop.gatewaycommon.secret.IsvManager;
 import com.gitee.sop.gatewaycommon.validate.ApiEncrypter;
-import com.gitee.sop.gatewaycommon.validate.ApiSigner;
 import com.gitee.sop.gatewaycommon.validate.ApiValidator;
 import com.gitee.sop.gatewaycommon.validate.Encrypter;
 import com.gitee.sop.gatewaycommon.validate.Signer;
 import com.gitee.sop.gatewaycommon.validate.TokenValidator;
 import com.gitee.sop.gatewaycommon.validate.Validator;
+import com.gitee.sop.gatewaycommon.validate.alipay.AlipaySigner;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
@@ -74,7 +74,7 @@ public class ApiConfig {
     /**
      * 签名工具
      */
-    private Signer signer = new ApiSigner();
+    private Signer signer = new AlipaySigner();
 
     /**
      * 验证
