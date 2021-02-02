@@ -4,6 +4,8 @@ import com.gitee.sop.servercommon.util.UploadUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +27,8 @@ import java.util.Collection;
 @Api(tags = "食物接口")
 public class Example1008_RestfulController {
 
+    @Autowired
+    private Environment environment;
 
     // http://localhost:8081/rest/story-service/food/getFoodById?id=1  网关入口
     // http://localhost:2222/food/getFoodById/?id=12  本地入口
@@ -33,7 +37,7 @@ public class Example1008_RestfulController {
     public Food getFoodById(Integer id) {
         Food food = new Food();
         food.setId(id);
-        food.setName("香蕉");
+        food.setName("香蕉, " + environment.getProperty("server.port"));
         food.setPrice(new BigDecimal(20.00));
         return food;
     }

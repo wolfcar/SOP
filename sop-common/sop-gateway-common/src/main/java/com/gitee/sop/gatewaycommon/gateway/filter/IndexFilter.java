@@ -72,11 +72,9 @@ public class IndexFilter implements WebFilter {
             return chain.filter(exchange);
         }
         // 如果是restful请求，直接转发
+        // see：com.gitee.sop.gatewaycommon.gateway.controller.RestfulController
         if (enableRestful && path.startsWith(EnvironmentKeys.SOP_RESTFUL_PATH.getValue())) {
-            exchange.getAttributes().put(SopConstants.RESTFUL_REQUEST, true);
-            String restfulPath = ServerWebExchangeUtil.getRestfulPath(path, EnvironmentKeys.SOP_RESTFUL_PATH.getValue());
-            ServerWebExchange newExchange = ServerWebExchangeUtil.getForwardExchange(exchange, restfulPath);
-            return chain.filter(newExchange);
+            return chain.filter(exchange);
         }
         if (Objects.equals(path, indexPath)) {
             if (request.getMethod() == HttpMethod.POST) {
