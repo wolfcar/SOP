@@ -7,6 +7,7 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,6 +33,8 @@ public class ErrorFactory {
     private static Set<String> noModuleCache = new HashSet<>();
 
     private static Map<String, Error> errorCache = new HashMap<>(64);
+
+    private static List<Locale> localeList = Arrays.asList(Locale.ENGLISH, Locale.SIMPLIFIED_CHINESE);
 
     /**
      * 错误信息的国际化信息
@@ -69,6 +72,9 @@ public class ErrorFactory {
     public static Error getError(ErrorMeta errorMeta, Locale locale, Object... params) {
         if (locale == null) {
             locale = Locale.SIMPLIFIED_CHINESE;
+        }
+        if (!localeList.contains(locale)) {
+            locale = Locale.ENGLISH;
         }
         String key = errorMeta.getModulePrefix() + errorMeta.getCode() + errorMeta.getSubCode() + locale.toString();
         Error error = errorCache.get(key);
