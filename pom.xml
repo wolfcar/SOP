@@ -12,7 +12,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.gitee.sop</groupId>
 	<artifactId>sop-parent</artifactId>
-	<version>4.2.5-SNAPSHOT</version>
+	<version>${revision}</version>
 	<packaging>pom</packaging>
 	<description>一个开放平台解决方案项目，基于Spring Cloud实现，目标是能够让用户快速得搭建起自己的开放平台</description>
 
@@ -29,6 +29,8 @@
 	</modules>
 
 	<properties>
+		<!-- Project revision -->
+		<revision>4.2.6-SNAPSHOT</revision>
 		<java.version>1.8</java.version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
