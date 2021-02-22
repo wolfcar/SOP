@@ -14,6 +14,7 @@ import com.gitee.sop.gatewaycommon.result.BaseExecutorAdapter;
 import com.gitee.sop.gatewaycommon.result.ResultExecutorForGateway;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.gateway.support.TimeoutException;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -84,7 +85,9 @@ public class GatewayResultExecutor extends BaseExecutorAdapter<ServerWebExchange
     public String buildErrorResult(ServerWebExchange exchange, Throwable ex) {
         Locale locale = getLocale(exchange);
         Error error;
-        if (ex instanceof ApiException) {
+        if (ex.getCause() instanceof TimeoutException) {
+            error = ErrorEnum.ISP_GATEWAY_RESPONSE_TIMEOUT.getErrorMeta().getError(locale);
+        } else if (ex instanceof ApiException) {
             ApiException apiException = (ApiException) ex;
             error = apiException.getError(locale);
         } else {

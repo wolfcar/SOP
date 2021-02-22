@@ -12,6 +12,8 @@ public enum ErrorEnum {
     ISP_UNKNOWN_ERROR(Codes.CODE_UNKNOWN, "isp.unknown-error"),
     /** 服务不可用，路由被禁用 */
     ISP_API_DISABLED(Codes.CODE_UNKNOWN, "isp.service-not-available"),
+    /** 网关响应超时 */
+    ISP_GATEWAY_RESPONSE_TIMEOUT(Codes.CODE_UNKNOWN, "isp.gateway-response-timeout"),
     /** 限流处理 */
     ISV_REQUEST_LIMIT(Codes.CODE_UNKNOWN, "isv.service-busy"),
 

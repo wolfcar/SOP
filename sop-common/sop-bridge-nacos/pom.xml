@@ -5,20 +5,18 @@
     <parent>
         <groupId>com.gitee.sop</groupId>
         <artifactId>sop-parent</artifactId>
-        <version>4.2.5-SNAPSHOT</version>
+        <version>${revision}</version>
         <relativePath>../../pom.xml</relativePath> <!-- lookup parent from repository -->
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <version>4.2.5-SNAPSHOT</version>
-
     <artifactId>sop-bridge-nacos</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>com.gitee.sop</groupId>
             <artifactId>sop-gateway-common</artifactId>
-            <version>4.2.5-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>

@@ -13,11 +13,9 @@ import java.util.Locale;
 @Getter
 public class ErrorMeta {
 
-    private static final Locale ZH_CN = Locale.SIMPLIFIED_CHINESE;
-
-    private String modulePrefix;
-    private String code;
-    private String subCode;
+    private final String modulePrefix;
+    private final String code;
+    private final String subCode;
 
     public ErrorMeta(String modulePrefix, String code, String subCode) {
         this.modulePrefix = modulePrefix;
