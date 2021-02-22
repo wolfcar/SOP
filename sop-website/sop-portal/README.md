@@ -12,7 +12,7 @@ npm install
 
 # 启动
 
-docsite start
+`docsite start`（windows系统执行：`npm run start`）
 
 # 打包
 
