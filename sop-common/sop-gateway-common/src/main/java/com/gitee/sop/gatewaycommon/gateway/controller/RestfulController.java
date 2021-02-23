@@ -2,6 +2,7 @@ package com.gitee.sop.gatewaycommon.gateway.controller;
 
 import com.gitee.sop.gatewaycommon.bean.SpringContext;
 import com.gitee.sop.gatewaycommon.gateway.loadbalancer.SopLoadBalancerClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.gateway.webflux.ProxyExchange;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +19,10 @@ import reactor.core.publisher.Mono;
 @Controller
 public class RestfulController {
 
-    private static final int PREFIX_LEN = "/rest/".length();
+    @Value("${sop.restful.path:/rest}")
+    private String prefix;
 
-    @RequestMapping("/rest/**")
+    @RequestMapping("${sop.restful.path:/rest}/**")
     public Mono<ResponseEntity<byte[]>> proxy(ProxyExchange<byte[]> proxy, ServerWebExchange exchange) {
         String path = proxy.path();
         String serviceId = getServiceId(path);
@@ -41,14 +43,16 @@ public class RestfulController {
      * @return 返回serviceId
      */
     private String getServiceId(String path) {
-        path = path.substring(PREFIX_LEN);
+        int length = prefix.length() + 1;
+        path = path.substring(length);
         int index = path.indexOf('/');
         path = path.substring(0, index);
         return path;
     }
 
     private String getTargetPath(String serviceId, String path) {
-        int len = PREFIX_LEN + serviceId.length();
+        int length = prefix.length() + 1;
+        int len = length + serviceId.length();
         return path.substring(len);
     }
 }
