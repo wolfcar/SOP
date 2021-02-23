@@ -1,6 +1,7 @@
 package com.gitee.app.controller;
 
 import com.gitee.app.model.Goods;
+import com.gitee.app.model.StoryParam;
 import com.gitee.sop.servercommon.annotation.Open;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -54,6 +55,14 @@ public class HomeController {
 		goods.setGoods_name(param.getGoods_name() + " 1");
 		goods.setPrice(new BigDecimal(5000));
 		return goods;
+	}
+
+	@Open("springmvc.path.same")
+	@RequestMapping("iam_same_path")
+	@ResponseBody
+	public Object iam_same_path(StoryParam param) {
+		param.setName(param.getName() + " mvc..");
+		return param;
 	}
 
 }

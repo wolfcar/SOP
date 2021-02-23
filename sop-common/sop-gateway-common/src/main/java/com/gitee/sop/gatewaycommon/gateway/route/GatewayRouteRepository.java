@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
+import org.springframework.cloud.gateway.filter.factory.RewritePathGatewayFilterFactory;
 import org.springframework.cloud.gateway.route.Route;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
@@ -48,15 +49,20 @@ public class GatewayRouteRepository implements RouteRepository<GatewayTargetRout
 
     public void refresh() {
         RouteLocatorBuilder.Builder builder = routeLocatorBuilder.routes();
-        List<RouteDefinition> routeDefinitionList = routes.values()
-                .stream()
-                .map(GatewayTargetRoute::getRouteDefinition)
-                .collect(Collectors.toList());
-        routeDefinitionList.forEach(routeDefinition -> builder.route(routeDefinition.getId(),
-                r -> r.path(routeDefinition.getPath())
-                        .uri(routeDefinition.getUri())));
+        routes.values().forEach(gatewayTargetRoute -> {
+            RouteDefinition routeDefinition = gatewayTargetRoute.getRouteDefinition();
+            RewritePathGatewayFilterFactory rewritePathGatewayFilterFactory = new RewritePathGatewayFilterFactory();
+            RewritePathGatewayFilterFactory.Config config = new RewritePathGatewayFilterFactory.Config();
+            config.setRegexp(gatewayTargetRoute.getFullPath());
+            config.setReplacement(routeDefinition.getPath());
+            builder.route(routeDefinition.getId(),
+                    r -> r.path(routeDefinition.getPath())
+                            // path匹配
+                            .filters(gatewayFilterSpec -> gatewayFilterSpec.filter(rewritePathGatewayFilterFactory.apply(config)))
+                            .uri(routeDefinition.getUri())
+            );
+        });
         this.routeLocator = builder.build();
-
         // 触发
         applicationContext.publishEvent(new RefreshRoutesEvent(new Object()));
     }
