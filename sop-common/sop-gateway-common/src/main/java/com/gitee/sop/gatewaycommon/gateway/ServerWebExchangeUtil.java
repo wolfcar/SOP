@@ -61,7 +61,7 @@ public class ServerWebExchangeUtil {
                 .mutate();
         ServerHttpRequest newRequest = builder
                 .header(ParamNames.HEADER_VERSION_NAME, forwardInfo.getVersion())
-                .path(forwardInfo.getPath()).build();
+                .path(forwardInfo.getFullPath()).build();
         return exchange.mutate().request(newRequest).build();
     }
 

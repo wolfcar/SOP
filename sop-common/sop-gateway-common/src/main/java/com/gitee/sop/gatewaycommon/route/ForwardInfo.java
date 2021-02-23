@@ -19,6 +19,10 @@ public class ForwardInfo {
         this.targetRoute = targetRoute;
     }
 
+    public String getFullPath() {
+        return targetRoute.getFullPath();
+    }
+
     public String getPath() {
         return targetRoute.getRouteDefinition().getPath();
     }
@@ -39,6 +43,11 @@ public class ForwardInfo {
 
         public ErrorForwardInfo(TargetRoute targetRoute) {
             super(targetRoute);
+        }
+
+        @Override
+        public String getFullPath() {
+            return getPath();
         }
 
         @Override

@@ -19,4 +19,6 @@ public interface TargetRoute {
      */
     RouteDefinition getRouteDefinition();
 
+    String getFullPath();
+
 }
