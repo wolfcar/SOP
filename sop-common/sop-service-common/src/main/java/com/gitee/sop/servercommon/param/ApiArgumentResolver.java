@@ -205,7 +205,7 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
         try {
             param = JSON.parseObject(bizContent, parameterType);
         } catch (Exception e) {
-            log.error("非json参数，biz_content:{}, requestParams:{}", bizContent, requestParams);
+            log.error("非json参数, \nbiz_content:{}\nrequestParams:{}", bizContent, requestParams, e);
             // 否则认为是 aa=1&bb=33 形式
             Map<String, Object> query = OpenUtil.parseQueryToMap(bizContent);
             param = new JSONObject(query).toJavaObject(parameterType);

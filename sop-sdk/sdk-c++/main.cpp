@@ -5,11 +5,11 @@
 #include "request/MemberInfoGetRequest.hpp"
 
 // 应用ID
-string appId = "2020051325943082302177280";
+string appId = "201904035630907729292cpp";
 // 存放私钥的文件路径
-string privateKeyFile = "/Users/thc/IdeaProjects/opc/opc-sdk/sdk-c++/privateEx.pem";
+string privateKeyFile = "/Users/thc/IdeaProjects/SOP/sop-sdk/sdk-c++/privateEx.pem";
 // 请求接口
-string url = "http://localhost:7071/prod/gw68uy85";
+string url = "http://localhost:8081";
 
 OpenClient openClient(appId, privateKeyFile, url);
 
@@ -32,10 +32,11 @@ int main() {
 //    });
 
     // 发送请求
-    neb::CJsonObject jsonObj = openClient.execute(&request);
-    std::cout << jsonObj.ToString() << std::endl;
-    std::cout << "id:" << jsonObj["id"].ToString() << std::endl;
-    std::cout << "is_vip:" << jsonObj["member_info"]["is_vip"].ToString() << std::endl;
+    Json::Value jsonObj = openClient.execute(&request);
+    std::cout << jsonObj << std::endl;
+    std::cout << "id:" << jsonObj["id"].asString() << std::endl;
+    std::cout << "name:" << jsonObj["name"].asString() << std::endl;
+    std::cout << "is_vip:" << jsonObj["member_info"]["is_vip"].asString() << std::endl;
     return 0;
 }
 

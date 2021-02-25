@@ -2,17 +2,11 @@
 #define SDK_CXX_OPENCLIENT_H
 
 #include <string>
+#include <json/json.h>
 #include "httplib.h"
 #include "../request/BaseRequest.h"
-#include "../thirdparty/CJsonObject/CJsonObject.hpp"
 
 using namespace std;
-
-struct HostInfo {
-    string host;
-    int port;
-    char *path;
-};
 
 /**
  * 请求客户端
@@ -21,6 +15,7 @@ class OpenClient {
 private:
     /** 应用id */
     string appId;
+    string url;
     /** 私钥文件路径 */
     string privateKeyFilePath;
 
@@ -39,18 +34,16 @@ public:
      * @param token token
      * @return 返回响应结果
      */
-    neb::CJsonObject execute(BaseRequest *request, const string& token);
+    Json::Value execute(BaseRequest *request, const string& token);
 
     /**
      * 发送请求
      * @param request 请求对象，BaseRequest的子类
      * @return 返回响应结果
      */
-    neb::CJsonObject execute(BaseRequest *request);
+    Json::Value execute(BaseRequest *request);
 
 private:
-
-    HostInfo hostInfo;
 
     map<string, string> buildParams(BaseRequest *request, const string& token);
 
@@ -59,7 +52,9 @@ private:
 
     static httplib::Params getParams(map<string, string> params);
 
-    static neb::CJsonObject parseResponse(const string& responseBody,BaseRequest *request);
+    static string getQuery(map<string, string> params);
+
+    static Json::Value parseResponse(const string& responseBody,BaseRequest *request);
 };
 
 
