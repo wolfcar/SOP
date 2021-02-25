@@ -7,6 +7,7 @@ import com.gitee.sop.servercommon.annotation.Open;
 import com.gitee.sop.servercommon.bean.OpenContext;
 import com.gitee.sop.servercommon.bean.ServiceContext;
 import com.gitee.sop.servercommon.exception.ServiceException;
+import com.gitee.sop.storyweb.controller.param.ArrayElementParam;
 import com.gitee.sop.storyweb.controller.param.CategoryParam;
 import com.gitee.sop.storyweb.controller.param.LargeTextParam;
 import com.gitee.sop.storyweb.controller.param.MemberInfoGetParam;
@@ -156,6 +157,16 @@ public class Example1001_BaseController {
         StoryResult result = new StoryResult();
         result.setId((long) story.getId());
         result.setName(story.getName() + ", ignoreValidate = true");
+        return result;
+    }
+
+    @ApiOperation(value = "接收数组", notes = "接收数组")
+    @Open(value = "story.listparam")
+    @PostMapping(value = "/get/listparam/v1")
+    public StoryResult listparam(@RequestBody ArrayElementParam story) {
+        StoryResult result = new StoryResult();
+        result.setId(11L);
+        result.setName(JSON.toJSONString(story));
         return result;
     }
 

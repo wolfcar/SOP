@@ -93,11 +93,7 @@ impl OpenClient {
         all_params.insert("charset", "UTF-8".to_string());
         all_params.insert("timestamp", Local::now().format("%Y-%m-%d %H:%M:%S").to_string());
         all_params.insert("version", version.to_string());
-
-        // 添加业务参数
-        for entry in &request.get_base().biz_model {
-            all_params.insert(entry.0, entry.1.to_string());
-        }
+        all_params.insert("biz_content", serde_json::to_string(&request.get_base().biz_model).unwrap_or(String::from("{}")));
 
         if !token.is_empty() {
             all_params.insert("app_auth_token", token.to_string());
