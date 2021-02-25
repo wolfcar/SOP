@@ -103,14 +103,12 @@ class OpenClient:
             'charset': 'UTF-8',
             'sign_type': 'RSA2',
             'timestamp': time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
-            'version': request.get_version()
+            'version': request.get_version(),
+            'biz_content': json.dumps(params)
         }
 
         if token is not None:
             all_params['access_token'] = token
-
-        # 添加业务参数
-        all_params.update(params)
 
         # 构建sign
         sign = SignUtil.create_sign(all_params, self.__private_key, 'RSA2')

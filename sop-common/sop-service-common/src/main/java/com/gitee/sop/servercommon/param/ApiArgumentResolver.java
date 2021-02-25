@@ -143,7 +143,6 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
         Object paramObj = this.getParamObject(methodParameter, nativeWebRequest);
         if (paramObj != null) {
             // JSR-303验证
-
             if (paramObj instanceof SingleParameterWrapper) {
                 SingleParameterWrapper parameterWrapper = (SingleParameterWrapper) paramObj;
                 paramValidator.validateBizParam(parameterWrapper.getWrapperObject());
@@ -203,10 +202,10 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
             return singleParameterWrapper;
         }
         Object param;
-        // 如果是json字符串
-        if (JSONValidator.from(bizContent).validate()) {
+        try {
             param = JSON.parseObject(bizContent, parameterType);
-        } else {
+        } catch (Exception e) {
+            log.error("非json参数，biz_content:{}, requestParams:{}", bizContent, requestParams);
             // 否则认为是 aa=1&bb=33 形式
             Map<String, Object> query = OpenUtil.parseQueryToMap(bizContent);
             param = new JSONObject(query).toJavaObject(parameterType);
