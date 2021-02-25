@@ -66,13 +66,11 @@ func parseResponseResult(iRequest IRequest, response string) []byte {
 	if err != nil {
 		panic(err)
 	}
-	requestId := responseRoot["request_id"].(string)
 	var responseDataMap = responseRoot["error_response"]
 	if responseDataMap == nil {
 		dataName := strings.ReplaceAll(iRequest.GetMethod(), ".", "_") + "_response"
 		responseDataMap = responseRoot[dataName]
 	}
-	responseDataMap.(map[string]interface{})["request_id"] = requestId
 	// json数据
 	dataJsonBytes, _ := json.Marshal(responseDataMap)
 	return dataJsonBytes
@@ -92,10 +90,12 @@ func (client OpenClient) buildParams(iRequest IRequest, params map[string]interf
 		allParams["access_token"] = token
 	}
 
+	bizParams := map[string]interface{}{}
 	// 添加业务参数
 	for k, v := range params {
-		allParams[k] = ToString(v)
+		bizParams[k] = v
 	}
+	allParams["biz_content"] = ToString(bizParams)
 
 	// 构建sign
 	sign := CreateSign(allParams, client.PrivateKey, "RSA2")
