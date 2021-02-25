@@ -18,6 +18,7 @@ function test() {
 
     // 设置业务参数
     request.bizModel = {
+        id: 111,
         name: 'jim'
     }
 
