@@ -130,12 +130,8 @@ const OpenClient = Class.create({
             'charset': 'UTF-8',
             'sign_type': 'RSA2',
             'timestamp': moment().format('YYYY-MM-DD HH:mm:ss'),
-            'version': request.getVersion()
-        }
-        const bizModel = request.bizModel
-
-        for (const key in bizModel) {
-            allParams[key] = bizModel[key]
+            'version': request.getVersion(),
+            'biz_content': JSON.stringify(request.bizModel)
         }
 
         if (token) {
