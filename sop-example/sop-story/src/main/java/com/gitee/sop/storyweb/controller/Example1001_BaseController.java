@@ -9,9 +9,12 @@ import com.gitee.sop.servercommon.bean.ServiceContext;
 import com.gitee.sop.servercommon.exception.ServiceException;
 import com.gitee.sop.storyweb.controller.param.CategoryParam;
 import com.gitee.sop.storyweb.controller.param.LargeTextParam;
+import com.gitee.sop.storyweb.controller.param.MemberInfoGetParam;
 import com.gitee.sop.storyweb.controller.param.StoryParam;
 import com.gitee.sop.storyweb.controller.param.TypeEnum;
 import com.gitee.sop.storyweb.controller.result.CategoryResult;
+import com.gitee.sop.storyweb.controller.result.MemberInfoGetResult;
+import com.gitee.sop.storyweb.controller.result.MemberInfoGetResultMemberInfo;
 import com.gitee.sop.storyweb.controller.result.StoryResult;
 import com.gitee.sop.storyweb.controller.result.TestResult;
 import com.gitee.sop.storyweb.controller.result.TreeResult;
@@ -262,6 +265,19 @@ public class Example1001_BaseController {
         Map<String, Object> map = new HashMap<>();
         map.put("data", list);
         return map;
+    }
+
+    @Open(value = "member.info.get")
+    @RequestMapping("/member/info/get")
+    public MemberInfoGetResult bigData(MemberInfoGetParam param) {
+        MemberInfoGetResult result = new MemberInfoGetResult();
+        MemberInfoGetResultMemberInfo memberInfo = new MemberInfoGetResultMemberInfo();
+        memberInfo.setIsVip((byte)1);
+        memberInfo.setVipEndtime(new Date());
+        result.setName(param.getName());
+        result.setId(11);
+        result.setMemberInfo(memberInfo);
+        return result;
     }
 
 }
