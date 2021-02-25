@@ -269,12 +269,12 @@ public class Example1001_BaseController {
 
     @Open(value = "member.info.get")
     @RequestMapping("/member/info/get")
-    public MemberInfoGetResult bigData(MemberInfoGetParam param) {
+    public MemberInfoGetResult memberInfoGet(MemberInfoGetParam param) {
         MemberInfoGetResult result = new MemberInfoGetResult();
         MemberInfoGetResultMemberInfo memberInfo = new MemberInfoGetResultMemberInfo();
         memberInfo.setIsVip((byte)1);
         memberInfo.setVipEndtime(new Date());
-        result.setName(param.getName());
+        result.setName(JSON.toJSONString(param));
         result.setId(11);
         result.setMemberInfo(memberInfo);
         return result;

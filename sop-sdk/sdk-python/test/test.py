@@ -48,7 +48,7 @@ class MyTestCase(unittest.TestCase):
         # for f in files.values():
         #     f.close()
 
-        if response.is_success():
+        if response.get('code') == '10000':
             print 'response: ', response
             print 'is_vip:', response.get('member_info').get('is_vip', 0)
         else:
