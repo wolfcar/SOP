@@ -76,7 +76,7 @@ public class IndexFilter implements WebFilter {
         if (enableRestful && path.startsWith(EnvironmentKeys.SOP_RESTFUL_PATH.getValue())) {
             return chain.filter(exchange);
         }
-        if (Objects.equals(path, indexPath)) {
+        if (Objects.equals(path, indexPath) || "".equals(path)) {
             if (request.getMethod() == HttpMethod.POST) {
                 ServerRequest serverRequest = ServerWebExchangeUtil.createReadBodyRequest(exchange);
                 // 读取请求体中的内容
@@ -140,9 +140,10 @@ public class IndexFilter implements WebFilter {
             validator.validate(apiParam);
             this.afterValidate(exchange, apiParam);
         } catch (ApiException e) {
-            log.error("验证失败，url:{}, ip:{}, params:{}, errorMsg:{}",
+            log.error("验证失败, errorMsg:{}，url:{}, ip:{}, params:{}",
+                    e.getMessage(),
                     exchange.getRequest().getURI().toString(),
-                    apiParam.fetchIp(), apiParam.toJSONString(), e.getMessage());
+                    apiParam.fetchIp(), apiParam.toJSONString());
             ServerWebExchangeUtil.setThrowable(exchange, e);
         }
     }

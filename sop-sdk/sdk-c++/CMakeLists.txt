@@ -17,13 +17,8 @@ set(LIB_SRC
         request/MemberInfoGetRequest.hpp
         thirdparty/base64/base64.h
         thirdparty/base64/base64.cpp
-        thirdparty/CJsonObject/cJSON.c
-        thirdparty/CJsonObject/cJSON.h
-        thirdparty/CJsonObject/CJsonObject.hpp
-        thirdparty/CJsonObject/CJsonObject.cpp
-        thirdparty/x2struct/x2struct.hpp
         common/sign.cpp common/tool.cpp common/sha256.cpp
-        request/BaseRequest.cpp response/BaseResponse.h response/MemberInfoGetResponse.h)
+        request/BaseRequest.cpp)
 
 # openssl安装路径
 set(OPENSSL_INC_DIR /usr/local/opt/openssl/include)
@@ -35,8 +30,16 @@ link_libraries(ssl crypto)
 
 # 添加类库
 add_library(lib ${LIB_SRC})
+# jsoncpp
+add_library(jsoncpp SHARED IMPORTED)
+set_target_properties(jsoncpp PROPERTIES
+        IMPORTED_LOCATION "/usr/local/lib/libjsoncpp.dylib"
+        INTERFACE_INCLUDE_DIRECTORIES "/usr/local/include/json"
+        )
+
 # 添加可执行文件
 add_executable(sdk_cxx main.cpp)
 
 # 可执行文件依赖lib库
 target_link_libraries(sdk_cxx lib ssl)
+target_link_libraries(sdk_cxx jsoncpp)

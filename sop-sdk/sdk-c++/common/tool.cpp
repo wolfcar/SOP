@@ -1,5 +1,5 @@
-#include <clocale>
 #include "tool.h"
+#include "json/json.h"
 #include <map>
 #include <fstream>
 #include <sstream>
@@ -21,49 +21,6 @@ namespace tool {
         return tmp;
     }
 
-    int parse_url(char *url, char **serverstrp, int *portp, char **pathstrp) {
-        char buf[256];
-        int serverlen, numread = 0;
-        /* go through the url */
-
-        /* reset url to point PAST the http:// */
-
-        /* assume it's always 7 chars! */
-        string _url = url;
-        bool isHttps = startWith(_url, "https");
-        int len = 7;
-        if (isHttps) {
-            len = 8;
-        }
-        url = url + len;
-        /* no http:// now... server is simply up to the next / or : */
-
-        sscanf(url, "%255[^/:]", buf);
-        serverlen = strlen(buf);
-        *serverstrp = (char *) malloc(serverlen + 1);
-        strcpy(*serverstrp, buf);
-        if (url[serverlen] == ':') {
-            /* get the port */
-
-            sscanf(&url[serverlen + 1], "%d%n", portp, &numread);
-            /* add one to go PAST it */
-
-            numread++;
-
-        } else {
-            if (isHttps) {
-                *portp = 443;
-            } else {
-                *portp = 80;
-            }
-
-        }
-        /* the path is a pointer into the rest of url */
-
-        *pathstrp = &url[serverlen + numread];
-        return 0;
-    }
-
     std::string url_encode(const std::string &str) {
         std::string strTemp = "";
         size_t length = str.length();
@@ -75,7 +32,7 @@ namespace tool {
                 (str[i] == '~'))
                 strTemp += str[i];
             else if (str[i] == ' ')
-                strTemp += "+";
+                strTemp += "%20";
             else {
                 strTemp += '%';
                 strTemp += ToHex((unsigned char) str[i] >> 4);
@@ -117,13 +74,12 @@ namespace tool {
     }
 
     string mapToJson(std::map<string, string> map_info) {
-//        Json::Value jObject;
-//        for (map<string, string>::const_iterator iter = map_info.begin( ); iter != map_info.end( ); ++iter)
-//        {
-//            jObject[iter->first] = iter->second;
-//        }
-//        return jObject.toStyledString();
-        return "{}";
+        Json::Value jObject;
+        for (map<string, string>::const_iterator iter = map_info.begin( ); iter != map_info.end( ); ++iter)
+        {
+            jObject[iter->first] = iter->second;
+        }
+        return jObject.toStyledString();
     }
 
     string getFilename(string filepath) {

@@ -16,8 +16,6 @@ namespace tool {
 
     string getTime();
 
-    int parse_url(char *url, char **serverstrp, int *portp, char **pathstrp);
-
     std::string url_encode(const std::string &szToEncode);
 
     std::string url_decode(const std::string &SRC);
