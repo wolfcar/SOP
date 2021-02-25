@@ -90,6 +90,7 @@ impl OpenClient {
         let mut all_params = HashMap::new();
         all_params.insert("app_id", self.app_id.to_string());
         all_params.insert("method", method.to_string());
+        all_params.insert("sign_type", "RSA2".to_string());
         all_params.insert("charset", "UTF-8".to_string());
         all_params.insert("timestamp", Local::now().format("%Y-%m-%d %H:%M:%S").to_string());
         all_params.insert("version", version.to_string());
