@@ -4,6 +4,7 @@
 
 - 升级`spring-boot/spring-cloud/spring-cloud-alibaba`版本
 - 修复`DataBufferLimitException: Exceeded limit on max bytes to buffer : 262144`问题
+- 修复压测出现`ClosedChannelException`问题
 
 ## 4.2.7
 
