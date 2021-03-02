@@ -152,7 +152,7 @@ public class Example1001_BaseController {
     // 忽略验证
     @ApiOperation(value = "忽略签名验证", notes = "忽略签名验证")
     @Open(value = "story.get.ignore", ignoreValidate = true)
-    @PostMapping(value = "/get/ignore/v1")
+    @RequestMapping(value = "/get/ignore/v1")
     public StoryResult getStory21(@RequestBody StoryParam story) {
         StoryResult result = new StoryResult();
         result.setId((long) story.getId());

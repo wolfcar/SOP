@@ -73,6 +73,11 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>io.projectreactor.netty</groupId>
+				<artifactId>reactor-netty</artifactId>
+				<version>0.8.19.RELEASE</version>
+			</dependency>
 			<!-- 加了这个就不需要加版本号了 -->
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
