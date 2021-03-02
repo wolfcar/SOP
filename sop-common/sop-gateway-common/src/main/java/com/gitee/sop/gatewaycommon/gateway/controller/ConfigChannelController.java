@@ -14,7 +14,9 @@ import com.gitee.sop.gatewaycommon.manager.RouteConfigManager;
 import com.gitee.sop.gatewaycommon.secret.IsvManager;
 import com.gitee.sop.gatewaycommon.util.RequestUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -45,9 +47,12 @@ public class ConfigChannelController {
     @Value("${sop.secret}")
     private String secret;
 
+    @Autowired
+    private ServerCodecConfigurer codecConfigurer;
+
     @PostMapping("/sop/configChannelMsg")
     public Mono<String> configChannel(ServerWebExchange exchange) {
-        ServerRequest serverRequest = ServerWebExchangeUtil.createReadBodyRequest(exchange);
+        ServerRequest serverRequest = ServerWebExchangeUtil.createReadBodyRequest(exchange, codecConfigurer);
         // 读取请求体中的内容
         return serverRequest.bodyToMono(String.class)
                 .flatMap(requestJson -> {

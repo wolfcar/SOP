@@ -16,13 +16,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.codec.HttpMessageReader;
+import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
-import org.springframework.web.reactive.function.server.HandlerStrategies;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilterChain;
@@ -47,8 +46,6 @@ public class ServerWebExchangeUtil {
 
     private static final FormHttpMessageConverter formHttpMessageConverter = new FormHttpMessageConverter();
 
-    private static final List<HttpMessageReader<?>> messageReaders = HandlerStrategies.withDefaults().messageReaders();
-
     /**
      * 重定向
      *
@@ -70,10 +67,11 @@ public class ServerWebExchangeUtil {
      * 构建一个接受请求体的request
      *
      * @param exchange exchange
+     * @param codecConfigurer codecConfigurer
      * @return 返回ServerRequest
      */
-    public static ServerRequest createReadBodyRequest(ServerWebExchange exchange) {
-        return ServerRequest.create(exchange, messageReaders);
+    public static ServerRequest createReadBodyRequest(ServerWebExchange exchange, ServerCodecConfigurer codecConfigurer) {
+        return ServerRequest.create(exchange, codecConfigurer.getReaders());
     }
 
     public static String getRestfulPath(String path, String prefix) {

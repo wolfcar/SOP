@@ -7,6 +7,7 @@ import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.util.unit.DataSize;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -31,9 +32,17 @@ public class SopGatewayEnvironmentPostProcessor implements EnvironmentPostProces
         }
         try {
             properties.load(resource.getInputStream());
+            this.initMemSize(properties);
             return new PropertiesPropertySource(resource.getFilename(), properties);
         } catch (IOException ex) {
             throw new IllegalStateException("加载配置文件失败" + resource, ex);
         }
     }
+
+    private void initMemSize(Properties properties) {
+        String size = properties.getProperty("spring.servlet.multipart.max-file-size", "10M");
+        DataSize dataSize = DataSize.parse(size);
+        properties.putIfAbsent("spring.codec.max-in-memory-size", dataSize.toBytes());
+    }
+
 }
