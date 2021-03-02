@@ -93,7 +93,7 @@ public abstract class BaseExecutorAdapter<T, R> implements ResultExecutor<T, R> 
         serviceResult = formatResult(serviceResult);
         boolean isMergeResult = this.isMergeResult(request);
         int responseStatus = this.getResponseStatus(request);
-        this.doAfterRoute(serviceResult, responseStatus, request);
+//        this.doAfterRoute(serviceResult, responseStatus, request);
         String finalResult;
         if (isMergeResult) {
             Map<String, Object> responseData = this.parseServiceResult(serviceResult, responseStatus, request);
