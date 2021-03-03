@@ -42,7 +42,7 @@ public class SopGatewayEnvironmentPostProcessor implements EnvironmentPostProces
     private void initMemSize(Properties properties) {
         String maxFileSizeKey = "spring.servlet.multipart.max-file-size";
         String maxMemSizeKey = "spring.codec.max-in-memory-size";
-        String defaultSize = "10M";
+        String defaultSize = "10MB";
         String maxUploadSize = properties.getProperty(maxFileSizeKey, defaultSize);
         String maxBodySize = properties.getProperty(maxMemSizeKey, defaultSize);
         long size = Math.max(DataSize.parse(maxUploadSize).toBytes(), DataSize.parse(maxBodySize).toBytes());
