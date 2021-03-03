@@ -1,5 +1,11 @@
 # changelog
 
+## 4.3.0
+
+- 升级`spring-boot/spring-cloud/spring-cloud-alibaba`版本
+- 修复`DataBufferLimitException: Exceeded limit on max bytes to buffer : 262144`问题
+- 修复压测出现`ClosedChannelException`，`Connection has been closed BEFORE response`问题
+
 ## 4.2.7
 
 - 修复两个微服务相同path问题
