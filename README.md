@@ -132,10 +132,12 @@ System.out.println(responseData);
 
 ## 分支说明
 
-- master：发版分支（当前为4.0版本）
+- master：发版分支
 - develop：日常开发分支
 - eureka：使用eureka注册中心
 - pr：接受PR的分支，提交PR请提交到此分支
+
+[更新说明](./changelog.md)
 
 ## 相关文档
 
