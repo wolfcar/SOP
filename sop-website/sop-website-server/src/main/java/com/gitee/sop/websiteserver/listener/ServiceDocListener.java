@@ -22,6 +22,7 @@ public class ServiceDocListener extends BaseServiceListener {
 
     @Override
     public void onRemoveService(String serviceId) {
+        log.info("服务下线，删除文档，serviceId: {}", serviceId);
         docManager.remove(serviceId);
     }
 
