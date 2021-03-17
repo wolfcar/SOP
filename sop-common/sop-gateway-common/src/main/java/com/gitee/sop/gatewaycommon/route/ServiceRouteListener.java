@@ -45,11 +45,23 @@ public class ServiceRouteListener extends BaseServiceListener {
         ResponseEntity<String> responseEntity = getRestTemplate().getForEntity(url, String.class);
         if (responseEntity.getStatusCode() == HttpStatus.OK) {
             String body = responseEntity.getBody();
-            ServiceRouteInfo serviceRouteInfo = JSON.parseObject(body, ServiceRouteInfo.class);
+            ServiceRouteInfo serviceRouteInfo;
+            try {
+                serviceRouteInfo =  this.parseServiceRouteInfo(body);
+            } catch (Exception e) {
+                log.error("解析路由配置错误，body:{}", body, e);
+                return;
+            }
             gatewayRouteCache.load(serviceRouteInfo, callback -> routesProcessor.saveRoutes(serviceRouteInfo, instance));
         } else {
             log.error("拉取路由配置异常，url: {}, status: {}, body: {}", url, responseEntity.getStatusCodeValue(), responseEntity.getBody());
         }
+    }
+
+    private ServiceRouteInfo parseServiceRouteInfo(String body) {
+        ServiceRouteInfo serviceRouteInfo = JSON.parseObject(body, ServiceRouteInfo.class);
+        serviceRouteInfo.setServiceId(serviceRouteInfo.getServiceId().toLowerCase());
+        return serviceRouteInfo;
     }
 
     protected HttpEntity<String> getHttpEntity() {
