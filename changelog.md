@@ -1,5 +1,9 @@
 # changelog
 
+## 4.3.1
+
+- 修复serviceId有大小写出现404问题
+
 ## 4.3.0
 
 - 升级`spring-boot/spring-cloud/spring-cloud-alibaba`版本
