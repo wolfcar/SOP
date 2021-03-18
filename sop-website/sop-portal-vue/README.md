@@ -10,8 +10,10 @@ npm install
 
 npm run docs:dev
 
-- 构建
+- 部署
 
 npm run docs:build
 
 结果在：`docs/.vuepress/dist`
+
+将`dist`文件夹放到静态服务器
