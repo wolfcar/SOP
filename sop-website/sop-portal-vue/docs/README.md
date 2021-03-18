@@ -3,8 +3,8 @@ home: true
 heroImage: /assets/images/hero.jpeg
 heroText: 开放平台
 tagline: 一句话描述你的平台。。
-actionText: null
-actionLink: null
+actionText: 立即开始
+actionLink: http://baidu.com
 features:
 - title: 更快
   details: 开放接口更快。。
