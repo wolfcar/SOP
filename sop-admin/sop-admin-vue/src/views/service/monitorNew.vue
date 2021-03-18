@@ -172,8 +172,8 @@
         :page-sizes="[5, 10, 20, 40]"
         :total="errorMsgData.pageInfo.total"
         layout="total, sizes, prev, pager, next"
-        @size-change="onSizeChange"
-        @current-change="onPageIndexChange"
+        @size-change="onErrorSizeChange"
+        @current-change="onErrorPageIndexChange"
       />
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="logDetailVisible = false">关 闭</el-button>
@@ -248,6 +248,7 @@ export default {
       this.confirm('确认标记为已解决吗？', function(done) {
         this.post('monitornew.error.solve', { routeId: row.routeId, errorId: row.errorId }, function(resp) {
           done()
+          this.errorMsgFormData.pageIndex = 1
           this.loadErrorData()
         })
       })
@@ -255,19 +256,28 @@ export default {
     onCloseErrorDlg: function() {
       this.loadTable()
     },
+    onErrorSizeChange: function(size) {
+      this.errorMsgFormData.pageSize = size
+      this.loadErrorData()
+    },
+    onErrorPageIndexChange: function(pageIndex) {
+      this.errorMsgFormData.pageIndex = pageIndex
+      this.loadErrorData()
+    },
     onSizeChange: function(size) {
       this.searchFormData.pageSize = size
+      this.loadTable()
+    },
+    onPageIndexChange: function(pageIndex) {
+      this.searchFormData.pageIndex = pageIndex
       this.loadTable()
     },
     onAdd: function() {
       this.dialogTitle = '新增IP'
       this.dialogVisible = true
       this.dialogFormData.id = 0
-    },
-    onPageIndexChange: function(pageIndex) {
-      this.searchFormData.pageIndex = pageIndex
-      this.loadTable()
     }
+
   }
 }
 </script>
