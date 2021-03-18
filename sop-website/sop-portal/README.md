@@ -1,4 +1,6 @@
-# 门户网站
+# 门户网站（不推荐，请使用sop-portal-vue）
+
+> 不推荐，请使用`sop-portal-vue`
 
 纯静态网站，作为开放平台基本介绍使用，可独立部署，logo制作：http://www.uugai.com/
 
