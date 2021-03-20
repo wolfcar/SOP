@@ -20,8 +20,8 @@ module.exports = {
         searchMaxSuggestions: 10,
         // 导航按钮配置
         nav: [
-            { text: '登录', link: 'http://baidu.com' },
-            { text: '免费注册', link: 'http://baidu.com' },
+            { text: '登录', link: 'http://localhost:8083/index.html#/login' },
+            { text: '免费注册', link: 'http://localhost:8083/index.html#/isvReg' },
         ],
     },
     // 派生主题，https://www.vuepress.cn/theme/inheritance.html#%E6%A6%82%E5%BF%B5
