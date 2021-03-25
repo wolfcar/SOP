@@ -56,6 +56,8 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
 
     private final Map<MethodParameter, HandlerMethodArgumentResolver> argumentResolverCache = new ConcurrentHashMap<>(256);
 
+    private static List<MethodParameter> NEED_INIT_OPEN_CONTEXT = new ArrayList<>(16);
+
     private ParamValidator paramValidator = new ServiceParamValidator();
 
     private static Class<?> pushBuilder;
@@ -89,8 +91,8 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
             return false;
         }
         Class<?> paramType = methodParameter.getParameterType();
-        // 排除的
-        boolean exclude = (
+        // 特殊参数
+        boolean special = (
                 WebRequest.class.isAssignableFrom(paramType) ||
                         ServletRequest.class.isAssignableFrom(paramType) ||
                         MultipartRequest.class.isAssignableFrom(paramType) ||
@@ -107,12 +109,17 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
                         OutputStream.class.isAssignableFrom(paramType) ||
                         Writer.class.isAssignableFrom(paramType)
         );
-        // 除此之外都匹配
-        boolean support = !exclude;
-        if (support) {
-            this.wrapSingleParam(methodParameter, open);
+        // 特殊参数只需要初始化OpenContext
+        if (special) {
+            NEED_INIT_OPEN_CONTEXT.add(methodParameter);
         }
-        return support;
+        this.wrapSingleParam(methodParameter, open);
+        return true;
+    }
+
+
+    private boolean isOnlyInitOpenContext(MethodParameter methodParameter) {
+        return NEED_INIT_OPEN_CONTEXT.contains(methodParameter);
     }
 
     /**
@@ -136,6 +143,20 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
             , NativeWebRequest nativeWebRequest
             , WebDataBinderFactory webDataBinderFactory
     ) throws Exception {
+        // 特殊参数只需要初始化OpenContext
+        if (isOnlyInitOpenContext(methodParameter)) {
+            this.initOpenContextImpl(nativeWebRequest);
+            HandlerMethodArgumentResolver resolver = getOtherArgumentResolver(methodParameter);
+            if (resolver != null) {
+                return resolver.resolveArgument(
+                        methodParameter
+                        , modelAndViewContainer
+                        , nativeWebRequest
+                        , webDataBinderFactory
+                );
+            }
+            return null;
+        }
         nativeWebRequest = new SopServletWebRequest(
                 (HttpServletRequest) nativeWebRequest.getNativeRequest(),
                 (HttpServletResponse) nativeWebRequest.getNativeResponse()
@@ -170,6 +191,14 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
         return null;
     }
 
+    private OpenContextImpl initOpenContextImpl(NativeWebRequest nativeWebRequest) {
+        HttpServletRequest request = (HttpServletRequest) nativeWebRequest.getNativeRequest();
+        ServiceContext currentContext = ServiceContext.getCurrentContext();
+        JSONObject requestParams = OpenUtil.getRequestParams(request);
+        OpenContextImpl openContext = new OpenContextImpl(requestParams);
+        currentContext.setOpenContext(openContext);
+        return openContext;
+    }
 
     /**
      * 获取参数对象，将request中的参数绑定到实体对象中去
@@ -180,11 +209,10 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
      */
     protected Object getParamObject(MethodParameter methodParameter, NativeWebRequest nativeWebRequest) {
         HttpServletRequest request = (HttpServletRequest) nativeWebRequest.getNativeRequest();
-        ServiceContext currentContext = ServiceContext.getCurrentContext();
-        JSONObject requestParams = OpenUtil.getRequestParams(request);
-        OpenContextImpl openContext = new OpenContextImpl(requestParams);
-        currentContext.setOpenContext(openContext);
-        String bizContent = requestParams.getString(ParamNames.BIZ_CONTENT_NAME);
+        OpenContextImpl openContext = initOpenContextImpl(nativeWebRequest);
+        Map<String, Object> requestParams = openContext.getParameterMap();
+        Object bizObj = requestParams.get(ParamNames.BIZ_CONTENT_NAME);
+        String bizContent = bizObj == null ? null : bizObj.toString();
         if (bizContent == null) {
             return null;
         }
