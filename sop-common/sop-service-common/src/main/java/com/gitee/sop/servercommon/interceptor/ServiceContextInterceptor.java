@@ -40,11 +40,15 @@ public class ServiceContextInterceptor extends HandlerInterceptorAdapter {
         if (handler instanceof HandlerMethod) {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
             Open open = handlerMethod.getMethodAnnotation(Open.class);
-            if (open != null && handlerMethod.getMethodParameters().length == 0) {
+            if (open != null && getArrayLength(handlerMethod.getMethodParameters()) == 0) {
                 JSONObject requestParams = OpenUtil.getRequestParams(request);
                 OpenContextImpl openContext = new OpenContextImpl(requestParams);
                 context.setOpenContext(openContext);
             }
         }
+    }
+
+    private static <T> int getArrayLength(T[] arr) {
+        return arr == null ? 0 : arr.length;
     }
 }
