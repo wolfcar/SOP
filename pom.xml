@@ -11,7 +11,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.gitee.sop</groupId>
 	<artifactId>sop-parent</artifactId>
-	<version>4.3.1-SNAPSHOT</version>
+	<version>4.3.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>一个开放平台解决方案项目，基于Spring Cloud实现，目标是能够让用户快速得搭建起自己的开放平台</description>
 
