@@ -389,6 +389,21 @@ public class AllInOneTest extends TestBase {
         client.execute(requestBuilder);
     }
 
+    public void testParamSystem() {
+        String token = "asdfasdfadsf";
+        Client.RequestBuilder requestBuilder = new Client.RequestBuilder()
+                .method("story.system.param.get3")
+                .version("1.0")
+                .appAuthToken(token)
+                .httpMethod(HttpTool.HTTPMethod.GET)
+                .callback((requestInfo, responseData) -> {
+                    System.out.println(responseData);
+                    Assert.assertTrue(responseData.contains(token));
+                });
+
+        client.execute(requestBuilder);
+    }
+
     static class BizContent extends HashMap<String, Object> {
         public BizContent add(String key, Object value) {
             this.put(key, value);

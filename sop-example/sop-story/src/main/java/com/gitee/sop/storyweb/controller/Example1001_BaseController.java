@@ -121,6 +121,17 @@ public class Example1001_BaseController {
         return result;
     }
 
+    @Open(value = "story.system.param.get3")
+    @GetMapping("/get/system/param/v3")
+    public StoryResult systemParam3(HttpServletRequest request) {
+        System.out.println(request.getParameter("app_id"));
+        StoryResult result = new StoryResult();
+        OpenContext openContext = ServiceContext.getCurrentContext().getOpenContext();
+        String token = openContext.getAppAuthToken();
+        result.setName(token);
+        return result;
+    }
+
     // 参数绑定，少量参数可以这样写，参数多了建议放进类里面
     @Open(value = "story.oneparam")
     @GetMapping("/oneParam/v1")
