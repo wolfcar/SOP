@@ -1,5 +1,9 @@
 # changelog
 
+## 4.3.2
+
+- 修复微服务方法没有参数时获取不到OpenContext问题
+
 ## 4.3.1
 
 - 修复serviceId有大小写出现404问题

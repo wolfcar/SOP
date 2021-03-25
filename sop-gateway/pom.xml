@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.gitee.sop</groupId>
         <artifactId>sop-parent</artifactId>
-        <version>4.3.1-SNAPSHOT</version>
+        <version>4.3.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
     </parent>
 
