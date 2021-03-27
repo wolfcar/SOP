@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * eureka接口实现
@@ -29,11 +31,11 @@ public class RegistryServiceEurekaImpl implements RegistryService {
     private OkHttpClient client = new OkHttpClient();
 
     @Value("${eureka.client.serviceUrl.defaultZone:}")
-    private String eurekaUrl;
+    private String eurekaUrls;
 
     @Override
     public List<ServiceInfo> listAllService(int pageNo, int pageSize) throws Exception {
-        if (StringUtils.isBlank(eurekaUrl)) {
+        if (StringUtils.isBlank(eurekaUrls)) {
             throw new IllegalArgumentException("未指定eureka.client.serviceUrl.defaultZone参数");
         }
         String json = this.requestEurekaServer(EurekaUri.QUERY_APPS);
@@ -81,7 +83,7 @@ public class RegistryServiceEurekaImpl implements RegistryService {
     }
 
     private String requestEurekaServer(EurekaUri eurekaUri, String... args) throws IOException {
-        Request request = eurekaUri.getRequest(this.eurekaUrl, args);
+        Request request = eurekaUri.getRequest(getFirstDefaultZoneServiceUrl(), args);
         Response response = client.newCall(request).execute();
         if (response.isSuccessful()) {
             return response.body().string();
@@ -89,6 +91,24 @@ public class RegistryServiceEurekaImpl implements RegistryService {
             log.error("操作失败，url:{}, msg:{}, code:{}", eurekaUri.getUri(args), response.message(), response.code());
             throw new RuntimeException("操作失败");
         }
+    }
+
+    private List<String> getDefaultZoneServiceUrls() {
+        if (!StringUtils.isEmpty(eurekaUrls)) {
+            return Stream.of(org.springframework.util.StringUtils.commaDelimitedListToStringArray(eurekaUrls))
+                    .map(url -> !url.endsWith("/") ? (url += "/").trim() : url.trim())
+                    .collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    private String getFirstDefaultZoneServiceUrl() {
+        List<String> serviceUrls = getDefaultZoneServiceUrls();
+        if (CollectionUtils.isEmpty(serviceUrls)) {
+            throw new IllegalArgumentException("未指定eureka.client.serviceUrl.defaultZone参数");
+        }
+        return serviceUrls.get(0);
     }
 
 }
