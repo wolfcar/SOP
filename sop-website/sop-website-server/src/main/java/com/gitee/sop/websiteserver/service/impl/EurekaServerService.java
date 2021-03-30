@@ -12,12 +12,14 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author tanghc
@@ -28,11 +30,11 @@ public class EurekaServerService implements ServerService  {
     private OkHttpClient client = new OkHttpClient();
 
     @Value("${eureka.client.serviceUrl.defaultZone:}")
-    private String eurekaUrl;
+    private String eurekaUrls;
 
     @Override
     public List<String> listServerHost(String serviceId) {
-        if (StringUtils.isBlank(eurekaUrl)) {
+        if (StringUtils.isBlank(eurekaUrls)) {
             throw new IllegalArgumentException("未指定eureka.client.serviceUrl.defaultZone参数");
         }
         Objects.requireNonNull(serviceId, "serviceId can not be null");
@@ -58,7 +60,7 @@ public class EurekaServerService implements ServerService  {
     }
 
     private String requestEurekaServer(EurekaUri eurekaUri, String... args) throws IOException {
-        Request request = eurekaUri.getRequest(this.eurekaUrl, args);
+        Request request = eurekaUri.getRequest(this.getFirstDefaultZoneServiceUrl(), args);
         Response response = client.newCall(request).execute();
         if (response.isSuccessful()) {
             return response.body().string();
@@ -66,5 +68,23 @@ public class EurekaServerService implements ServerService  {
             log.error("操作失败，url:{}, msg:{}, code:{}", eurekaUri.getUri(args), response.message(), response.code());
             throw new RuntimeException("操作失败");
         }
+    }
+
+    private List<String> getDefaultZoneServiceUrls() {
+        if (!StringUtils.isEmpty(eurekaUrls)) {
+            return Stream.of(org.springframework.util.StringUtils.commaDelimitedListToStringArray(eurekaUrls))
+                    .map(url -> !url.endsWith("/") ? (url += "/").trim() : url.trim())
+                    .collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    private String getFirstDefaultZoneServiceUrl() {
+        List<String> serviceUrls = getDefaultZoneServiceUrls();
+        if (CollectionUtils.isEmpty(serviceUrls)) {
+            throw new IllegalArgumentException("未指定eureka.client.serviceUrl.defaultZone参数");
+        }
+        return serviceUrls.get(0);
     }
 }
