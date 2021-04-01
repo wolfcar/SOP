@@ -209,7 +209,11 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
      */
     protected Object getParamObject(MethodParameter methodParameter, NativeWebRequest nativeWebRequest) {
         HttpServletRequest request = (HttpServletRequest) nativeWebRequest.getNativeRequest();
-        OpenContextImpl openContext = initOpenContextImpl(nativeWebRequest);
+        ServiceContext currentContext = ServiceContext.getCurrentContext();
+        OpenContextImpl openContext = (OpenContextImpl)currentContext.getOpenContext();
+        if (openContext == null) {
+            openContext = initOpenContextImpl(nativeWebRequest);
+        }
         Map<String, Object> requestParams = openContext.getParameterMap();
         Object bizObj = requestParams.get(ParamNames.BIZ_CONTENT_NAME);
         String bizContent = bizObj == null ? null : bizObj.toString();

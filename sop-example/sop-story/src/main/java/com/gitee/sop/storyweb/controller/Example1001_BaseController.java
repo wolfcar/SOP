@@ -9,6 +9,7 @@ import com.gitee.sop.servercommon.bean.ServiceContext;
 import com.gitee.sop.servercommon.exception.ServiceException;
 import com.gitee.sop.storyweb.controller.param.ArrayElementParam;
 import com.gitee.sop.storyweb.controller.param.CategoryParam;
+import com.gitee.sop.storyweb.controller.param.GoodsParam;
 import com.gitee.sop.storyweb.controller.param.LargeTextParam;
 import com.gitee.sop.storyweb.controller.param.MemberInfoGetParam;
 import com.gitee.sop.storyweb.controller.param.StoryParam;
@@ -130,6 +131,12 @@ public class Example1001_BaseController {
         String token = openContext.getAppAuthToken();
         result.setName(token);
         return result;
+    }
+
+    @Open("story.system.param.get4")
+    @RequestMapping("/get/system/param/v4")
+    public Object addGoods3(HttpServletRequest request, StoryParam param) {
+        return param;
     }
 
     // 参数绑定，少量参数可以这样写，参数多了建议放进类里面
