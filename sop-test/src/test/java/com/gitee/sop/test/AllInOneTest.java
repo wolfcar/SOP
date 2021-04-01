@@ -404,6 +404,24 @@ public class AllInOneTest extends TestBase {
         client.execute(requestBuilder);
     }
 
+    public void testParamBind() {
+        Client.RequestBuilder requestBuilder = new Client.RequestBuilder()
+                .method("story.system.param.get4")
+                .version("1.0")
+                .bizContent(new BizContent().add("id", "1").add("name", "葫芦娃"))
+                .postJson(true)
+                .httpMethod(HttpTool.HTTPMethod.POST)
+                .callback((requestInfo, responseData) -> {
+                    System.out.println(responseData);
+                    String node = requestInfo.getDataNode();
+                    JSONObject jsonObject = JSON.parseObject(responseData).getJSONObject(node);
+                    Assert.assertEquals(1L, jsonObject.getLongValue("id"));
+                    Assert.assertEquals("葫芦娃", jsonObject.getString("name"));
+                });
+
+        client.execute(requestBuilder);
+    }
+
     static class BizContent extends HashMap<String, Object> {
         public BizContent add(String key, Object value) {
             this.put(key, value);
