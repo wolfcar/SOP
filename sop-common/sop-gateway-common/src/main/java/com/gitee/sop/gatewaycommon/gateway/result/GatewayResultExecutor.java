@@ -24,6 +24,7 @@ import org.springframework.web.util.UriUtils;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 
 /**
@@ -36,27 +37,24 @@ public class GatewayResultExecutor extends BaseExecutorAdapter<ServerWebExchange
     @Override
     public int getResponseStatus(ServerWebExchange exchange) {
         HttpStatus statusCode = exchange.getResponse().getStatusCode();
-        int responseStatus = statusCode.value();
-        List<String> errorCodeList = exchange.getResponse().getHeaders().get(SopConstants.X_SERVICE_ERROR_CODE);
-        if (!CollectionUtils.isEmpty(errorCodeList)) {
-            String errorCode = errorCodeList.get(0);
-            responseStatus = Integer.parseInt(errorCode);
+        return ServerWebExchangeUtil.getHeaderValue(exchange, SopConstants.X_SERVICE_ERROR_CODE)
+                .map(Integer::parseInt)
+                .orElse(statusCode.value());
+    }
+
+    @Override
+    public Optional<String> getServiceResultForError(ServerWebExchange exchange, int status) {
+        if (status == HttpStatus.OK.value()) {
+            return Optional.empty();
         }
-        return responseStatus;
+        return ServerWebExchangeUtil.getHeaderValue(exchange, SopConstants.X_SERVICE_ERROR_RESPONSE);
     }
 
     @Override
     public String getResponseErrorMessage(ServerWebExchange exchange) {
-        String errorMsg = null;
-        List<String> errorMessageList = exchange.getResponse().getHeaders().get(SopConstants.X_SERVICE_ERROR_MESSAGE);
-        if (!CollectionUtils.isEmpty(errorMessageList)) {
-            errorMsg = errorMessageList.get(0);
-        }
-        if (StringUtils.hasText(errorMsg)) {
-            errorMsg = UriUtils.decode(errorMsg, StandardCharsets.UTF_8);
-        }
-        exchange.getResponse().getHeaders().remove(SopConstants.X_SERVICE_ERROR_MESSAGE);
-        return errorMsg;
+        return ServerWebExchangeUtil.getHeaderValue(exchange, SopConstants.X_SERVICE_ERROR_MESSAGE)
+                .map(msg -> UriUtils.decode(msg, StandardCharsets.UTF_8))
+                .orElse(null);
     }
 
     @Override
@@ -71,14 +69,15 @@ public class GatewayResultExecutor extends BaseExecutorAdapter<ServerWebExchange
 
     @Override
     protected RouteInterceptorContext getRouteInterceptorContext(ServerWebExchange exchange) {
-        return (RouteInterceptorContext) exchange.getAttributes().get(SopConstants.CACHE_ROUTE_INTERCEPTOR_CONTEXT);
+        RouteInterceptorContext routeInterceptorContext = exchange.getAttribute(SopConstants.CACHE_ROUTE_INTERCEPTOR_CONTEXT);
+        ServiceInstance serviceInstance = exchange.getAttribute(SopConstants.TARGET_SERVICE);
+        DefaultRouteInterceptorContext context = (DefaultRouteInterceptorContext) routeInterceptorContext;
+        context.setServiceInstance(serviceInstance);
+        return routeInterceptorContext;
     }
 
     @Override
     protected void bindRouteInterceptorContextProperties(RouteInterceptorContext routeInterceptorContext, ServerWebExchange requestContext) {
-        ServiceInstance serviceInstance = requestContext.getAttribute(SopConstants.TARGET_SERVICE);
-        DefaultRouteInterceptorContext context = (DefaultRouteInterceptorContext) routeInterceptorContext;
-        context.setServiceInstance(serviceInstance);
     }
 
     @Override

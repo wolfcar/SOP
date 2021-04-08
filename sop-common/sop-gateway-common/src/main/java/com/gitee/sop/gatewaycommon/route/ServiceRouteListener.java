@@ -2,17 +2,24 @@ package com.gitee.sop.gatewaycommon.route;
 
 import com.alibaba.fastjson.JSON;
 import com.gitee.sop.gatewaycommon.bean.InstanceDefinition;
+import com.gitee.sop.gatewaycommon.bean.RouteDefinition;
+import com.gitee.sop.gatewaycommon.bean.ServiceBeanInitializer;
 import com.gitee.sop.gatewaycommon.bean.ServiceRouteInfo;
 import com.gitee.sop.gatewaycommon.gateway.route.GatewayRouteCache;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.DigestUtils;
 
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author tanghc
@@ -30,6 +37,9 @@ public class ServiceRouteListener extends BaseServiceListener {
     @Autowired
     private RoutesProcessor routesProcessor;
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
     @Override
     public void onRemoveService(String serviceId) {
         log.info("服务下线，删除路由配置，serviceId: {}", serviceId);
@@ -39,9 +49,9 @@ public class ServiceRouteListener extends BaseServiceListener {
 
     @Override
     public void onAddInstance(InstanceDefinition instance) {
-        String serviceName = instance.getServiceId();
+        String serviceId = instance.getServiceId();
         String url = getRouteRequestUrl(instance);
-        log.info("拉取路由配置，serviceId: {}, url: {}", serviceName, url);
+        log.info("拉取路由配置，serviceId: {}, url: {}", serviceId, url);
         ResponseEntity<String> responseEntity = getRestTemplate().getForEntity(url, String.class);
         if (responseEntity.getStatusCode() == HttpStatus.OK) {
             String body = responseEntity.getBody();
@@ -53,15 +63,39 @@ public class ServiceRouteListener extends BaseServiceListener {
                 return;
             }
             gatewayRouteCache.load(serviceRouteInfo, callback -> routesProcessor.saveRoutes(serviceRouteInfo, instance));
+            this.initServiceBeanInitializer(serviceId);
         } else {
             log.error("拉取路由配置异常，url: {}, status: {}, body: {}", url, responseEntity.getStatusCodeValue(), responseEntity.getBody());
         }
     }
 
+    private void initServiceBeanInitializer(String serviceId) {
+        Map<String, ServiceBeanInitializer> serviceBeanInitializerMap = applicationContext.getBeansOfType(ServiceBeanInitializer.class);
+        serviceBeanInitializerMap.values().forEach(serviceBeanInitializer -> serviceBeanInitializer.load(serviceId));
+    }
+
     private ServiceRouteInfo parseServiceRouteInfo(String body) {
         ServiceRouteInfo serviceRouteInfo = JSON.parseObject(body, ServiceRouteInfo.class);
         serviceRouteInfo.setServiceId(serviceRouteInfo.getServiceId().toLowerCase());
+        List<RouteDefinition> routeDefinitionList = serviceRouteInfo.getRouteDefinitionList();
+        String md5 = buildMd5(routeDefinitionList);
+        serviceRouteInfo.setMd5(md5);
         return serviceRouteInfo;
+    }
+
+    /**
+     * 构建路由id MD5
+     *
+     * @param routeDefinitionList 路由列表
+     * @return 返回MD5
+     */
+    private String buildMd5(List<RouteDefinition> routeDefinitionList) {
+        List<String> routeIdList = routeDefinitionList.stream()
+                .map(JSON::toJSONString)
+                .sorted()
+                .collect(Collectors.toList());
+        String md5Source = org.apache.commons.lang3.StringUtils.join(routeIdList, "");
+        return DigestUtils.md5DigestAsHex(md5Source.getBytes(StandardCharsets.UTF_8));
     }
 
     protected HttpEntity<String> getHttpEntity() {

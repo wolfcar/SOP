@@ -32,4 +32,11 @@ public class Example1005_ThrowExceptionController {
         }
         return param;
     }
+
+    @Open("goods.update2")
+    @RequestMapping("ex2")
+    public Object updateGoods2(GoodsUpdateParam param) {
+        int i = 1/0;
+        return param;
+    }
 }

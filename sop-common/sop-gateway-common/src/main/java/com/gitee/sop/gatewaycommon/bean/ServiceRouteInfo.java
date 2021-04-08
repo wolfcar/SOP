@@ -24,6 +24,8 @@ public class ServiceRouteInfo {
 
     private List<RouteDefinition> routeDefinitionList;
 
+    private String md5;
+
     public String fetchServiceIdLowerCase() {
         return serviceId.toLowerCase();
     }

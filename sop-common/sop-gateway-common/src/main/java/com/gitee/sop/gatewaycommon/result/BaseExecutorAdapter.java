@@ -17,13 +17,17 @@ import com.gitee.sop.gatewaycommon.util.RouteInterceptorUtil;
 import com.gitee.sop.gatewaycommon.validate.alipay.AlipaySignature;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.util.UriUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * 处理微服务返回结果
@@ -44,6 +48,7 @@ public abstract class BaseExecutorAdapter<T, R> implements ResultExecutor<T, R> 
     static {
         HTTP_STATUS_ERROR_ENUM_MAP.put(HttpStatus.OK.value(), ErrorEnum.SUCCESS);
         HTTP_STATUS_ERROR_ENUM_MAP.put(SopConstants.BIZ_ERROR_STATUS, ErrorEnum.BIZ_ERROR);
+        HTTP_STATUS_ERROR_ENUM_MAP.put(SopConstants.UNKNOWN_ERROR_STATUS, ErrorEnum.ISP_SERVICE_UNKNOWN_ERROR);
         HTTP_STATUS_ERROR_ENUM_MAP.put(HttpStatus.NOT_FOUND.value(), ErrorEnum.ISV_INVALID_METHOD);
     }
 
@@ -63,6 +68,14 @@ public abstract class BaseExecutorAdapter<T, R> implements ResultExecutor<T, R> 
      * @return 返回错误信息
      */
     public abstract String getResponseErrorMessage(T t);
+
+    /**
+     * 业务返回的错误结果
+     * @param t request
+     * @param status status
+     * @return 业务返回结果
+     */
+    public abstract Optional<String> getServiceResultForError(T t, int status);
 
     /**
      * 返回Api参数
@@ -93,6 +106,10 @@ public abstract class BaseExecutorAdapter<T, R> implements ResultExecutor<T, R> 
         serviceResult = formatResult(serviceResult);
         boolean isMergeResult = this.isMergeResult(request);
         int responseStatus = this.getResponseStatus(request);
+        Optional<String> serviceResultForError = this.getServiceResultForError(request, responseStatus);
+        if (serviceResultForError.isPresent()) {
+            serviceResult = UriUtils.decode(serviceResultForError.get(), StandardCharsets.UTF_8);
+        }
         this.doAfterRoute(serviceResult, responseStatus, request);
         String finalResult;
         if (isMergeResult) {
@@ -124,6 +141,8 @@ public abstract class BaseExecutorAdapter<T, R> implements ResultExecutor<T, R> 
                 if (StringUtils.isEmpty(responseErrorMessage)) {
                     responseErrorMessage = serviceResult;
                 }
+                ServiceInstance serviceInstance = defaultRouteInterceptorContext.getServiceInstance();
+                log.error("微服务端报错，instance：{}:{}, errorMsg:{}", serviceInstance.getHost(), serviceInstance.getPort(), responseErrorMessage);
                 defaultRouteInterceptorContext.setServiceErrorMsg(responseErrorMessage);
             }
         }

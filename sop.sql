@@ -23,6 +23,7 @@ DROP TABLE IF EXISTS `monitor_info`;
 DROP TABLE IF EXISTS `monitor_info_error`;
 DROP TABLE IF EXISTS `user_account`;
 DROP TABLE IF EXISTS `isp_resource`;
+DROP TABLE IF EXISTS `system_lock`;
 
 
 CREATE TABLE `admin_user_info` (
@@ -280,6 +281,13 @@ CREATE TABLE `isp_resource` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='ISP资源表';
 
+CREATE TABLE `system_lock` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `content` varchar(64) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_content` (`content`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 INSERT INTO `admin_user_info` (`id`, `username`, `password`, `status`, `gmt_create`, `gmt_modified`) VALUES
 	(1,'admin','a62cd510fb9a8a557a27ef279569091f',1,'2019-04-02 19:55:26','2019-04-02 19:55:26');
 
@@ -350,3 +358,5 @@ INSERT INTO `isp_resource` (`id`, `name`, `content`, `ext_content`, `version`, `
 	(3,'Python','http://www.bilibili.com','```python\n    # 创建请求\n    request = MemberInfoGetRequest()\n    # 请求参数\n    model = MemberInfoGetModel()\n    model.age = 22\n    model.name = \'jim\'\n    model.address = \'xx\'\n    # 添加请求参数\n    request.biz_model = model\n\n    # 添加上传文件\n    # files = {\n    #     \'file1\': open(\'aa.txt\', \'rb\'),\n    #     \'file2\': open(\'bb.txt\', \'rb\')\n    # }\n    # request.files = files\n\n    # 调用请求\n    response = self.client.execute(request)\n\n    if response.is_success():\n        print \'response: \', response\n        print \'is_vip:\', response.get(\'member_info\').get(\'is_vip\', 0)\n    else:\n        print \'请求失败,code:%s, msg:%s, sub_code:%s, sub_msg:%s\' % \\\n              (response.code, response.msg, response.sub_code, response.sub_msg)\n```','1.0',0,0,'2020-11-07 14:30:16','2020-11-07 14:31:41'),
 	(4,'Go','http://www.baidu.com','```go\n\n// 应用ID\nconst appId string = "xx"\n// 应用私钥\nconst privateKey string = "xx"\n// 请求地址\nconst url string = "http://localhost:7071/prod/gw68uy85"\n\n// 请求客户端\nvar openClient = common.OpenClient{AppId: appId, PrivateKey: privateKey, Url: url}\n\nfunc main() {\n	// 创建请求\n	memberInfoGetRequest := request.MemberInfoGetRequest{}\n	// 请求参数\n	memberInfoGetRequest.BizModel = model.MemberInfoGetModel{Name: "jim", Age: 22, Address: "xx"}\n	\n    // 添加上传文件\n	//path, _ := os.Getwd()\n	//files := []common.UploadFile{\n	//	{Name:"file1", Filepath:path + "/test/aa.txt"},\n	//	{Name:"file2", Filepath:path + "/test/bb.txt"},\n	//}\n	//memberInfoGetRequest.Files = files\n    \n    // 发送请求，返回json bytes\n	var jsonBytes = openClient.Execute(memberInfoGetRequest)\n	fmt.Printf("data:%s\\n", string(jsonBytes))\n	// 转换结果\n	var memberInfoGetResponse response.MemberInfoGetResponse\n	response.ConvertResponse(jsonBytes, &memberInfoGetResponse)\n\n	if memberInfoGetResponse.IsSuccess() {\n		fmt.Printf("is_vip:%d, vip_endtime:%s\\n", memberInfoGetResponse.MemberInfo.IsVip, memberInfoGetResponse.MemberInfo.VipEndtime)\n	} else {\n		fmt.Printf("code:%s, msg:%s, subCode:%s, subMsg:%s\\n",\n			memberInfoGetResponse.Code, memberInfoGetResponse.Msg, memberInfoGetResponse.SubCode, memberInfoGetResponse.SubMsg)\n	}\n}\n```','1.0',0,0,'2020-11-07 14:31:21','2020-11-07 14:31:21'),
 	(5,'C++','http://pan.baidu.com','#include <iostream>\n\n#include "common/OpenClient.h"\n#include "request/BaseRequest.h"\n#include "request/MemberInfoGetRequest.hpp"\n\n// 应用ID\nstring appId = "2020051325943082302177280";\n// 存放私钥的文件路径\nstring privateKeyFile = "/Users/thc/IdeaProjects/opc/opc-sdk/sdk-c++/privateEx.pem";\n// 请求接口\nstring url = "http://localhost:7071/prod/gw68uy85";\n\nOpenClient openClient(appId, privateKeyFile, url);\n\nint main() {\n    // 创建请求\n    MemberInfoGetRequest request;\n\n    // 业务参数\n    map<string, string> bizModel;\n    bizModel["name"] = "jim";\n    bizModel["age"] = "22";\n    bizModel["address"] = "xx";\n\n    request.bizModel = bizModel;\n\n    // 添加上传文件\n//    request->setFiles({\n//        FileInfo{"aa", "/Users/thc/IdeaProjects/opc/opc-sdk/sdk-c++/aa.txt"},\n//        FileInfo{"bb", "/Users/thc/IdeaProjects/opc/opc-sdk/sdk-c++/bb.txt"}\n//    });\n\n    // 发送请求\n    neb::CJsonObject jsonObj = openClient.execute(&request);\n    std::cout << jsonObj.ToString() << std::endl;\n    std::cout << "id:" << jsonObj["id"].ToString() << std::endl;\n    std::cout << "is_vip:" << jsonObj["member_info"]["is_vip"].ToString() << std::endl;\n    return 0;\n}\n\n','1.0',0,0,'2020-11-07 14:32:55','2020-11-07 14:32:55');
+
+INSERT INTO `system_lock` (`id`, `content`) VALUES  (1,'lock');

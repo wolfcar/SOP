@@ -19,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -33,6 +34,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -196,6 +198,29 @@ public class ServerWebExchangeUtil {
                 .mutate()
                 .request(serverHttpRequestNew)
                 .build();
+    }
+
+    /**
+     * 返回header值
+     * @param exchange ServerWebExchange
+     * @param name header名
+     * @return 返回值，没有返回null
+     */
+    public static Optional<String> getHeaderValue(ServerWebExchange exchange, String name) {
+        List<String> values = exchange.getResponse().getHeaders().get(name);
+        if (CollectionUtils.isEmpty(values)) {
+            return Optional.empty();
+        }
+        return values.stream().findFirst();
+    }
+
+    /**
+     * 移除header
+     * @param exchange ServerWebExchange
+     * @param name header名
+     */
+    public static void removeHeader(ServerWebExchange exchange, String name) {
+        exchange.getResponse().getHeaders().remove(name);
     }
 
     /**

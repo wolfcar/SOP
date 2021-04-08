@@ -10,6 +10,8 @@ public enum ErrorEnum {
 
     /** 服务暂不可用 */
     ISP_UNKNOWN_ERROR(Codes.CODE_UNKNOWN, "isp.unknown-error"),
+    /** 微服务未知错误 */
+    ISP_SERVICE_UNKNOWN_ERROR(Codes.CODE_UNKNOWN, "isp.service-unknown-error"),
     /** 服务不可用，路由被禁用 */
     ISP_API_DISABLED(Codes.CODE_UNKNOWN, "isp.service-not-available"),
     /** 网关响应超时 */

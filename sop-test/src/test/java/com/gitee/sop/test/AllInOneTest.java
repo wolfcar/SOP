@@ -422,6 +422,25 @@ public class AllInOneTest extends TestBase {
         client.execute(requestBuilder);
     }
 
+    /**
+     * 未知异常
+     */
+    public void testException() {
+        Client.RequestBuilder requestBuilder = new Client.RequestBuilder()
+                .method("goods.update2")
+                .version("1.0")
+                .bizContent(new BizContent().add("goods_name", "Apple"))
+                .httpMethod(HttpTool.HTTPMethod.POST)
+                .callback((requestInfo, responseData) -> {
+                    System.out.println(responseData);
+                    String node = requestInfo.getDataNode();
+                    JSONObject jsonObject = JSON.parseObject(responseData).getJSONObject(node);
+                    Assert.assertEquals("isp.service-unknown-error", jsonObject.getString("sub_code"));
+                });
+
+        client.execute(requestBuilder);
+    }
+
     static class BizContent extends HashMap<String, Object> {
         public BizContent add(String key, Object value) {
             this.put(key, value);

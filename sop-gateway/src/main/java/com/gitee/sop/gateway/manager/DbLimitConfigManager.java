@@ -10,7 +10,6 @@ import com.gitee.sop.gatewaycommon.util.MyBeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 /**
@@ -23,9 +22,6 @@ public class DbLimitConfigManager extends DefaultLimitConfigManager {
 
     @Autowired
     ConfigLimitMapper configLimitMapper;
-
-    @Autowired
-    Environment environment;
 
     @Override
     public void load(String serviceId) {
