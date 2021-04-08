@@ -38,7 +38,7 @@ public class GatewayRouteCache implements RouteLoader {
     public void load(ServiceRouteInfo serviceRouteInfo, Consumer<Object> callback) {
         try {
             String serviceId = serviceRouteInfo.getServiceId();
-            String newMd5 = buildMd5(serviceRouteInfo.getRouteDefinitionList());
+            String newMd5 = serviceRouteInfo.getMd5();
             String oldMd5 = serviceIdMd5Map.get(serviceId);
             if (Objects.equals(newMd5, oldMd5)) {
                 return;
@@ -78,20 +78,6 @@ public class GatewayRouteCache implements RouteLoader {
         this.routeRepository.refresh();
     }
 
-    /**
-     * 构建路由id MD5
-     *
-     * @param routeDefinitionList 路由列表
-     * @return 返回MD5
-     */
-    private String buildMd5(List<RouteDefinition> routeDefinitionList) {
-        List<String> routeIdList = routeDefinitionList.stream()
-                .map(JSON::toJSONString)
-                .sorted()
-                .collect(Collectors.toList());
-        String md5Source = org.apache.commons.lang3.StringUtils.join(routeIdList, "");
-        return DigestUtils.md5DigestAsHex(md5Source.getBytes(StandardCharsets.UTF_8));
-    }
 
     @Override
     public void remove(String serviceId) {

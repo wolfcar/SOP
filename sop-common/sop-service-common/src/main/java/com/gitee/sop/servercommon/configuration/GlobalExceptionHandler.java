@@ -14,10 +14,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
 
 /**
- * 全局异常处理
+ * 全局异常处理，不在使用，目的是不与原有的全局异常冲突。替代方案见sop-story中的
+ *
+ * com.gitee.sop.storyweb.StoryGlobalExceptionHandler
  *
  * @author tanghc
  */
+@Deprecated
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {

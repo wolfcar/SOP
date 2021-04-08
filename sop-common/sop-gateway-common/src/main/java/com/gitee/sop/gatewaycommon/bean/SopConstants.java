@@ -40,7 +40,10 @@ public class SopConstants {
 
     public static final String X_SERVICE_ERROR_MESSAGE = "x-service-error-message";
 
+    public static final String X_SERVICE_ERROR_RESPONSE = "x-service-error-response";
+
     public static final int BIZ_ERROR_STATUS = 4000;
+    public static final int UNKNOWN_ERROR_STATUS = 5050;
 
     public static final String UNKNOWN_SERVICE= "_sop_unknown_service_";
     public static final String UNKNOWN_METHOD = "_sop_unknown_method_";

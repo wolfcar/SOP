@@ -1,6 +1,10 @@
 package com.gitee.sop.servercommon.result;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.gitee.sop.servercommon.exception.ServiceException;
+import com.gitee.sop.servercommon.message.ServiceError;
+import com.gitee.sop.servercommon.message.ServiceErrorEnum;
+import com.gitee.sop.servercommon.message.ServiceErrorMeta;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,20 +19,17 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 public class DefaultServiceResultBuilder implements ServiceResultBuilder {
 
-    public static final String ISP_UNKNOWN_ERROR = "isp.unknown-error";
-
     @Override
     public Object buildError(HttpServletRequest request, HttpServletResponse response, Throwable throwable) {
-        String subCode, subMsg;
+        ServiceError error;
         if (throwable instanceof ServiceException) {
-            ServiceException ex = (ServiceException) throwable;
-            subCode = ex.getError().getSub_code();
-            subMsg = ex.getError().getSub_msg();
+            ServiceException serviceException = (ServiceException) throwable;
+            error = serviceException.getError();
         } else {
-            subCode = ISP_UNKNOWN_ERROR;
-            subMsg = throwable.getMessage();
+            ServiceErrorMeta errorMeta = ServiceErrorEnum.ISP_UNKNOWN_ERROR.getErrorMeta();
+            error = errorMeta.getError();
         }
-        return this.buildError(subCode, subMsg);
+        return this.buildError(error.getSub_code(), error.getSub_msg());
     }
 
     @Override
@@ -41,7 +42,9 @@ public class DefaultServiceResultBuilder implements ServiceResultBuilder {
 
     @Data
     public static class AlipayResult {
+        @JSONField(ordinal = 1)
         private String sub_code;
+        @JSONField(ordinal = 2)
         private String sub_msg;
     }
 }

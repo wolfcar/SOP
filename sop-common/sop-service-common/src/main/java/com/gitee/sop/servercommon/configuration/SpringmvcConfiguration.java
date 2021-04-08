@@ -78,12 +78,6 @@ public class SpringmvcConfiguration implements WebMvcConfigurer, BeanPostProcess
 
     @Bean
     @ConditionalOnMissingBean
-    GlobalExceptionHandler globalExceptionHandler() {
-        return new GlobalExceptionHandler();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
     ServiceRouteController serviceRouteInfoHandler() {
         return new ServiceRouteController();
     }
