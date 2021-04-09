@@ -82,20 +82,25 @@ public class DefaultLimitConfigManager implements LimitConfigManager {
         if (StringUtils.isNotBlank(routeId) && StringUtils.isNotBlank(appKey) && StringUtils.isBlank(limitIp)) {
             keys.add(routeId.trim() + appKey.trim());
         }
-        Set<String> baseKeys = new HashSet<>(keys);
         // 根据ip限流
         if (StringUtils.isBlank(routeId) && StringUtils.isBlank(appKey) && StringUtils.isNotBlank(limitIp)) {
             String[] ips = limitIp.split("\\,|\\，");
             keys.addAll(Arrays.asList(ips));
         }
-        // 根据ip+路由id限流
-        // 根据ip+appKey限流
-        // 根据ip+路由id+appKey限流
         if (StringUtils.isNotBlank(limitIp)) {
             String[] ips = limitIp.split("\\,|\\，");
             for (String ip : ips) {
-                for (String baseKey : baseKeys) {
-                    keys.add(ip + baseKey);
+                // 根据ip+路由id限流
+                if (StringUtils.isNotBlank(ip) && StringUtils.isNotBlank(routeId) && StringUtils.isBlank(appKey)) {
+                    keys.add(routeId);
+                }
+                // 根据ip+appKey限流
+                if (StringUtils.isNotBlank(ip) && StringUtils.isBlank(routeId) && StringUtils.isNotBlank(appKey)) {
+                    keys.add(ip + appKey);
+                }
+                // 根据ip+路由id+appKey限流
+                if (StringUtils.isNotBlank(ip) && StringUtils.isNotBlank(routeId) && StringUtils.isNotBlank(appKey)) {
+                    keys.add(ip + routeId +appKey);
                 }
             }
         }

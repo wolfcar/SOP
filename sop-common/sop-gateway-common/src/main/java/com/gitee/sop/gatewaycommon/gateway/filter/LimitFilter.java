@@ -85,6 +85,7 @@ public class LimitFilter implements GlobalFilter, Ordered {
                 appKey,
                 routeId + appKey,
 
+                ip,
                 ip + routeId,
                 ip + appKey,
                 ip + routeId + appKey,
