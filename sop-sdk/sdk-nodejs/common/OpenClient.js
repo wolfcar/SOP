@@ -81,7 +81,7 @@ const OpenClient = Class.create({
                     case RequestType.POST_FILE:
                         this._postFile(request, callback);
                         break;
-                    default : {
+                    default: {
                         throw 'request.getRequestType()类型不正确';
                     }
                 }
