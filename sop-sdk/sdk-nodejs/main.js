@@ -30,6 +30,7 @@ function test() {
     // ]
 
     openClient.execute(request, data => {
+        console.log('异步请求')
         // 成功
         if (!data.sub_code) {
             console.log('成功', data);
@@ -37,6 +38,31 @@ function test() {
             console.error('失败', data)
         }
     })
+
+    // 使用Promise进行封装
+    openClient.executeSync(request).then(data => {
+        console.log('同步请求-Promise')
+        // 成功
+        if (!data.sub_code) {
+            console.log('成功', data);
+        } else {
+            console.error('失败', data)
+        }
+    })
+
+    // 使用Async/Await进行封装
+    async function syncRequest () {
+        const data = await openClient.execute(request)
+        console.log('同步请求-Async/Await')
+        // 成功
+        if (!data.sub_code) {
+            console.log('成功', data);
+        } else {
+            console.error('失败', data)
+        }
+    }
+
+    syncRequest()
 }
 
 

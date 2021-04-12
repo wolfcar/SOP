@@ -68,21 +68,22 @@ exports.SignUtil = {
      */
     getSignContent: function (params) {
         const paramNames = []
-        for(const key in params) {
-            paramNames.push(key)
-        }
+        // 获取对象中的Key
+        paramNames.push(...Object.keys(params || {})
+        // 过滤无效的KeyValue
+        .filter(paramName => {
+            // 参数名不为undefined且参数值不为undefined
+            return !(typeof paramName === undefined || typeof params[paramName] === undefined)
+        }))
 
         paramNames.sort()
 
-        const paramNameValue = []
-
-        for (let i = 0, len = paramNames.length; i < len; i++) {
-            const paramName = paramNames[i];
+        // 合成签名字符串
+        const paramNameValue = paramNames.map(paramName => {
             const val = params[paramName];
-            if (paramName && val) {
-                paramNameValue.push(`${paramName}=${val}`)
-            }
-        }
+            return `${paramName}=${val}`
+        })
+
         return paramNameValue.join('&')
     }
 }

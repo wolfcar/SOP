@@ -33,43 +33,74 @@ const OpenClient = Class.create({
     /**
      * 发送请求
      * @param request 请求类
-     * @param callback 回调函数，参数json
+     * @param callback 回调函数，参数json（undefined则使用executeSync）
      */
     execute: function (request, callback) {
-      this.executeToken(request, null, callback)
+      if (typeof callback == 'function') {
+        this.executeToken(request, null, callback)
+      } else {
+        return this.executeSync(request)
+      }
+    },
+    /**
+     * 发送同步请求
+     * @param request 请求类
+     * */
+    executeSync: function (request) {
+        return new Promise((resolve) => {
+            this.execute(request, res => {
+                resolve(res)
+            })
+        })
     },
     /**
      * 发送请求
      * @param request 请求类
      * @param token token
-     * @param callback 回调函数，参数json
+     * @param callback 回调函数，参数json（undefined则使用executeTokenSync）
      */
     executeToken: function (request, token, callback) {
         if (!(request instanceof BaseRequest)) {
             throw 'request类未继承BaseRequest'
         }
-        const requestType = request.getRequestType();
-        if (request.files) {
-            this._postFile(request, callback);
-        } else {
-            switch (requestType) {
-                case RequestType.GET:
-                    this._get(request, callback);
-                    break
-                case RequestType.POST_FORM:
-                    this._postForm(request, callback);
-                    break
-                case RequestType.POST_JSON:
-                    this._postJson(request, callback);
-                    break
-                case RequestType.POST_FILE:
-                    this._postFile(request, callback);
-                    break
-                default :{
-                    throw 'request.getRequestType()类型不正确'
+        if (typeof callback == 'function') {
+            const requestType = request.getRequestType();
+            if (request.files) {
+                this._postFile(request, callback);
+            } else {
+                switch (requestType) {
+                    case RequestType.GET:
+                        this._get(request, callback);
+                        break
+                    case RequestType.POST_FORM:
+                        this._postForm(request, callback);
+                        break
+                    case RequestType.POST_JSON:
+                        this._postJson(request, callback);
+                        break
+                    case RequestType.POST_FILE:
+                        this._postFile(request, callback);
+                        break
+                    default : {
+                        throw 'request.getRequestType()类型不正确'
+                    }
                 }
             }
+        } else {
+            return this.executeTokenSync(request, token)
         }
+    },
+  /**
+   * 发送同步请求
+   * @param request 请求类
+   * @param token token
+   */
+    executeTokenSync: function (request, token) {
+      return new Promise((resolve) => {
+        this.executeToken(request, token, res => {
+          resolve(res)
+        })
+      })
     },
     _get: function(request, callback) {
         const allParams = this._buildParams(request)
@@ -120,7 +151,13 @@ const OpenClient = Class.create({
         if (!error && response.statusCode === 200) {
             return request.parseResponse(response.body)
         } else {
-            throw '请求异常：' + error
+            // throw '请求异常：' + error
+            return { // 重新封装请求异常回调，以防中断
+                msg: '请求异常',
+                code: '502',
+                sub_msg: `${error}`,
+                sub_code: 'isv.invalid-server'
+            }
         }
     },
     _buildParams: function (request, token) {
