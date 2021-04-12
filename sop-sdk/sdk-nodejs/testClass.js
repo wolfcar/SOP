@@ -3,7 +3,7 @@
  * 运行：node testClass.js
  */
 
-const {Class} = require('./common/Class')
+const {Class} = require('./common/Class');
 
 function testClass() {
     //-------------------------
@@ -14,39 +14,39 @@ function testClass() {
     // 创建一个父类
     var Person = Class.create({
         // 构造函数
-        init:function(option){
+        init: function (option) {
             this.name = option.name;
         }
-        ,getName:function() {
+        , getName: function () {
             return this.name;
         }
     });
 
     // 声明类实例
-    var Jim = new Person({name:'Jim'});
-    console.log('Jim name:' + Jim.getName())
+    var Jim = new Person({name: 'Jim'});
+    console.log('Jim name:' + Jim.getName());
 
     //例子2:-------------------------
 
     // 创建一个类,继承Person类，并重写getName
     var Man = Class.create({
-        init:function(option) {
+        init: function (option) {
             this._super(option);// 调用父类构造函数
             this.age = option.age;
         }
         // 重写父类方法
-        ,getName:function() {
+        , getName: function () {
             // 调用父类的getName()
             var name = this._super();
-            return '我重写了getName方法：{'+name+'}';
+            return '我重写了getName方法：{' + name + '}';
         }
-    },Person);
+    }, Person);
 
-    var man = new Man({name:'Tom',age:22});
-    console.log('man name:' + man.getName())
+    var man = new Man({name: 'Tom', age: 22});
+    console.log('man name:' + man.getName());
 
     console.log('Jim instanceof Person: ' + (Jim instanceof Person));
     console.log('man instanceof Person: ' + (man instanceof Person));
 }
 
-testClass()
+testClass();
