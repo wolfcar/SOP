@@ -29,7 +29,10 @@ public class ServiceParamValidator implements ParamValidator {
     private static final String COMMA = ",";
     private static Object[] EMPTY_OBJ_ARRAY = {};
 
-    private static final List<String> SYSTEM_PACKAGE_LIST = Arrays.asList("java.lang", "java.math", "java.util", "sun.util");
+    private static final List<String> SYSTEM_PACKAGE_LIST = Arrays.asList(
+            "java.lang", "java.math", "java.util", "sun.util"
+            ,"org.springframework", "javax.servlet"
+    );
 
     private static javax.validation.Validator validator;
 
