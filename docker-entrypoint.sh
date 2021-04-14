@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 JAVA_OPTS="-Xms128m -Xmx128m"
 

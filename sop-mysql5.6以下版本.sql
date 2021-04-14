@@ -232,8 +232,8 @@ CREATE TABLE `monitor_info` (
   `total_request_count` bigint(20) NOT NULL DEFAULT '0' COMMENT '总调用次数',
   `success_count` bigint(20) NOT NULL DEFAULT '0' COMMENT '成功次数',
   `error_count` bigint(20) NOT NULL DEFAULT '0' COMMENT '失败次数（业务主动抛出的异常算作成功，如参数校验，未知的错误算失败）',
-  `gmt_create` datetime DEFAULT DEFAULT NULL,
-  `gmt_modified` datetime DEFAULT DEFAULT NULL,
+  `gmt_create` datetime DEFAULT NULL,
+  `gmt_modified` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_routeid` (`route_id`,`instance_id`) USING BTREE,
   KEY `idex_name` (`name`) USING BTREE
