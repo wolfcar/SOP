@@ -2,7 +2,7 @@ const isArray = require('isarray');
 /**
  * 请求类父类
  */
-exports.BaseRequest = class BaseRequest {
+module.exports = class BaseRequest {
     constructor() {
         this.bizModel = {};
 
@@ -10,6 +10,21 @@ exports.BaseRequest = class BaseRequest {
 
         // 用于文件上传时强制转换成POST_FILE请求
         this.__forceRequestType__ = undefined;
+
+        this.checkOverride();
+    }
+
+    /**
+     * 校验子类是否已重写相关方法
+     * */
+    checkOverride() {
+        try {
+            this.getMethod();
+            this.getVersion();
+            this.getRequestType();
+        } catch (error) {
+            throw error;
+        }
     }
 
     setBizModel(biz = {}) {
@@ -22,7 +37,7 @@ exports.BaseRequest = class BaseRequest {
         return this;
     }
 
-    addFile({name, path}) {
+    addFile(name, path) {
         if (name && path) {
             if (!isArray(this.files)) {
                 this.files = [];
