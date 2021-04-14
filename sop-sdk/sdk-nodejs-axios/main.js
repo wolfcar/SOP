@@ -27,8 +27,8 @@ const openClient = new OpenClient().setUrl(url).setAppId(appId).setPrivateKey(pr
     // 批量添加
     // const files = [
     //     // name: 表单名称，path：文件全路径
-    //     {name: 'file1', path: `${__dirname}/aa.txt`},
-    //     {name: 'file2', path: `${__dirname}/bb.txt`}
+    //     {name: 'file1', path: `${__dirname}/main.js`},
+    //     {name: 'file2', path: `${__dirname}/readme.md`}
     // ];
     // request.setFiles(files);
     // // 单个添加
