@@ -1,6 +1,6 @@
 {
   "name": "sdk-nodejs",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,8 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.21.1",
+    "form-data": "^4.0.0",
+    "isarray": "^2.0.5",
     "jsrsasign": "^8.0.19",
     "moment": "^2.27.0",
-    "needle": "^2.5.0"
+    "qs": "^6.10.1"
   }
 }

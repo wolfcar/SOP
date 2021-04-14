@@ -1,22 +1,19 @@
-const {Class} = require('../common/Class');
-const {RequestType} = require('../common/RequestType');
-const {BaseRequest} = require('./BaseRequest');
+const BaseRequest = require('../common/BaseRequest');
+const RequestType = require('../common/RequestType');
 
 /**
  * 创建一个请求类，继承BaseRequest，重写三个函数
  */
-const StoryGetRequest = Class.create({
-
-    getMethod: function () {
+module.exports = class StoryGetRequest extends BaseRequest {
+    getMethod() {
         return 'story.get';
-    },
-    getVersion: function () {
-        return '1.0';
-    },
-    getRequestType: function () {
-        return RequestType.GET;
     }
 
-}, BaseRequest); // 继承BaseRequest
+    getVersion() {
+        return '1.0';
+    }
 
-module.exports.StoryGetRequest = StoryGetRequest;
+    getRequestType() {
+        return RequestType.GET;
+    }
+};

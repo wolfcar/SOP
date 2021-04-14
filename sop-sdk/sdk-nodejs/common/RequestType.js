@@ -1,4 +1,4 @@
-exports.RequestType = {
+module.exports = {
     GET: 'GET',
     POST_FORM: 'POST_FORM',
     POST_JSON: 'POST_JSON',

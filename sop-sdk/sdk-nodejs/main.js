@@ -1,6 +1,6 @@
 const OpenClient = require('./common/OpenClient');
 
-const {StoryGetRequest} = require('./request/StoryGetRequest');
+const StoryGetRequest = require('./request/StoryGetRequest');
 
 // 应用ID
 const appId = '2019032617262200001';
@@ -10,61 +10,35 @@ const privateKey = 'MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCXJv1pQFqW
 const url = 'http://localhost:8081';
 
 // 创建客户端
-const openClient = new OpenClient(appId, privateKey, url);
+const openClient = new OpenClient().setUrl(url).setAppId(appId).setPrivateKey(privateKey);
 
-function test() {
+(async () => {
     // 创建请求
     const request = new StoryGetRequest();
 
     // 设置业务参数
-    request.bizModel = {
+    const bizModel = {
         id: 111,
         name: 'jim'
     };
+    request.setBizModel(bizModel);
 
     // 添加上传文件
-    // request.files = [
+    // 批量添加
+    // const files = [
     //     // name: 表单名称，path：文件全路径
-    //     {name: 'file1', path: `${__dirname}/aa.txt`},
-    //     {name: 'file2', path: `${__dirname}/bb.txt`}
-    // ]
+    //     {name: 'file1', path: `${__dirname}/main.js`},
+    //     {name: 'file2', path: `${__dirname}/readme.md`}
+    // ];
+    // request.setFiles(files);
+    // // 单个添加
+    // request.addFile('file3', `${__dirname}/package.json`);
 
-    openClient.execute(request, data => {
-        console.log('异步请求');
-        // 成功
-        if (!data.sub_code) {
-            console.log('成功', data);
-        } else {
-            console.error('失败', data);
-        }
-    });
-
-    // 使用Promise进行封装
-    openClient.executeSync(request).then(data => {
-        console.log('同步请求-Promise');
-        // 成功
-        if (!data.sub_code) {
-            console.log('成功', data);
-        } else {
-            console.error('失败', data);
-        }
-    });
-
-    // 使用Async/Await进行封装
-    async function syncRequest() {
-        const data = await openClient.execute(request);
-        console.log('同步请求-Async/Await');
-        // 成功
-        if (!data.sub_code) {
-            console.log('成功', data);
-        } else {
-            console.error('失败', data);
-        }
+    const data = await openClient.executeSync(request);
+    // 成功
+    if (!data.sub_code) {
+        console.log('成功', data);
+    } else {
+        console.error('失败', data);
     }
-
-    syncRequest();
-}
-
-
-test();
-
+})();
