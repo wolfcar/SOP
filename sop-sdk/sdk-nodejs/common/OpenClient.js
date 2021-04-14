@@ -79,7 +79,7 @@ const executeRequest = async (instance = {}, request, token, callback, customOpt
         case RequestType.POST_FILE: {
             let formData;
             if (IS_RUN_IN_BROWSER) {
-                formData = new window.FormData()
+                formData = new window.FormData();
                 (request.files || []).forEach(({name, path}) => {
                     formData.append(name, path, {
                         contentType: 'application/octet-stream'
@@ -167,8 +167,8 @@ module.exports = class OpenClient {
      * @param options 自定义参数，如headers
      * */
     executeSync(request, options) {
-        return new Promise((resolve) => {
-            const _ = this.execute(request, res => {
+        return new Promise(async (resolve) => {
+            await this.execute(request, res => {
                 resolve(res);
             }, options);
         });
@@ -203,8 +203,8 @@ module.exports = class OpenClient {
      * @param options 自定义参数，如headers
      */
     executeTokenSync(request, token, options) {
-        return new Promise((resolve) => {
-            const _ = this.executeToken(request, token, res => {
+        return new Promise(async (resolve) => {
+            await this.executeToken(request, token, res => {
                 resolve(res);
             }, options);
         });
