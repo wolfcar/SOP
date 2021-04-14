@@ -1,11 +1,12 @@
 const axios = require('axios');
-const formData = require('form-data');
 const moment = require('moment');
 const qs = require('qs');
 
-const {RequestType} = require('./RequestType');
-const {SignUtil} = require('./SignUtil');
-const {BaseRequest} = require('../request/BaseRequest');
+const RequestType = require('./RequestType');
+const SignUtil = require('./SignUtil');
+const BaseRequest = require('./BaseRequest');
+
+const IS_RUN_IN_BROWSER = this === window;
 
 const HEADERS = {'Accept-Encoding': 'identity'};
 
@@ -56,7 +57,7 @@ const executeRequest = async (instance = {}, request, token, callback, {headers}
         data: undefined
     };
     headers = getHeaders(headers);
-    const requestType = request.getRequestType();
+    const requestType = request.getRealRequestType();
     switch (requestType) {
         case RequestType.GET: {
             options.method = 'GET';
@@ -75,18 +76,31 @@ const executeRequest = async (instance = {}, request, token, callback, {headers}
         }
             break;
         case RequestType.POST_FILE: {
-            const formData = new formData();
-            (request.files || []).forEach(({name, path}) => {
-                formData.append(name, path, {
-                    contentType: 'application/octet-stream'
-                });
-            });
             Object.keys(params).forEach(key => {
                 const value = params[key];
                 if (!(typeof key === 'undefined' || typeof value === 'undefined')) {
                     formData.append(key, params[key]);
                 }
             });
+            let formData;
+            if (IS_RUN_IN_BROWSER) {
+                formData = new window.FormData()
+                (request.files || []).forEach(({name, path}) => {
+                    formData.append(name, path, {
+                        contentType: 'application/octet-stream'
+                    });
+                });
+            } else {
+                const fs = require('fs');
+                const fd = require('form-data');
+                formData = new fd();
+                (request.files || []).forEach(({name, path}) => {
+                    formData.append(name, fs.createReadStream(path), {
+                        contentType: 'application/octet-stream'
+                    });
+                });
+                headers = Object.assign(headers, formData.getHeaders());
+            }
             options.data = formData;
         }
             break;
@@ -112,9 +126,24 @@ module.exports = class OpenClient {
      * @param url 请求url
      */
     constructor(appId, privateKey, url) {
-        this.appId = appId;
-        this.privateKey = privateKey;
-        this.url = url;
+        this.appId = appId || '';
+        this.privateKey = privateKey || '';
+        this.url = url || '';
+    }
+
+    setAppId(appId) {
+        this.appId = appId || '';
+        return this;
+    }
+
+    setPrivateKey(privateKey) {
+        this.privateKey = privateKey || '';
+        return this;
+    }
+
+    setUrl(url) {
+        this.url = url || '';
+        return this;
     }
 
     /**

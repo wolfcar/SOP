@@ -11,7 +11,7 @@ const PEM_END = '\n-----END PRIVATE KEY-----';
 /**
  * rsa签名参考：https://www.jianshu.com/p/145eab95322c
  */
-exports.SignUtil = {
+module.exports = {
     /**
      * 创建签名
      * @param params 请求参数
