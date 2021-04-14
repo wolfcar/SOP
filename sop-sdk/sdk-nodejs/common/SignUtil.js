@@ -11,7 +11,7 @@ const PEM_END = '\n-----END PRIVATE KEY-----';
 /**
  * rsa签名参考：https://www.jianshu.com/p/145eab95322c
  */
-exports.SignUtil = {
+module.exports = {
     /**
      * 创建签名
      * @param params 请求参数
@@ -68,22 +68,21 @@ exports.SignUtil = {
      */
     getSignContent: function (params) {
         const paramNames = [];
-        // 获取对象中的Key
-        paramNames.push(...Object.keys(params || {})
-            // 过滤无效的KeyValue
-            .filter(paramName => {
-                // 参数名不为undefined且参数值不为undefined
-                return !(typeof paramName === undefined || typeof params[paramName] === undefined);
-            }));
+        for (const key in params) {
+            paramNames.push(key);
+        }
 
         paramNames.sort();
 
-        // 合成签名字符串
-        const paramNameValue = paramNames.map(paramName => {
-            const val = params[paramName];
-            return `${paramName}=${val}`;
-        });
+        const paramNameValue = [];
 
+        for (let i = 0, len = paramNames.length; i < len; i++) {
+            const paramName = paramNames[i];
+            const val = params[paramName];
+            if (paramName && val) {
+                paramNameValue.push(`${paramName}=${val}`);
+            }
+        }
         return paramNameValue.join('&');
     }
 };
