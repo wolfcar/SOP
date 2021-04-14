@@ -6,7 +6,7 @@ const RequestType = require('./RequestType');
 const SignUtil = require('./SignUtil');
 const BaseRequest = require('./BaseRequest');
 
-const IS_RUN_IN_BROWSER = this === window;
+const IS_RUN_IN_BROWSER = typeof window !== 'undefined' && this === window;
 
 const HEADERS = {'Accept-Encoding': 'identity'};
 
@@ -47,10 +47,11 @@ const buildParams = (instance, request, token) => {
     return allParams;
 };
 
-const executeRequest = async (instance = {}, request, token, callback, {headers}) => {
+const executeRequest = async (instance = {}, request, token, callback, customOptions = {}) => {
     const params = buildParams(instance, request, token);
     const {url} = instance;
-    const options = {
+    let {headers} = customOptions;
+    const config = {
         url,
         method: 'POST',
         params: undefined,
@@ -60,28 +61,22 @@ const executeRequest = async (instance = {}, request, token, callback, {headers}
     const requestType = request.getRealRequestType();
     switch (requestType) {
         case RequestType.GET: {
-            options.method = 'GET';
-            options.params = params;
+            config.method = 'GET';
+            config.params = params;
         }
             break;
         case RequestType.POST_FORM: {
             headers = Object.assign(headers, {
                 'Content-Type': 'application/x-www-form-urlencoded'
             });
-            options.data = qs.stringify(params);
+            config.data = qs.stringify(params);
         }
             break;
         case RequestType.POST_JSON: {
-            options.data = params;
+            config.data = params;
         }
             break;
         case RequestType.POST_FILE: {
-            Object.keys(params).forEach(key => {
-                const value = params[key];
-                if (!(typeof key === 'undefined' || typeof value === 'undefined')) {
-                    formData.append(key, params[key]);
-                }
-            });
             let formData;
             if (IS_RUN_IN_BROWSER) {
                 formData = new window.FormData()
@@ -101,7 +96,13 @@ const executeRequest = async (instance = {}, request, token, callback, {headers}
                 });
                 headers = Object.assign(headers, formData.getHeaders());
             }
-            options.data = formData;
+            Object.keys(params).forEach(key => {
+                const value = params[key];
+                if (!(typeof key === 'undefined' || typeof value === 'undefined')) {
+                    formData.append(key, params[key]);
+                }
+            });
+            config.data = formData;
         }
             break;
         default: {
@@ -110,8 +111,8 @@ const executeRequest = async (instance = {}, request, token, callback, {headers}
         }
     }
     try {
-        options['headers'] = headers;
-        const response = await axios.request(options);
+        config['headers'] = headers;
+        const response = await axios.request(config);
         callback(parseResponse(undefined, response, request));
     } catch (error) {
         callback(parseResponse(error, undefined, request));
