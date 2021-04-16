@@ -18,6 +18,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.HttpMessageReader;
+import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.MultiValueMap;
@@ -76,6 +77,17 @@ public class ServerWebExchangeUtil {
      */
     public static ServerRequest createReadBodyRequest(ServerWebExchange exchange) {
         return ServerRequest.create(exchange, messageReaders);
+    }
+
+    /**
+     * 构建一个接受请求体的request
+     *
+     * @param exchange exchange
+     * @param codecConfigurer codecConfigurer
+     * @return 返回ServerRequest
+     */
+    public static ServerRequest createReadBodyRequest(ServerWebExchange exchange, ServerCodecConfigurer codecConfigurer) {
+        return ServerRequest.create(exchange, codecConfigurer.getReaders());
     }
 
     public static ApiParam getApiParamForRestful(ServerWebExchange exchange, String path) {

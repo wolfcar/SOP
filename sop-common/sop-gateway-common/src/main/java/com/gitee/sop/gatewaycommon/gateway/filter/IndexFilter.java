@@ -20,6 +20,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
 import org.springframework.web.reactive.function.BodyInserter;
@@ -61,6 +62,9 @@ public class IndexFilter implements WebFilter {
     @Autowired
     private GatewayForwardChooser gatewayForwardChooser;
 
+    @Autowired
+    private ServerCodecConfigurer codecConfigurer;
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
@@ -84,7 +88,7 @@ public class IndexFilter implements WebFilter {
         }
         if (Objects.equals(path, indexPath)) {
             if (request.getMethod() == HttpMethod.POST) {
-                ServerRequest serverRequest = ServerWebExchangeUtil.createReadBodyRequest(exchange);
+                ServerRequest serverRequest = ServerWebExchangeUtil.createReadBodyRequest(exchange, codecConfigurer);
                 // 读取请求体中的内容
                 Mono<?> modifiedBody = serverRequest.bodyToMono(byte[].class)
                         .flatMap(data -> {
