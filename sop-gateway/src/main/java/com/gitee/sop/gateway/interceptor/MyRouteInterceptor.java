@@ -5,6 +5,7 @@ import com.gitee.sop.gatewaycommon.interceptor.RouteInterceptorContext;
 import com.gitee.sop.gatewaycommon.param.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
 
 import java.net.URI;
@@ -34,6 +35,10 @@ public class MyRouteInterceptor implements RouteInterceptor {
 
     @Override
     public void afterRoute(RouteInterceptorContext context) {
+        String serviceErrorMsg = context.getServiceErrorMsg();
+        if (StringUtils.hasText(serviceErrorMsg)) {
+            log.error("错误信息:{}", serviceErrorMsg);
+        }
     }
 
     @Override
