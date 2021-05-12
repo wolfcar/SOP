@@ -44,6 +44,8 @@ public abstract class BaseRequest<T extends BaseResponse> {
     private String bizContent = EMPTY_JSON;
     private Object bizModel;
 
+    private RequestMethod requestMethod = RequestMethod.POST;
+
     /**
      * 上传文件
      */
@@ -144,13 +146,12 @@ public abstract class BaseRequest<T extends BaseResponse> {
         return responseClass;
     }
 
-    /**
-     * 指定HTTP请求method,默认POST
-     *
-     * @return
-     */
-    protected RequestMethod getRequestMethod() {
-        return RequestMethod.POST;
+
+    public RequestMethod getRequestMethod() {
+        return requestMethod;
     }
 
+    public void setRequestMethod(RequestMethod requestMethod) {
+        this.requestMethod = requestMethod;
+    }
 }

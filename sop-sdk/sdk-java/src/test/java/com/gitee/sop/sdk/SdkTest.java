@@ -3,6 +3,7 @@ package com.gitee.sop.sdk;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.gitee.sop.sdk.client.OpenClient;
+import com.gitee.sop.sdk.common.RequestMethod;
 import com.gitee.sop.sdk.common.UploadFile;
 import com.gitee.sop.sdk.model.DemoFileUploadModel;
 import com.gitee.sop.sdk.model.GetStoryModel;
@@ -65,6 +66,7 @@ public class SdkTest extends TestCase {
         Map<String, Object> bizModel = new HashMap<>();
         bizModel.put("name", "白雪公主");
         request.setBizModel(bizModel);
+//        request.setRequestMethod(RequestMethod.GET);
 
         // 发送请求
         CommonResponse response = client.execute(request);
