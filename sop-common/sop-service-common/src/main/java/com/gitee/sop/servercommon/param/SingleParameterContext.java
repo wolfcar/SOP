@@ -25,8 +25,8 @@ public class SingleParameterContext {
     public static void add(Parameter parameter, Open open) {
         String version = open.version();
         version = "".equals(version) ? ServiceConfig.getInstance().getDefaultVersion() : version;
-        String key = open.value() + version;
         String parameterName = parameter.getName();
+        String key = open.value() + version + parameterName;
         Class<?> wrapClass = singleFieldWrapper.create(parameter, parameterName);
         SingleParameterContextValue value = new SingleParameterContextValue();
         value.setParameterName(parameterName);
