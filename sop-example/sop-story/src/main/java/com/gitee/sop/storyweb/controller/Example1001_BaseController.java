@@ -171,7 +171,7 @@ public class Example1001_BaseController {
     // 参数绑定
     @Open(value = "story.param.bind", mergeResult = false)
     @RequestMapping("/get/param/v1")
-    public StoryResult param(@RequestParam("id") Integer id, @RequestParam String name) {
+    public StoryResult param(String id, String name) {
         StoryResult result = new StoryResult();
         result.setName("参数绑定：id:" + id + ", name:" + name);
         return result;
