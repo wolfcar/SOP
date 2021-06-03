@@ -55,8 +55,14 @@ public class GatewayRouteRepository implements RouteRepository<GatewayTargetRout
             RewritePathGatewayFilterFactory.Config config = new RewritePathGatewayFilterFactory.Config();
             config.setRegexp(gatewayTargetRoute.getFullPath());
             config.setReplacement(routeDefinition.getPath());
+            String serviceId = gatewayTargetRoute.getServiceDefinition().getServiceId();
+            String path = routeDefinition.getPath();
+            if (!path.startsWith("/")) {
+                path = "/" + path;
+            }
+            String finalPath = "/" + serviceId + path;
             builder.route(routeDefinition.getId(),
-                    r -> r.path(routeDefinition.getPath())
+                    r -> r.path(finalPath)
                             // path匹配
                             .filters(gatewayFilterSpec -> gatewayFilterSpec.filter(rewritePathGatewayFilterFactory.apply(config)))
                             .uri(routeDefinition.getUri())
