@@ -151,9 +151,7 @@ public class Example1001_BaseController {
     // 参数绑定
     @Open(value = "story.oneparam", version = "1.1")
     @GetMapping("/oneParam/v2")
-    public StoryResult oneParamV2(
-            @NotNull(message = "id不能为空")
-            @Min(value = 1, message = "id必须大于0") Integer id) {
+    public StoryResult oneParamV2(Integer id) {
         StoryResult result = new StoryResult();
         result.setName("id：" + id);
         return result;

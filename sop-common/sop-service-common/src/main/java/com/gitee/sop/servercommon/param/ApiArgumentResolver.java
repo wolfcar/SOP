@@ -2,19 +2,17 @@ package com.gitee.sop.servercommon.param;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.JSONValidator;
 import com.gitee.sop.servercommon.annotation.Open;
-import com.gitee.sop.servercommon.bean.OpenContext;
 import com.gitee.sop.servercommon.bean.OpenContextImpl;
 import com.gitee.sop.servercommon.bean.ParamNames;
 import com.gitee.sop.servercommon.bean.ServiceContext;
-import com.gitee.sop.servercommon.util.FieldUtil;
 import com.gitee.sop.servercommon.util.OpenUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -36,7 +34,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
-import java.lang.reflect.Parameter;
 import java.security.Principal;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -113,27 +110,12 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
         if (special) {
             NEED_INIT_OPEN_CONTEXT.add(methodParameter);
         }
-        this.wrapSingleParam(methodParameter, open);
         return true;
     }
 
 
     private boolean isOnlyInitOpenContext(MethodParameter methodParameter) {
         return NEED_INIT_OPEN_CONTEXT.contains(methodParameter);
-    }
-
-    /**
-     * 包装单个值参数
-     * @param methodParameter 参数信息
-     * @param open open注解
-     */
-    private void wrapSingleParam(MethodParameter methodParameter, Open open) {
-        Parameter parameter = methodParameter.getParameter();
-        boolean isNumberStringEnumType = FieldUtil.isNumberStringEnumType(parameter.getType());
-        if (isNumberStringEnumType) {
-            log.debug("包装参数，方法：{}，参数名：{}", methodParameter.getMethod(), parameter.getName());
-            SingleParameterContext.add(parameter, open);
-        }
     }
 
     @Override
@@ -164,29 +146,17 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
         Object paramObj = this.getParamObject(methodParameter, nativeWebRequest);
         if (paramObj != null) {
             // JSR-303验证
-            if (paramObj instanceof SingleParameterWrapper) {
-                SingleParameterWrapper parameterWrapper = (SingleParameterWrapper) paramObj;
-                paramValidator.validateBizParam(parameterWrapper.getWrapperObject());
-                return parameterWrapper.getParamValue();
-            } else {
-                paramValidator.validateBizParam(paramObj);
-                return paramObj;
-            }
+            paramValidator.validateBizParam(paramObj);
+            return paramObj;
         }
         HandlerMethodArgumentResolver resolver = getOtherArgumentResolver(methodParameter);
         if (resolver != null) {
-            Object param = resolver.resolveArgument(
+            return resolver.resolveArgument(
                     methodParameter
                     , modelAndViewContainer
                     , nativeWebRequest
                     , webDataBinderFactory
             );
-            OpenContext openContext = ServiceContext.getCurrentContext().getOpenContext();
-            if (openContext instanceof OpenContextImpl) {
-                OpenContextImpl openContextImpl = (OpenContextImpl) openContext;
-                openContextImpl.setBizObject(param);
-            }
-            return param;
         }
         return null;
     }
@@ -217,22 +187,11 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
         Map<String, Object> requestParams = openContext.getParameterMap();
         Object bizObj = requestParams.get(ParamNames.BIZ_CONTENT_NAME);
         String bizContent = bizObj == null ? null : bizObj.toString();
-        if (bizContent == null) {
+        if (StringUtils.isEmpty(bizContent)) {
             return null;
         }
         // 方法参数类型
         Class<?> parameterType = methodParameter.getParameterType();
-        SingleParameterContextValue singleValue = SingleParameterContext.get(openContext.getMethod(), openContext.getVersion());
-        // 如果是单值参数
-        if (singleValue != null) {
-            JSONObject jsonObj = JSON.parseObject(bizContent);
-            Object paramValue = jsonObj.getObject(singleValue.getParameterName(), parameterType);
-            Object wrapperObject = jsonObj.toJavaObject(singleValue.getWrapClass());
-            SingleParameterWrapper singleParameterWrapper = new SingleParameterWrapper();
-            singleParameterWrapper.setParamValue(paramValue);
-            singleParameterWrapper.setWrapperObject(wrapperObject);
-            return singleParameterWrapper;
-        }
         Object param;
         try {
             param = JSON.parseObject(bizContent, parameterType);
