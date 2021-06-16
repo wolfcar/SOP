@@ -51,6 +51,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
 
+    private static final String HAS_INIT_OPEN_CONTEXT = "hasInitOpenContext";
     private final Map<MethodParameter, HandlerMethodArgumentResolver> argumentResolverCache = new ConcurrentHashMap<>(256);
 
     private static List<MethodParameter> NEED_INIT_OPEN_CONTEXT = new ArrayList<>(16);
@@ -163,10 +164,15 @@ public class ApiArgumentResolver implements SopHandlerMethodArgumentResolver {
 
     private OpenContextImpl initOpenContextImpl(NativeWebRequest nativeWebRequest) {
         HttpServletRequest request = (HttpServletRequest) nativeWebRequest.getNativeRequest();
+        Object hasInit = request.getAttribute(HAS_INIT_OPEN_CONTEXT);
+        if (hasInit != null) {
+            return (OpenContextImpl) ServiceContext.getCurrentContext().getOpenContext();
+        }
         ServiceContext currentContext = ServiceContext.getCurrentContext();
         JSONObject requestParams = OpenUtil.getRequestParams(request);
         OpenContextImpl openContext = new OpenContextImpl(requestParams);
         currentContext.setOpenContext(openContext);
+        request.setAttribute(HAS_INIT_OPEN_CONTEXT, true);
         return openContext;
     }
 

@@ -35,6 +35,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -136,6 +137,14 @@ public class Example1001_BaseController {
     @Open("story.system.param.get4")
     @RequestMapping("/get/system/param/v4")
     public Object addGoods3(HttpServletRequest request, StoryParam param) {
+        param.setRemark(request.getRequestURI());
+        return param;
+    }
+
+    @Open("story.system.param.get5")
+    @RequestMapping("/get/system/param/v5")
+    public Object get5(HttpServletRequest request, HttpServletResponse response, StoryParam param) {
+        param.setRemark(request.getRequestURI() + ", getCharacterEncoding:" + response.getCharacterEncoding());
         return param;
     }
 
