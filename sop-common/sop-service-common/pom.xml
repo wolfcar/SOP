@@ -39,6 +39,7 @@
         <springfox-swagger2.version>2.9.2</springfox-swagger2.version>
         <easyopen.version>1.16.9</easyopen.version>
         <pagehelper.version>5.2.0</pagehelper.version>
+        <asm.version>6.2</asm.version>
     </properties>
 
     <dependencies>
@@ -71,6 +72,11 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
         </dependency>
 
         <!-- optional -->
@@ -211,6 +217,12 @@
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-validator</artifactId>
                 <version>${hibernate-validator.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm</artifactId>
+                <version>${asm.version}</version>
             </dependency>
 
             <dependency>
