@@ -7,10 +7,10 @@ import org.springframework.web.server.ServerWebExchange;
 import java.util.Map;
 
 /**
- * 处理业务数据
+ * 处理业务返回数据
  * @author thc
  */
-public interface BizContentHandler {
+public interface BizResultHandler {
 
     /**
     * 处理业务参数
