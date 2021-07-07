@@ -179,11 +179,11 @@ public abstract class BaseExecutorAdapter<T, R> implements ResultExecutor<T, R> 
         serviceData.put(GATEWAY_CODE_NAME, errorMeta.getCode());
         serviceData.put(GATEWAY_MSG_NAME, errorMeta.getError(getLocale(request)).getMsg());
         JSONObject serviceObj = JSON.parseObject(serviceResult, Feature.OrderedField);
-        this.handleBizContent(serviceData, serviceObj, apiParam, request);
+        this.handleBizResult(serviceData, serviceObj, apiParam, request);
         return serviceData;
     }
 
-    protected abstract void handleBizContent(Map<String, Object> serviceData, JSONObject serviceObj, ApiParam apiParam, T request);
+    protected abstract void handleBizResult(Map<String, Object> serviceData, JSONObject serviceObj, ApiParam apiParam, T request);
 
 
     /**

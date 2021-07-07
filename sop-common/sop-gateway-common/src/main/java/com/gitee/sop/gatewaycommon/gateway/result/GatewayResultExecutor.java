@@ -96,7 +96,7 @@ public class GatewayResultExecutor extends BaseExecutorAdapter<ServerWebExchange
     }
 
     @Override
-    protected void handleBizContent(Map<String, Object> serviceData, JSONObject serviceObj, ApiParam apiParam, ServerWebExchange request) {
-        ApiConfig.getInstance().getBizContentHandler().handle(serviceData, serviceObj, apiParam, request);
+    protected void handleBizResult(Map<String, Object> serviceData, JSONObject serviceObj, ApiParam apiParam, ServerWebExchange request) {
+        ApiConfig.getInstance().getBizResultHandler().handle(serviceData, serviceObj, apiParam, request);
     }
 }
