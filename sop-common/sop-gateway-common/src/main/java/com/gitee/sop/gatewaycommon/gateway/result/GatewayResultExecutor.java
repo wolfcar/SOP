@@ -2,6 +2,7 @@ package com.gitee.sop.gatewaycommon.gateway.result;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.gitee.sop.gatewaycommon.bean.ApiConfig;
 import com.gitee.sop.gatewaycommon.bean.DefaultRouteInterceptorContext;
 import com.gitee.sop.gatewaycommon.bean.SopConstants;
 import com.gitee.sop.gatewaycommon.exception.ApiException;
@@ -16,14 +17,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.gateway.support.TimeoutException;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.UriUtils;
 
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -96,4 +95,8 @@ public class GatewayResultExecutor extends BaseExecutorAdapter<ServerWebExchange
         return this.merge(exchange, jsonObject);
     }
 
+    @Override
+    protected void handleBizContent(Map<String, Object> serviceData, JSONObject serviceObj, ApiParam apiParam, ServerWebExchange request) {
+        ApiConfig.getInstance().getBizContentHandler().handle(serviceData, serviceObj, apiParam, request);
+    }
 }

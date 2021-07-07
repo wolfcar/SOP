@@ -1,5 +1,6 @@
 package com.gitee.sop.gatewaycommon.bean;
 
+import com.gitee.sop.gatewaycommon.gateway.result.BizContentHandler;
 import com.gitee.sop.gatewaycommon.gateway.result.GatewayResultExecutor;
 import com.gitee.sop.gatewaycommon.interceptor.RouteInterceptor;
 import com.gitee.sop.gatewaycommon.limit.DefaultLimitManager;
@@ -142,6 +143,13 @@ public class ApiConfig {
      * 监控管理
      */
     private MonitorManager monitorManager = new MonitorManager();
+
+    /**
+    * 业务返回参数处理
+    */
+    private BizContentHandler bizContentHandler = (serviceData, serviceObj, apiParam, request) -> {
+        serviceData.putAll(serviceObj);
+    };
 
     // -------- fields ---------
 
