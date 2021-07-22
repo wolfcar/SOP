@@ -142,9 +142,3 @@ System.out.println(responseData);
 ## 相关文档
 
 [开发文档](http://durcframework.gitee.io/sop)
-
-## 沟通交流
-
-- QQ群
-
-1群：167643071（满）、2群：167643071（满）、3群：565894770
