@@ -157,7 +157,7 @@ public class OpenClient {
         form.put(this.openConfig.getAppKeyName(), this.appId);
 
         String content = SopSignature.getSignContent(form);
-        String sign = null;
+        String sign;
         try {
             sign = SopSignature.rsaSign(content, privateKey, openConfig.getCharset(), openConfig.getSignType());
         } catch (SopSignException e) {
