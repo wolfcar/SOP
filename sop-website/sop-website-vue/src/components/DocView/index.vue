@@ -17,7 +17,7 @@
       <el-table-column prop="versionValue" width="120" />
     </el-table>
     <h3>接口描述</h3>
-    <div class="doc-overview">{{ docInfo.description || docInfo.title }}</div>
+    <div class="doc-overview" v-html="docInfo.description || docInfo.title"></div>
     <h3>请求地址</h3>
     <el-table
       :data="[{ envLabel: '环境', envValue: '正式环境', urlLabel: '请求地址', urlValue: urlProd }]"
