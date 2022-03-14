@@ -5,6 +5,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.internal.http.HttpMethod;
 
+import java.util.Base64;
+
 /**
  * https://github.com/Netflix/eureka/wiki/Eureka-REST-operations
  *
@@ -64,12 +66,16 @@ public enum EurekaUri {
             url = url.substring(0, url.length() - 1);
         }
         String requestUrl = url + getUri(args);
-        Request request = this.getBuilder()
+        Request.Builder builder = this.getBuilder()
                 .url(requestUrl)
                 .addHeader("Content-Type", "application/json")
-                .addHeader("Accept", "application/json")
-                .build();
-        return request;
+                .addHeader("Accept", "application/json");
+        //是否开启 Basic
+        if(url.contains("@") && url.contains(":")){
+            String user = url.split("@")[0].replace("http://","").replace("https://","");
+            builder.addHeader("Authorization","Basic " + Base64.getUrlEncoder().encodeToString(user.getBytes()));
+        }
+        return builder.build();
     }
 
     public Request.Builder getBuilder() {
